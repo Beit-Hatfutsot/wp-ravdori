@@ -1,0 +1,119 @@
+/*************************************************************/
+/*              Backend Dictionary & quotes GUI              */
+/* - The following style was taken from ACF repeater plugin  */
+/*************************************************************/
+
+.repeater {
+  > table {
+    margin: 0 0 8px;
+    &.acf-input-table > tbody > tr > td.field {
+      padding: 8px;
+    }
+    > {
+      thead > tr > th:last-child {
+        border-right: 0 none;
+      }
+      tbody > tr {
+        > td.remove > a {
+          &.acf-button-add {
+            position: absolute;
+            -webkit-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            -moz-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            -o-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            visibility: hidden;
+            opacity: 0;
+          }
+          &.acf-button-remove {
+            position: absolute;
+            -webkit-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            -moz-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            -o-transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            transition: opacity 0.25s 0s ease-in-out, visibility 0s linear 0.25s;
+            visibility: hidden;
+            opacity: 0;
+            position: relative;
+          }
+        }
+        &:hover > td.remove > a {
+          &.acf-button-add, &.acf-button-remove {
+            -webkit-transition-delay: 0s;
+            -moz-transition-delay: 0s;
+            -o-transition-delay: 0s;
+            transition-delay: 0s;
+            visibility: visible;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+  &.disabled > table > tbody > tr:hover > td.remove > a.acf-button-add {
+    visibility: hidden !important;
+  }
+  > table > {
+    thead > tr > th.order {
+      width: 16px !important;
+      text-align: center !important;
+      vertical-align: middle;
+      color: #aaa;
+      text-shadow: #fff 0 1px 0;
+    }
+    tbody > tr > td {
+      &.order {
+        width: 16px !important;
+        text-align: center !important;
+        vertical-align: middle;
+        color: #aaa;
+        text-shadow: #fff 0 1px 0;
+        border-right-color: #E1E1E1;
+        background: #f4f4f4;
+      }
+      &.remove {
+        background: #F9F9F9;
+      }
+    }
+    thead > tr > th.order:hover, tbody > tr > td.order:hover {
+      color: #666;
+    }
+    thead > tr > th.remove, tbody > tr > td.remove {
+      width: 16px !important;
+      vertical-align: middle;
+    }
+  }
+  tr.row-clone {
+    display: none !important;
+  }
+  > table > tbody > tr {
+    &.ui-sortable-helper {
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    }
+    &.ui-sortable-placeholder {
+      visibility: visible !important;
+      td {
+        border: 0 none !important;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.075);
+      }
+    }
+  }
+  &.empty table {
+    thead th {
+      border-bottom: 0 none;
+    }
+    &.row_layout {
+      box-shadow: none;
+      border: 0 none;
+      margin: 0;
+    }
+  }
+}
+
+.media-item .describe .repeater > table > thead > tr > th {
+  width: auto;
+}
+
+.acf-input-wrap input,
+.acf-input-wrap textarea { width: 100% !important; }
+
+.wp-editor-container{background-color:#fff;}

@@ -1,0 +1,271 @@
+@import "params";
+
+@mixin reset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: none;
+}
+
+@mixin section {
+	float: left;
+	clear: left;
+	width: 100%;
+}
+
+@mixin not-selectable {
+	-webkit-user-select: none;
+	-moz-user-select:    none;
+	-ms-user-select:     none;
+	-o-user-select:      none;
+	user-select:         none;
+}
+
+@mixin box-sizing ( $box:border-box ) {
+	-webkit-box-sizing: $box;
+	-moz-box-sizing:    $box;
+	box-sizing:         $box;
+}
+
+/* ADDS A BROWSER PREFIX TO THE PROPERTY */
+@mixin css3-prefix($property, $value) {
+  -webkit-#{$property}: #{$value};
+  -khtml-#{$property}: #{$value};
+  -moz-#{$property}: #{$value};
+  -ms-#{$property}: #{$value};
+  -o-#{$property}: #{$value};
+  #{$property}: #{$value};
+}
+
+@mixin box-shadow($h_offset, $v_offset, $color, $blur: 0, $spread: 0, $inset: false) {
+	@if $inset == true {
+		-webkit-box-shadow: inset $h_offset $v_offset $blur $spread $color;
+		-moz-box-shadow:    inset $h_offset $v_offset $blur $spread $color;
+		box-shadow:         inset $h_offset $v_offset $blur $spread $color;
+	} @else {
+		-webkit-box-shadow: $h_offset $v_offset $blur $spread $color;
+		-moz-box-shadow:    $h_offset $v_offset $blur $spread $color;
+		box-shadow:         $h_offset $v_offset $blur $spread $color;
+	}
+}
+
+@mixin no-wrap($disable-white-space: true) {
+	@if $disable-white-space == true {
+		white-space: nowrap;
+	}
+
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+@mixin transition($efx: opacity, $speed: .25s) {
+	-webkit-transition: #{$efx} $speed;
+	-moz-transition:    #{$efx} $speed;
+	-ms-transition:     #{$efx} $speed;
+	-o-transition:      #{$efx} $speed;
+	transition:         #{$efx} $speed;
+}
+
+@mixin transform($efx) {
+	-webkit-transform: $efx;
+	-moz-transform:    $efx;
+	-ms-transform:     $efx;
+	-o-transform:      $efx;
+	transform:         $efx;
+}
+
+
+@mixin transform-origin ($origin) {
+  moz-transform-origin: $origin;
+  -o-transform-origin: $origin;
+  -ms-transform-origin: $origin;
+  -webkit-transform-origin: $origin;
+  transform-origin: $origin;
+}
+
+@mixin vertical-gradient($top, $bottom, $top-pos: 0%, $bottom-pos: 100%) {
+	background-image: -webkit-linear-gradient(top, $top $top-pos, $bottom $bottom-pos);
+	background-image: -moz-linear-gradient(top, $top $top-pos, $bottom $bottom-pos);
+	background-image: -ms-linear-gradient(top, $top $top-pos, $bottom $bottom-pos);
+	background-image: -o-linear-gradient(top, $top $top-pos, $bottom $bottom-pos);
+	background-image: linear-gradient(to top, $top $top-pos, $bottom $bottom-pos);
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#{ie-hex-str($bottom)}', endColorstr='#{ie-hex-str($top)}');
+}
+
+@mixin horizontal-gradient($left, $right, $left-pos: 0%, $right-pos: 100%) {
+	background-image: -webkit-linear-gradient(left, $left $left-pos, $right $right-pos);
+	background-image: -moz-linear-gradient(left, $left $left-pos, $right $right-pos);
+	background-image: -ms-linear-gradient(left, $left $left-pos, $right $right-pos);
+	background-image: -o-linear-gradient(left, $left $left-pos, $right $right-pos);
+	background-image: linear-gradient(to right, $left $left-pos, $right $right-pos);
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#{ie-hex-str($right)}', endColorstr='#{ie-hex-str($left)}');
+}
+
+@mixin image($url, $background_color: transparent , $size: "", $position: 0 0, $repeat: no-repeat) {
+	background: $background_color url($images + $url) $position $repeat;
+
+	@if $size != "" {
+		background-size: $size;
+	}
+}
+
+@mixin font($name: "") {
+	@if $name != "" {
+		font-family: $name, $default_fonts;
+	} @else {
+		font-family: $default_fonts;
+	}
+}
+
+@mixin load-font($name, $file_name, $weight: normal, $style: normal) {
+	@if $name != "" and $file_name != "" {
+		@font-face {
+			font-family: $name;
+			src: url( $fonts + $file_name + ".eot" );
+			src: url( $fonts + $file_name + ".eot?#iefix" ) format('embedded-opentype'),
+				 url( $fonts + $file_name + ".woff" ) format('woff'),
+				 url( $fonts + $file_name + ".ttf" ) format('truetype'),
+				 url( $fonts + $file_name + ".svg#" + $name ) format('svg');
+			font-weight: $weight;
+			font-style: $style;
+		}
+	}
+}
+
+@mixin border-radius($radius, $background-clip: true) {
+	-webkit-border-radius: $radius;
+	-moz-border-radius:    $radius;
+	border-radius:         $radius;
+	
+	@if $background-clip {
+		-webkit-background-clip: padding-box; 
+		-moz-background-clip:    padding; 
+		background-clip:         padding-box;
+	} 
+}
+
+@mixin calc($property, $expression) {
+	#{$property}: -moz-calc(#{$expression}); 
+	#{$property}: -o-calc(#{$expression}); 
+	#{$property}: -webkit-calc(#{$expression}); 
+	#{$property}: calc(#{$expression}); 
+}
+
+@mixin vertical-align {
+	position: relative;
+	top: 50%;
+	-webkit-transform:	translateY(-50%);
+	-ms-transform:		translateY(-50%);
+	transform:			translateY(-50%);
+}
+
+@mixin flipH {
+	-moz-transform:		scaleX(-1);
+	-o-transform:		scaleX(-1);
+	-webkit-transform:	scaleX(-1);
+	transform:			scaleX(-1);
+	filter:				FlipH;
+	-ms-filter:			"FlipH";
+}
+
+@mixin opacity($opacity: 0.70) {
+	-khtml-opacity: $opacity;
+	-moz-opacity:   $opacity;
+	opacity:        $opacity;
+}
+
+@mixin blur($blur: 10px) {
+	-webkit-filter: blur($blur);
+	-moz-filter:    blur($blur);
+	-o-filter:      blur($blur);
+	-ms-filter:     blur($blur);
+	filter:         url(blur.svg#blur);
+	filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='$blur');
+}
+
+
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }
+  @-ms-keyframes #{$animation-name} {
+    @content;
+  }
+  @-o-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+
+@mixin animation($str) {
+  -webkit-animation: #{$str};
+  -moz-animation: #{$str};
+  -ms-animation: #{$str};
+  -o-animation: #{$str};
+  animation: #{$str};
+}
+
+
+@mixin background-clip($clip) {
+  -moz-background-clip: $clip;
+  -webkit-background-clip: $clip;
+  background-clip: $clip;
+}
+
+
+@mixin background-origin($origin) {
+  -moz-origin-size: $origin;
+  -webkit-origin-size: $origin;
+  -o-origin-size: $origin;
+  origin-size: $origin;
+}
+
+
+@mixin background-size( $content-box , $border-box , $initial , $inherit ) {
+  -webkit-background-size: $content-box , $border-box , $initial , $inherit;
+  background-size: $content-box , $border-box , $initial , $inherit;
+}
+
+/* Site Specific functions */
+
+@mixin sidebar-box( $box_name , $top_image_path  , $middle_image_path , $bottom_image_path , $width , $middle_offset: 0 , $inner_content_margin: 50px ) {
+
+
+  .box-#{$box_name}-top {
+    @include image($top_image_path);
+    width: $width;
+    height:  46px;
+  }
+
+  .box-#{$box_name}-middle {
+    @include image($middle_image_path ,$repeat: repeat-y);
+    width: $width - $middle_offset;
+  }
+
+  .box-#{$box_name}-bottom {
+    @include image($bottom_image_path);
+    width:  $width;
+    height:  42px;
+    margin-bottom: 10px;
+  }
+
+  .box-#{$box_name}-content {
+    padding: 10px 6px 0;
+    margin-right: $inner_content_margin;
+
+    .#{$box_name}-read-more  {
+      text-align: left;
+      padding: 7px;
+
+      a {
+        color: $white;
+        font-size: 13px;
+      }
+    }
+  }
+}
