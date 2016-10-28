@@ -73,7 +73,7 @@ $('#city-select').live('change', function () {
                                                     //$("#school-field").trigger("chosen:updated");
                                                // }
 
-                                        <?endif;?>
+                                        <?php endif;?>
 
 
 

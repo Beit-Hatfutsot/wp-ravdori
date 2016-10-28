@@ -86,9 +86,9 @@ if( $team_query->have_posts() ):
 </div>
 
 
-<? endwhile; ?>
+<?php endwhile; ?>
 
-<? else: ?>
+<?php else: ?>
 
     <div class="row voffset5">
         <div class="col-xs-12 text-center">
@@ -99,7 +99,7 @@ if( $team_query->have_posts() ):
         </div>
     </div>
 
-<?
+<?php
 endif;
 wp_reset_postdata();
 ?>

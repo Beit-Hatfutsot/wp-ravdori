@@ -95,7 +95,7 @@
         $story_query = null;
         $story_query = new WP_Query($args);
 ?>
-<? if( $story_query->have_posts() ): ?>
+<?php if( $story_query->have_posts() ): ?>
 
 
             <div class="row">

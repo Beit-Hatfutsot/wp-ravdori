@@ -226,7 +226,7 @@ if( $story_query->have_posts() ): ?>
                         </p>
                     </blockquote>
 
-                <?    endif; ?>
+                <?php    endif; ?>
             </div>
 
         </div>

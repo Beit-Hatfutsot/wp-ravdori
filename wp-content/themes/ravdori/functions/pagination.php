@@ -66,7 +66,7 @@ function create_pagination( $post_count , $page_number , $max_rows = MAX_ROWS_PE
     <?php endif; ?>
 
 
-    <?
+    <?php
     return ( $pages );
 }
 

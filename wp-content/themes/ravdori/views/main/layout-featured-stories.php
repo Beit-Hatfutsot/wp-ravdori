@@ -35,7 +35,7 @@ $featured_story_query = new WP_Query( $args );
 <div class="row featured-stories user-details">
 
 
-<? if( $featured_story_query->have_posts() ): ?>
+<?php if( $featured_story_query->have_posts() ): ?>
     <div id="polaroid">
 
         <?php while ( $featured_story_query->have_posts()) : $featured_story_query->the_post(); ?>
@@ -77,7 +77,7 @@ if ( $featured_story_query_post_count < MAIN_PAGE_MAX_FEATURED_STORIES ):
 
 ?>
 
-    <? if( $story_query->have_posts() ): ?>
+    <?php if( $story_query->have_posts() ): ?>
     <div id="polaroid">
         <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
             <div class="col-xs-4">

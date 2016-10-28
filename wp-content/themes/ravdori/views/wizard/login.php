@@ -182,7 +182,7 @@ jQuery(document).ready(function () {
 
         <div class="container">
             <div class="row">
-                <?Php include(WIZARD_VIEWS . '/components/progressbar.php'); //Show the progress bar ?>
+                <?php include(WIZARD_VIEWS . '/components/progressbar.php'); //Show the progress bar ?>
 
                 <div class="col-xs-12">
 
@@ -287,7 +287,7 @@ jQuery(document).ready(function () {
                                                     foreach ( $cities as $city ):
                                                     ?>
                                                         <option <?php echo ( ( $city->term_id == $selected_city ) ? " selected " : "" ); ?>  class="<?php echo $country->term_id . ' '.  $city->term_id; ?>" value="<?php echo $city->term_id; ?>"><?php echo $city->name; ?></option>
-                                                    <?
+                                                    <?php
 
                                                     endforeach;
                                                 }

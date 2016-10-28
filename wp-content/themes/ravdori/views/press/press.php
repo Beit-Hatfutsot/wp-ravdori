@@ -41,7 +41,7 @@ if( $press_query->have_posts() ):
 
         </div>
 
-    <? endwhile; ?>
+    <?php endwhile; ?>
 
     <div class="row">
         <div class="col-xs-12 text-center">
@@ -49,7 +49,7 @@ if( $press_query->have_posts() ):
         </div>
     </div>
 
-<? else: ?>
+<?php else: ?>
 
 <div class="row voffset5">
     <div class="col-xs-12 text-center">
@@ -61,7 +61,7 @@ if( $press_query->have_posts() ):
     </div>
 </div>
 
-<? endif;
+<?php endif;
 
 wp_reset_postdata();
 ?>
