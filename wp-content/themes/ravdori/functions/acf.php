@@ -24,14 +24,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * */
 
 //ADD RULE TO SECTION
-add_filter('acf/location/rule_types', 'acf_location_rules_types');
 function acf_location_rules_types( $choices )
 {
     $choices['Other']['taxonomy_depth'] = 'Taxonomy Depth';
     return $choices;
 }
+add_filter('acf/location/rule_types', 'acf_location_rules_types');
+
+
 //MATCHING OPERATORS
-add_filter('acf/location/rule_operators', 'acf_location_rules_operators');
 function acf_location_rules_operators( $choices )
 {
     //BY DEFAULT WE HAVE == AND !=
@@ -39,8 +40,9 @@ function acf_location_rules_operators( $choices )
     $choices['>'] = 'is greater than';
     return $choices;
 }
+add_filter('acf/location/rule_operators', 'acf_location_rules_operators');
+
 //POPULATE LIST WITH OPTIONS
-add_filter('acf/location/rule_values/taxonomy_depth', 'acf_location_rules_values_taxonomy_depth');
 function acf_location_rules_values_taxonomy_depth( $choices )
 {
     for ($i=0; $i < 6; $i++)
@@ -49,8 +51,10 @@ function acf_location_rules_values_taxonomy_depth( $choices )
     }
     return $choices;
 }
+add_filter('acf/location/rule_values/taxonomy_depth', 'acf_location_rules_values_taxonomy_depth');
+
+
 //MATCH THE RULE
-add_filter('acf/location/rule_match/taxonomy_depth', 'acf_location_rules_match_taxonomy_depth', 10, 3);
 function acf_location_rules_match_taxonomy_depth( $match, $rule, $options )
 {
     $depth = (int) $rule['value'];
@@ -83,3 +87,20 @@ function acf_location_rules_match_taxonomy_depth( $match, $rule, $options )
     }
     return $match;
 }
+add_filter('acf/location/rule_match/taxonomy_depth', 'acf_location_rules_match_taxonomy_depth', 10, 3);
+
+
+
+/* Limit */
+function my_relationship_query( args, field, post_id ) {
+	
+    // only show children of the current post being edited
+    args['posts_per_page'] = 20;
+	
+	
+	// return
+    return args;
+    
+}
+add_filter('acf/fields/relationship/query/name=acf-main-banner-selected-stories', 'my_relationship_query', 10, 3);
+add_filter('acf/fields/relationship/query/name=acf-main-ravdori-picture-line-repeater-url-inner	', 'my_relationship_query', 10, 3);

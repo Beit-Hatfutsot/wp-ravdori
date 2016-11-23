@@ -20,7 +20,8 @@ require_once('backend-story-cpt.php');
 // CRUD support for dictionary & quotes
 require_once('backend-admin-page.php');
 
-
+// Adjust the story CPT's SCHOOLS taxonomy backend (adding filterable parent selectbox etc.) 
+require_once('backend-story-cpt-category.php');
 
 /**
  * Outputs a repeater in the backend with CRUD capabilities
