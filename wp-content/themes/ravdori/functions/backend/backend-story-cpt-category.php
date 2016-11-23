@@ -14,7 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function my_enqueue($hook) {
 	
-    if ( !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools') ) {
+	if ( !isset( $_GET['taxonomy'] ) ){
+		return;
+	}
+		
+	
+    if ( !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )) {
         return;
     }
 

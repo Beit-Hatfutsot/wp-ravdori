@@ -417,13 +417,14 @@ get_header();
                                            {
                                                if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) )
                                                {
-                                                   echo '<h2>סיפורים בתהליך כתיבה</h2>';
+                                                   echo '<h2 class="pulse red-title">סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי</h2>';
 
-                                                   echo '<div class="alert alert-info">';
+                                                   echo '<div class="alert alert-info existing-story-alert">';
                                                    echo '<strong>' . 'שימו לב! '  . '</strong>';
                                                    echo '<br/>';
                                                    echo '<p>';
-                                                   echo 'אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת. אין לתעד שני אנשים שונים על אותה כתובת מייל.';
+                                                   echo 'אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת.<br>אין לתעד שני אנשים שונים על אותה כתובת מייל.' . '<br>';
+												   echo 'להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:';
                                                    echo '</p>';
                                                    echo '</div>';
                                                }
@@ -433,7 +434,7 @@ get_header();
 
                                                        if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) ) {
 
-                                                           echo '<li><a id="draft_story" data-id="' . get_the_ID() . '" style="cursor: pointer;">' . get_the_title() . '</a></li>';
+                                                           echo '<li class="author-page-stories-list"><a id="draft_story" data-id="' . get_the_ID() . '" style="cursor: pointer;">' . get_the_title() . '</a></li>';
 
                                                        }
                                                    endwhile;
@@ -453,10 +454,10 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2>סיפורים ממתינים לאישור</h2>';
+                                            echo '<h2 class="pulse red-title">סיפורים ממתינים לאישור</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
-                                                    echo '<li><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
+                                                    echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
                                             endwhile;
                                             echo '</ul>';
                                         }
@@ -474,10 +475,10 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2>סיפורים מפורסמים</h2>';
+                                            echo '<h2 class="pulse red-title">סיפורים מפורסמים</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
-                                                echo '<li><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
+                                                echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
                                                 // Load into session
                                             endwhile;
                                             echo '</ul>';
