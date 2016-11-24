@@ -283,3 +283,17 @@ function content_metabox( $post )
 
     echo '</div>';
 }
+
+
+
+
+function story_change_author_admin_script() {
+    global $post_type;
+
+	if( $post_type == STORY_POST_TYPE )
+	{
+		    wp_enqueue_script('story.backend.jquery'     ,	JS_DIR  . '/story.backend.jquery.js');
+	}
+}
+add_action( 'admin_print_scripts-post-story.php' , 'story_change_author_admin_script', 11 );
+add_action( 'admin_print_scripts-post.php'       , 'story_change_author_admin_script', 11 );
