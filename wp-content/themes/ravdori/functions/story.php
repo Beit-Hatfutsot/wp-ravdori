@@ -394,8 +394,14 @@ function adminNotification( $post_id ) {
     ob_end_clean();
     $email_msg .= '</div>';
 
-
-    $to =  filter_var( get_bloginfo('admin_email') , FILTER_SANITIZE_EMAIL );
+    
+	$options_page_mail = get_field ('acf-options-mail-notification');	
+	
+	if ( !acf-options-mail-notification ){
+		$options_page_mail = get_bloginfo('admin_email');
+	}
+	
+    $to =  filter_var( $options_page_mail , FILTER_SANITIZE_EMAIL );
 
     mail($to, "סיפור חדש התפרסם בקשר הרב דורי", $email_msg , $headers);
 
