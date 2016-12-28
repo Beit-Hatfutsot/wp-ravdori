@@ -1384,6 +1384,9 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons {
   position: relative;
   top: 41px;
   right: 0px; }
+  
+.wp-media-buttons { float:left !important; }
+  
 body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons:before {
   content: '';
   background: transparent url("../images/general/story/insert-media-bubble.png") 0 0 no-repeat;
