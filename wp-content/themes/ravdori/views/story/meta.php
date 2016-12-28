@@ -77,7 +77,7 @@
 
         /* Wrap every image with a div, to force it to be max 600px in height*/
         $('.entry img').each(function() {
-            $(this).wrap('<div style="max-height:600px;" />');
+            $(this).css('max-height','650px').css('margin','0 auto').css('width','auto');
         });
     });
 

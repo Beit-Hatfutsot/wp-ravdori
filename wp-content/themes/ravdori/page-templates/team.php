@@ -184,6 +184,39 @@ exit;*/
 
 ?>
 
+<?php 
+/*
+$args=array(
+  'post_type' => STORY_POST_TYPE,
+  'post_status' => 'publish',
+  'posts_per_page'=> -1,
+  /*'post__in' => array (32029) ,*/
+  /*);
+
+  $counter = 0;
+  
+$story_query = null;
+$story_query = new WP_Query( $args );
+
+if( $story_query->have_posts() ):
+
+while ( $story_query->have_posts()) : $story_query->the_post();
+		
+		$data = get_the_content();
+		$data = trim(strip_tags($data));
+		
+		if ( empty($data) )
+		{
+			echo "id: " . get_the_id() . " Title: " . get_the_title() . "<br/><br/>";
+		}
+		
+endwhile;
+	
+	//echo "<pre>".htmlentities($data)."</pre>";
+endif;
+exit;*/
+?>
+
 <section class="page-content">
 
     <div class="container">

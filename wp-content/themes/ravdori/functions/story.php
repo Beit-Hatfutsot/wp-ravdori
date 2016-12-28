@@ -397,7 +397,7 @@ function adminNotification( $post_id ) {
     
 	$options_page_mail = get_field ('acf-options-mail-notification');	
 	
-	if ( !acf-options-mail-notification ){
+	if ( !get_field('acf-options-mail-notification') ){
 		$options_page_mail = get_bloginfo('admin_email');
 	}
 	
