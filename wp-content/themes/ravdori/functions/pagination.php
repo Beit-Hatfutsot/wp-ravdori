@@ -80,6 +80,8 @@ function bh_pagination( $html )
 {
 
     global $wp_query;
+	
+	$showTextOnTop = $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM];
 
     $out    = '';
     $retStr = '';
@@ -106,18 +108,31 @@ function bh_pagination( $html )
     $showingStoryOutOf .= $postsNumberSoFar . ' ';
     $showingStoryOutOf .= 'מתוך: ';
     $showingStoryOutOf .= $wp_query->found_posts;
-
-    $retStr =  '<div class="row">
-                    <div class="col-xs-12 text-center">
-                            <ul class="pagination">'.$out.'</ul>
-
-                            <div>' .$showingStoryOutOf . '</div>
-                    </div>
-                </div>';
+	
+	$top_pagintion_margin = '';
+	
+	if ( $showTextOnTop ) { $top_pagintion_margin = 'style="margin: 15px 0 30px 0;"'; }
+	
+	$retStr  = '<div class="row" ' . $top_pagintion_margin . ' >';
+	$retStr .= '<div class="col-xs-12 text-center">';
+	if ( $showTextOnTop ) {  $retStr .=  '<div>' .$showingStoryOutOf . '</div>'; }
+	$retStr .= '<ul class="pagination">' . $out . '</ul>';
+	if ( !$showTextOnTop ) { $retStr .=  '<div>' .$showingStoryOutOf . '</div>'; }
+	$retStr .= '</div>';
+	$retStr .= '</div>';
 
     return( $retStr );
 }
 add_filter( 'wp_pagenavi', 'bh_pagination', 10, 2 ); //attach our function to the wp_pagenavi filter
 
 
+
+function show_wp_pagenavi( $story_query , $text_on_top = false ) 
+{
+	if(function_exists('wp_pagenavi')) {
+
+		  $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM] = $text_on_top;
+          wp_pagenavi( array( 'query' => $story_query ) );
+      }
+}
 

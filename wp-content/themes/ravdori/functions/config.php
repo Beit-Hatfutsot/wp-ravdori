@@ -32,6 +32,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	define( 'JS_DIR'     ,	TEMPLATE . '/js' );
     define( 'IMAGES_DIR' ,	TEMPLATE . '/images' );
     define( 'FUNCTIONS_DIR' ,  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/ravdori/functions/' );
+	
+	// Global variables consts
+	define( 'GLBL_WP_NAV_TOP_BOTTOM' , 'wp_nav_top_bottom' ); // Indicates where to show the  1 of X... text in the pagination
 
     // Google Fonts
     $google_fonts = array (
