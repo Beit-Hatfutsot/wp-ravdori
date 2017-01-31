@@ -16,6 +16,7 @@
                     <a href="http://www.bh.org.il/he/default.aspx" target="_blank">
                         <img src="<?php echo IMAGES_DIR?>/general/footer/logo-footer.png" />
                     </a>
+					<div class="text-center">&copy; כל הזכויות שמורות</div>
 				</div>
 			</div>
                

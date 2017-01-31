@@ -1151,7 +1151,11 @@ bootstrap
   top: 83px;
   left: 30px; }
 .disconnect-area .logout-link {
-  float: left; }
+	font-size: 18px;
+    color: #000;
+	float: left; 
+	font-weight: 700;
+	}
 
 .imgContainerYoung, .imgContainerAdultPast {
   border: 3px solid lightgrey;

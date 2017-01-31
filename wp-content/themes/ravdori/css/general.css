@@ -1892,4 +1892,11 @@ a.no-underline {
 .team-member-image img {
   border-radius: 50%; }
 
+  
+ .origin-country .search-button-caption {
+	 word-break: normal !important;
+     padding: 0px !important;
+ } 
+  
+  
 /*# sourceMappingURL=general.css.map */

@@ -55,9 +55,9 @@
                                  </a>
 
                                  <a href="<?php echo $countries_search_url;?>" class="no-underline">
-                                     <div class="search-button">
+                                     <div class="search-button origin-country">
                                              <div class="search-button-caption voffset1">
-                                                    <?php _e( 'מדינות' , 'BH' ); ?>
+                                                    <?php _e( 'ארץ מוצא' , 'BH' ); ?>
                                              </div>
 
                                      </div>

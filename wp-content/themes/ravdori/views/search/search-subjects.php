@@ -56,7 +56,7 @@
 
 
         <div class="col-xs-12">
-            <h4>תתי נושאים:</h4>
+            <h4>פרויקטים ושיתופי פעולה:</h4>
             <div class="voffset3"></div>
 
             <?php

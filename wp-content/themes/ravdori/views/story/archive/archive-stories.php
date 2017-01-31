@@ -24,6 +24,14 @@
 
 if( $story_query->have_posts() ): ?>
 
+<?php 
+
+      if(function_exists('wp_pagenavi')) {
+
+          wp_pagenavi( array( 'query' => $story_query ) );
+      }
+	  
+?>
 
 <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
 
