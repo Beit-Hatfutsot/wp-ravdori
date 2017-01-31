@@ -160,7 +160,7 @@
         </div>
 
         <div class="col-xs-12">
-                <input type="submit" value="חפש" style="margin-right: 0;">
+                <input type="submit" name="submit" value="חפש" style="margin-right: 0;">
         </div>
 
     </form>

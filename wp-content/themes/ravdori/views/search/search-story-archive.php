@@ -7,7 +7,17 @@
  * @version    1.0
  */
 ?>
-
+<?php 
+if ( isset ( $_GET['city-select'] ) OR isset ( $_GET['school-select'] ) OR isset( $_GET['country'] ) OR  isset ( $_GET['subjects'] ) Or isset( $_GET['subtopics'] ) Or isset( $_GET['submit'] ) ):
+?>
+    <script>
+        jQuery(function() {
+            jQuery('html, body').animate({
+                scrollTop: jQuery(".stories").offset().top - 30
+            }, 2000);
+         });
+    </script>
+<?php endif; ?>
 
 <?php
 
@@ -173,6 +183,8 @@ if( $story_query->have_posts() ): ?>
             <h2> תוצאות חיפוש: </h2>
         </div>
     </div>
+	<?php show_wp_pagenavi( $story_query , true ); ?>
+	
     <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
 
         <?php
@@ -232,11 +244,12 @@ if( $story_query->have_posts() ): ?>
         </div>
     <?php
     endwhile;
-    if(function_exists('wp_pagenavi')) {
+  //  if(function_exists('wp_pagenavi')) {
         echo '<div style="margin-top: 30px">';
-            wp_pagenavi( array( 'query' => $story_query ) );
+            //wp_pagenavi( array( 'query' => $story_query ) );
+		show_wp_pagenavi( $story_query , false );
         echo '</div>';
-    }
+    //}
     wp_reset_postdata();
     ?>
 </div>
