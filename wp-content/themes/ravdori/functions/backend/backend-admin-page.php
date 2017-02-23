@@ -39,11 +39,48 @@ function BH_dictionary_admin_page() {
 
     $titles = array ( __( 'ערך' , 'BH' ) , __( 'תרגום' , 'BH' ) );
 ?>
+<?php 
 
+$search_term = null;
+$matches     = array();
+
+if ( isset( $_POST[ 'term' ] ) OR isset( $_GET[ 'term' ] ) ) 
+{ 
+
+	if ( isset( $_POST[ 'term' ] ) ):
+		$search_term = strip_tags( trim( $_POST[ 'term' ] ) );
+	else:
+		$search_term = strip_tags( trim( $_GET[ 'term' ] ) );
+	endif;
+
+	if( !empty($search_term ) ) 
+	{
+		
+			foreach ( $post_terms as $term ):
+			
+				if ( (mb_strpos( $term->dictionary_term  , $search_term )  !== false) OR 
+					 (mb_strpos( $term->dictionary_value , $search_term )  !== false) 
+				   ) 
+				{
+					$matches[] = $term;
+				}
+			
+			endforeach;
+
+			$post_terms = $matches;	
+	}
+}
+
+ ?>
     <div class="wrap">
 
         <h2><span class="dashicons dashicons-translation"></span> <?php _e('מילון' , 'BH' ) ?></h2>
-
+		
+		<form method="post" id="searchform">
+			<input type="text" name="term">
+			<input type="submit" value="חיפוש">
+		</form>
+	
         <form method="post">
 
             <?php submit_button(); ?>
@@ -63,7 +100,6 @@ function BH_dictionary_admin_page() {
 }
 
 
-
 function BH_quotes_admin_page() {
 
     BH_admin_page_save_to_db();
@@ -75,10 +111,48 @@ function BH_quotes_admin_page() {
 
     ?>
 
+<?php 
+
+$search_term = null;
+$matches     = array();
+
+if ( isset( $_POST[ 'term' ] ) OR isset( $_GET[ 'term' ] ) ) 
+{ 
+
+	if ( isset( $_POST[ 'term' ] ) ):
+		$search_term = strip_tags( trim( $_POST[ 'term' ] ) );
+	else:
+		$search_term = strip_tags( trim( $_GET[ 'term' ] ) );
+	endif;
+
+	if( !empty($search_term ) ) 
+	{
+			foreach ( $post_terms as $term ):
+			
+				if ( $term == NULL OR is_object ( $term ) == false ) continue;
+				
+				if ( (mb_strpos( $term->quote_value  , $search_term )  !== false) ) 
+				{
+					$matches[] = $term;
+				}
+			
+			endforeach;
+
+			$post_terms = $matches;	
+	}
+}
+
+?>
+ 
     <div class="wrap">
 
         <h2><span class="dashicons dashicons-format-quote"></span> <?php _e( 'ציטוטים' , 'BH' ) ?></h2>
-
+		
+		<form method="post" id="searchform">
+			<input type="text" name="term">
+			<input type="submit" value="חיפוש">
+		</form>
+		
         <form method="post">
 
             <?php submit_button(); ?>

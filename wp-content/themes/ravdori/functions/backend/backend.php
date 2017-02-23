@@ -110,15 +110,49 @@ function BH_build_repeater_header_titles( $titles )
 function BH_build_repeater_dictionary_body( $terms , $show_post_permalink = false )
 {
     ?>
+	
+	<?php 
+	
+			if( filter_input(INPUT_GET, 'paged') ) 
+			{
+				$page = filter_input(INPUT_GET, 'paged');
+			} 
+			else 
+			{
+				$page = 1;
+			}
+			
+			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+				$page = 1;
+			}
 
+			$terms_per_page   = 19; // How many terms to display on each page
+			$total            = count( $terms );
+			$pages            = ceil( $total / $terms_per_page );
+			$min              = ( ( $page * $terms_per_page ) - $terms_per_page ) + 1;
+			$max              = ( $min + $terms_per_page ) - 1;	
+	?>
+	
     <tbody>
-    <?php $row_number = 0; ?>
+    <?php $row_number = -1; ?>
     <?php if( !empty( $terms ) ): foreach( $terms as $term ): ?>
 
+			<?php 
+			
+			 $row_number++;
+			
+			 // Ignore this term if $row_number is lower than $min
+			 if( ($row_number + 1) < $min) { continue; }
+			 
+			 // Stop loop completely if $row_number is higher than $max
+			 if( ($row_number + 1) > $max) { break; }
+			
+			?>
+			
         <tr class="row" data-postid="<?php echo $term->post_id; ?>">
 
-            <td class="order"><?php echo ++$row_number; ?></td>
-
+            <td class="order"><?php echo $row_number + 1; ?></td>
+			
             <td >
                 <div class="inner">
                     <div class="acf-input-wrap">
@@ -152,7 +186,36 @@ function BH_build_repeater_dictionary_body( $terms , $show_post_permalink = fals
                 </td>
             <?php endif;?>
         </tr>
-    <?php endforeach; endif; ?>
+    <?php endforeach; 
+	
+		  // Pagination
+		  echo '<div class="pagination-backend" style="margin: 25px 0;">'; 	
+			
+			$args = array(
+							'base' => '%_%',
+							'format' => '?paged=%#%',
+							'current' => $page,
+							'mid_size' => 10,
+							'total' => $pages
+						 ); 
+			
+			if ( isset( $_POST[ 'term' ] ) ) 
+			{
+				$search_term = strip_tags( trim( $_POST[ 'term' ] ) ); 
+				
+				$args['add_args'] = array( 'term' => $search_term );
+				$args['paged']    = '1';
+				
+			}	
+
+			echo paginate_links( $args );
+		  echo '</div>';
+		  
+		  
+  
+	else:
+		echo '<h2 style="margin: 15px 0">' .  'לא נמצאו ערכים' . '</h2>';
+	endif; ?>
     </tbody>
 
 
@@ -173,15 +236,49 @@ function BH_build_repeater_dictionary_body( $terms , $show_post_permalink = fals
 
 function BH_build_repeater_quotes_body( $terms , $show_post_permalink = false )
 {
-    ?>
+?>
+
+<?php 
+	
+			if( filter_input(INPUT_GET, 'paged') ) 
+			{
+				$page = filter_input(INPUT_GET, 'paged');
+			} 
+			else 
+			{
+				$page = 1;
+			}
+			
+			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+				$page = 1;
+			}
+
+			$terms_per_page   = 19; // How many terms to display on each page
+			$total            = count( $terms );
+			$pages            = ceil( $total / $terms_per_page );
+			$min              = ( ( $page * $terms_per_page ) - $terms_per_page ) + 1;
+			$max              = ( $min + $terms_per_page ) - 1;	
+?>
 
     <tbody>
-    <?php $row_number = 0; ?>
+    <?php $row_number = -1; ?>
     <?php if( !empty( $terms ) ): foreach( $terms as $term ): ?>
 
+		<?php 
+			
+			 $row_number++;
+			
+			 // Ignore this term if $row_number is lower than $min
+			 if( ($row_number + 1) < $min) { continue; }
+			 
+			 // Stop loop completely if $row_number is higher than $max
+			 if( ($row_number + 1) > $max) { break; }
+			
+		?>
+	
         <tr class="row" data-postid="<?php echo $term->post_id; ?>">
 
-            <td class="order"><?php echo ++$row_number; ?></td>
+            <td class="order"><?php echo $row_number + 1; ?></td>
 
             <td >
                 <div class="inner">
@@ -209,7 +306,37 @@ function BH_build_repeater_quotes_body( $terms , $show_post_permalink = false )
             <?php endif;?>
 
         </tr>
-    <?php endforeach; endif; ?>
+    <?php endforeach; 
+	
+		  // Pagination
+		  echo '<div class="pagination-backend" style="margin: 25px 0;">'; 	
+			
+			$args = array(
+							'base' => '%_%',
+							'format' => '?paged=%#%',
+							'current' => $page,
+							'mid_size' => 10,
+							'total' => $pages
+						 ); 
+			
+			if ( isset( $_POST[ 'term' ] ) ) 
+			{
+				$search_term = strip_tags( trim( $_POST[ 'term' ] ) ); 
+				
+				$args['add_args'] = array( 'term' => $search_term );
+				$args['paged']    = '1';
+				
+			}	
+
+			echo paginate_links( $args );
+		  echo '</div>';
+		  
+		  
+  
+	else:
+		echo '<h2 style="margin: 15px 0">' .  'לא נמצאו ערכים' . '</h2>';
+	
+	endif; ?>
     </tbody>
 
 
