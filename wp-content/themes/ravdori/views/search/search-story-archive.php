@@ -40,6 +40,11 @@ if ( isset( $_GET['school-select'] ) )
 <?php
 $paged    = (get_query_var('paged')) ? get_query_var('paged') : 1;
 
+
+if ( array_key_exists('new-school-selected' , $_GET)) {
+	$paged = 1;
+}
+
 $searchBy = (get_query_var('searchby')) ? get_query_var('searchby') : null;
 
 

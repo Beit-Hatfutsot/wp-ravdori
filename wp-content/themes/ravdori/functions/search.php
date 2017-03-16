@@ -121,8 +121,6 @@ add_filter('relevanssi_match', 'extra_user_weight');
 
  
  
-add_action( 'wp_ajax_nopriv_search_get_schools_ajax' , 'search_get_schools_ajax' );
-add_action( 'wp_ajax_search_get_schools_ajax'        , 'search_get_schools_ajax' );
 function search_get_schools_ajax()
 {
 
@@ -150,7 +148,10 @@ function search_get_schools_ajax()
         {
 
             //$outputString =  '<label for="school-select" class="title">מיון לפי בית ספר</label><br/>';
-            $outputString .= '<select id="school-select" name="school-select">';
+            
+			$outputString .= '<input type="hidden" id="new-school-selected" name="new-school-selected" value="true">';
+			
+			$outputString .= '<select id="school-select" name="school-select">';
 
             $outputString .= '<option value="-1">כל בתי הספר</option> <br/>';
 
@@ -172,3 +173,76 @@ function search_get_schools_ajax()
     die();
 
 }
+add_action( 'wp_ajax_nopriv_search_get_schools_ajax' , 'search_get_schools_ajax' );
+add_action( 'wp_ajax_search_get_schools_ajax'        , 'search_get_schools_ajax' );
+
+
+
+
+
+
+
+
+function search_get_country_cities_ajax()
+{
+
+    if ( isset($_REQUEST) )
+    {
+
+        // Get the country ID from the user
+        $countryId = $_POST['countryId'];
+
+		
+		// Get the top level (All the districts)
+		$districts = get_terms(SCHOOLS_TAXONOMY, array(
+														'hide_empty' => true,
+														'parent'     => $countryId
+														  )
+								  );
+
+									
+		$all_cities = array();
+		$outputString = null;
+
+		if ( !empty( $districts ) && !is_wp_error( $districts ) )
+		{
+			foreach ( $districts as $district )
+			{
+				// Get all the cities under the district $district
+				$cities = get_terms(SCHOOLS_TAXONOMY, array(
+																'parent' => $district->term_id,
+																'hide_empty' => true,
+																'orderby' => 'name'
+														   )
+								   );
+
+				if ( !empty( $cities ) && !is_wp_error( $cities ) )
+				{
+					$all_cities = array_merge($all_cities, $cities);
+				}
+			}
+		}
+
+		if (!empty($all_cities) && !is_wp_error($all_cities)) 
+		{
+
+				   $outputString .= '<option value="-1">בחרו יישוב</option> <br/>';
+				   foreach ( $all_cities as $city )
+				   {
+						$outputString .= '<option value="' . $city->term_id . '" ' . (( $cityId ==  $city->term_id ) ? ' selected ' : '') . ' >' . $city->name . '</option> <br/>';
+				   }
+
+				   echo $outputString;
+
+		}
+		else
+		{
+			echo "<option value='-1'>לא נמצאו ערים במערכת</option> <br/>";
+		}
+
+    }
+    die();
+
+}
+add_action( 'wp_ajax_nopriv_search_get_country_cities_ajax' , 'search_get_country_cities_ajax' );
+add_action( 'wp_ajax_search_get_country_cities_ajax'        , 'search_get_country_cities_ajax' );
