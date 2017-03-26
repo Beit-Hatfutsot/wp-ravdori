@@ -782,7 +782,9 @@ $wizardSessionManager->setField( 'do-saving' , false );
                             </div>
                             <input type="button" class="step4LoadImgButton" onclick="open_media_uploader_image_young();" value="בחר / החלף תמונה"/>
 
-                            <?php $imgStudentDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ]; ?>
+                            <?php $imgStudentDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ]; 
+								  $imgStudentDesc = htmlentities( stripslashesFull( $imgStudentDesc )  , ENT_QUOTES ); 
+							?>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ?>">* תיאור תמונת מספר ומתעד</label>
@@ -820,7 +822,10 @@ $wizardSessionManager->setField( 'do-saving' , false );
                             </div>
                             <input class="step4LoadImgButton" type="button" onclick="open_media_uploader_image_adult();"  value="בחר / החלף תמונה" />
 
-                            <?php $imgAdultDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_DESC ]; ?>
+                            <?php 
+								  $imgAdultDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_DESC ]; 
+								  $imgAdultDesc = htmlentities( stripslashesFull( $imgAdultDesc )  , ENT_QUOTES ); 
+							?>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC ?>">* תיאור תמונת מספר</label>
@@ -884,12 +889,12 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                     <div data-repeater-item class="row voffset5">
                                         <div class="col-sm-12">
                                             <label for="text-input">כתבו כאן את המילה:</label>
-                                            <input type="text" placeholder="או הביטוי"  name="text-input" style="width: 100%" value="<?php echo $term['text-input'] ?>"/>
+                                            <input type="text" placeholder="או הביטוי"  name="text-input" style="width: 100%" value="<?php echo htmlentities( stripslashesFull($term['text-input'])  , ENT_QUOTES ); ?>"/>
                                         </div>
 
                                         <div class="col-sm-12">
                                             <label for="textarea-input1">כתבו כאן את פירושה:</label>
-                                            <textarea name="textarea-input1" style="width: 100%"><?php echo $term['textarea-input1'] ?></textarea>
+                                            <textarea name="textarea-input1" style="width: 100%"><?php echo htmlentities( stripslashesFull($term['textarea-input1'])  , ENT_QUOTES ); ?></textarea>
                                         </div>
 
                                         <div class="col-sm-12 text-left">
@@ -953,7 +958,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                         <div class="col-sm-12">
                                             <label for="textarea-input2">כתבו כאן את הציטוט</label>
                                             <label class="quote-error"></label>
-                                            <textarea name="textarea-input2"  placeholder="עד 15 מילה"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? $quote['textarea-input2'] : "" ;?></textarea>
+                                            <textarea name="textarea-input2"  placeholder="עד 15 מילה"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? stripslashesFull ( $quote['textarea-input2'] ) : "" ;?></textarea>
                                         </div>
 
                                         <div class="col-sm-12 text-left">
@@ -1102,7 +1107,10 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                     </div>
 
-                    <?php $feedback = $stepData[IWizardStep4Fields::RAVDORI_FEEDBACK];?>
+                    <?php 
+							$feedback = $stepData[IWizardStep4Fields::RAVDORI_FEEDBACK];
+							$feedback = htmlentities( stripslashesFull($feedback)  , ENT_QUOTES ); 
+					?>
                     <div>
                         <h2>מהזוית האישית - מספר ומתעד</h2>
                         <label><?php showBackendErrors( $errors , IWizardStep4Fields::RAVDORI_FEEDBACK ); ?></label>
