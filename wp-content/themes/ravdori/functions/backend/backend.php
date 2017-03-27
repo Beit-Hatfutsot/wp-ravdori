@@ -85,7 +85,7 @@ function BH_build_repeater_header_titles( $titles )
 
     <thead>
     <tr>
-        <th class="order"></th>
+        <th class="acf-row-handle order ui-sortable-handle" title="גרור ושחרר לסידור מחדש"></th>
 
         <?php foreach( $titles as $title  ): ?>
             <th class="acf-th">
@@ -149,9 +149,9 @@ function BH_build_repeater_dictionary_body( $terms , $show_post_permalink = fals
 			
 			?>
 			
-        <tr class="row" data-postid="<?php echo $term->post_id; ?>">
+        <tr class="row acf-row" data-postid="<?php echo $term->post_id; ?>">
 
-            <td class="order"><?php echo $row_number + 1; ?></td>
+            <td class="acf-row-handle order ui-sortable-handle" title="גרור ושחרר לסידור מחדש"><?php echo $row_number + 1; ?></td>
 			
             <td >
                 <div class="inner">
@@ -177,7 +177,7 @@ function BH_build_repeater_dictionary_body( $terms , $show_post_permalink = fals
             </td>
 
             <td class="remove">
-                <a href="#" class="acf-button-remove story-post-edit-remove-row" data-storyid="<?php echo $term->dictionary_term_id; ?>"></a>
+                <a href="#" class="acf-button-remove acf-icon -minus small story-post-edit-remove-row" data-storyid="<?php echo $term->dictionary_term_id; ?>" data-event="remove-row" title="הסרת שורה"></a>
             </td>
 
             <?php if ( $show_post_permalink ): ?>
@@ -276,9 +276,9 @@ function BH_build_repeater_quotes_body( $terms , $show_post_permalink = false )
 			
 		?>
 	
-        <tr class="row" data-postid="<?php echo $term->post_id; ?>">
+        <tr class="row acf-row" data-postid="<?php echo $term->post_id; ?>">
 
-            <td class="order"><?php echo $row_number + 1; ?></td>
+            <td class="acf-row-handle order ui-sortable-handle" title="גרור ושחרר לסידור מחדש"><?php echo $row_number + 1; ?></td>
 
             <td >
                 <div class="inner">
@@ -296,7 +296,7 @@ function BH_build_repeater_quotes_body( $terms , $show_post_permalink = false )
             <input name="old_fields_quotes_pk[]" type="hidden" class="hidden" value="<?php echo $term->quote_id; ?>" />
 
             <td class="remove">
-                <a href="#" class="acf-button-remove story-post-edit-remove-row" data-storyid="<?php echo $term->quote_id; ?>"></a>
+                <a href="#" class="acf-icon -minus small acf-button-remove story-post-edit-remove-row" data-storyid="<?php echo $term->quote_id; ?>" data-event="remove-row" title="הסרת שורה"></a>
             </td>
 
             <?php if ( $show_post_permalink ): ?>

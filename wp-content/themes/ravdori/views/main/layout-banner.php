@@ -25,7 +25,7 @@ $args  = array (
 if ( !$show_random_stories )
 {
     $selected_stories = get_field('acf-main-banner-selected-stories');
-
+	
     if ( $selected_stories )
         $args['post__in' ] = $selected_stories;
 }

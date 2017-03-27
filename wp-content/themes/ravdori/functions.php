@@ -20,7 +20,7 @@ require_once('functions/config.php');
 require_once('functions/theme.php');
 
 // ACF plugin functions
-//require_once('functions/acf.php');
+require_once('functions/acf.php');
 
 // Wizard related functions
 require_once('functions/wizard/consts.php');

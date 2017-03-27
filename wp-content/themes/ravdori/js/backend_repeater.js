@@ -193,7 +193,7 @@ var $ = jQuery;
             new_row_markup += '</td>'
         }
         new_row_markup      += '<td class="remove">'
-        new_row_markup      +=      '<a href="#" class="acf-button-remove story-post-edit-remove-row" data-storyid=""></a>';
+        new_row_markup      +=      '<a href="#" class="acf-icon -minus small acf-button-remove story-post-edit-remove-row" data-storyid=""  data-event="remove-row" title="הסרת שורה"></a>';
         new_row_markup      += '</td>'
 
         new_row_markup      += '</tr>';
