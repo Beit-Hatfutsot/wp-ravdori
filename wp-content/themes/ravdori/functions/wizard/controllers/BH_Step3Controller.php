@@ -328,7 +328,7 @@ class BH_Step3Controller extends BH_Controller{
             $subtopics = get_the_terms ( $post_id , SUBTOPICS_TAXONOMY );
             $subtopicsArray = array();
 
-            if ( isset( $subtopics ) )
+            if ( isset( $subtopics ) AND is_array( $subtopics ) )
             {
                 foreach ($subtopics as $subtopic)
                 {
@@ -342,7 +342,7 @@ class BH_Step3Controller extends BH_Controller{
             $languages = get_the_terms ( $post_id , LANGUAGES_TAXONOMY );
             $languagesArray = array();
 
-            if ( isset( $languages ) )
+            if ( isset( $languages ) AND is_array( $languages ) )
             {
                 foreach ($languages as $lang )
                 {
