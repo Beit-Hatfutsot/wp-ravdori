@@ -18,7 +18,7 @@ $show_random_stories = get_field( 'acf-main-banner-random' );
 $args  = array (
                     'post_type'      => STORY_POST_TYPE,
                     'post_status'    => 'publish',
-                    'showposts'      => '6',
+                    'showposts'      => '8',
                     'orderby'        => 'rand',
                 );
 
