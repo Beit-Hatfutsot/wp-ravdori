@@ -666,7 +666,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                         $storyTitle = '';
                         if ( isset( $stepData[ IWizardStep4Fields::STORY_TITLE ] ) )
                         {
-                            $storyTitle = $stepData[ IWizardStep4Fields::STORY_TITLE ];
+                            $storyTitle = stripslashesFull( $stepData[ IWizardStep4Fields::STORY_TITLE ] );
                         }
 
                         ?>
@@ -693,7 +693,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                         $storySubTitle = '';
                         if ( isset( $stepData[ IWizardStep4Fields::STORY_SUBTITLE ] ) )
                         {
-                            $storySubTitle = $stepData[ IWizardStep4Fields::STORY_SUBTITLE ];
+                            $storySubTitle = stripslashesFull( $stepData[ IWizardStep4Fields::STORY_SUBTITLE ] );
                         }
 
                         ?>

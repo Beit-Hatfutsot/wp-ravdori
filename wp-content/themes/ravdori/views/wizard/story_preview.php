@@ -36,7 +36,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 
             <?php if ( !empty( $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] ) ): ?>
 
-            <?php $feedback =  json_encode( $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] , JSON_UNESCAPED_UNICODE );?>
+            <?php $feedback =  json_encode( $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] , JSON_HEX_APOS | JSON_HEX_QUOT );?>
             var feedbackText;
 
             <?php if ($feedback): ?>
@@ -45,7 +45,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
             feedbackText += 'הזוית האישית';
             feedbackText += '</h3></p>';
             feedbackText += '<p>';
-            feedbackText += <?php echo  $feedback;?>.replace( /\n/g, "<br />" );
+            feedbackText += <?php echo  stripslashesFull( $feedback );?>.replace( /\n/g, "<br />" );
             feedbackText += '</p>';
 
             $('.single-story .entry').append( feedbackText );

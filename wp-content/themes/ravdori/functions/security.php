@@ -88,10 +88,6 @@ function namesSanitization( $username )
     $username = preg_replace( '/[^A-Za-zא-ת ]/', '', $username );
     $username = preg_replace( '/&.+?;/', '', $username ); // Kill entities
 
-    // Consolidate contiguous whitespace
-    $username = preg_replace( '|s+|', ' ', $username );
-
-
     $username = trim( $username );
 
     sanitize_text_field($username);
