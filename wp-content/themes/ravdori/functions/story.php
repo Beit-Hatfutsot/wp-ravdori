@@ -213,7 +213,7 @@ function get_story_meta_data( $arrFields = null , $showDistricit = false )
     $stories_meta = array(
         array (
                 'meta_title' => __('מאת: ', 'BH'),
-                'meta_data'  => $adult_name,
+                'meta_data'  => '<bdi>' . $adult_name . '</bdi>',
                 'class'      => 'story-adult-name' ,
               ),
 
