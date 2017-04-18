@@ -1028,10 +1028,12 @@ function add_school_id(){
 
         ?>
             <script type="text/javascript">
-                $(function(){
-                    $(document).on('DOMNodeInserted', function(e) {
-                        jQuery('#acf-field-acf-school-code').attr('placeholder', 'קוד אחרון: ' + '<?php echo $max_code; ?>'  );
-                        jQuery('#acf-field-acf-school-code').val('<?php echo ($max_code + 1); ?>');
+                jQuery(function(){
+                    
+					/* The "ready" state used to be "DOMNodeInserted" in ACF v4 version */
+					jQuery(document).on( 'ready', function(e) { 
+                        jQuery('#acf-field_55bf5f841d1b0').attr('placeholder', 'קוד אחרון: ' + '<?php echo $max_code; ?>'  ); // field_55bf5f841d1b0 = acf-school-code
+                        jQuery('#acf-field_55bf5f841d1b0').val('<?php echo ($max_code + 1); ?>');
                     });
                 });
 
