@@ -13,8 +13,8 @@
 
     var $ = jQuery;
 
-    var caption1 = '<?php echo  json_encode ( get_field('acf-story-images-adult-child-description') ); ?>';
-    var caption2 = '<?php echo  json_encode ( get_field('acf-story-images-adult-past-description')  ); ?>';
+    var caption1 = '<?php echo  str_replace("\u0022","\\\\\"" , json_encode ( get_field('acf-story-images-adult-child-description') , JSON_HEX_QUOT | JSON_HEX_APOS  ) ); ?>';
+    var caption2 = '<?php echo  str_replace("\u0022","\\\\\"" , json_encode ( get_field('acf-story-images-adult-past-description')  , JSON_HEX_QUOT | JSON_HEX_APOS )  ); ?>';
 
     // Wait until all the images are loaded
     $(window).bind('load', function() {
