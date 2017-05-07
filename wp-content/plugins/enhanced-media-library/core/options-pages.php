@@ -140,8 +140,8 @@ if ( ! function_exists( 'wpuxss_eml_admin_menu' ) ) {
         );
 
 
-
         add_action( 'load-' . $eml_media_options_page, 'wpuxss_eml_load_media_options_page' );
+        add_action( $eml_media_options_page, 'wpuxss_eml_media_options_page' );
 
         add_action('admin_print_scripts-' . $eml_medialibrary_options_page, 'wpuxss_eml_medialibrary_options_page_scripts');
         add_action('admin_print_scripts-' . $eml_taxonomies_options_page, 'wpuxss_eml_taxonomies_options_page_scripts');
@@ -162,9 +162,86 @@ if ( ! function_exists( 'wpuxss_eml_admin_menu' ) ) {
  *  @created  14/06/16
  */
 
-function wpuxss_eml_load_media_options_page() {
+if ( ! function_exists( 'wpuxss_eml_load_media_options_page' ) ) {
 
-    do_action( 'load-options-media.php' );
+    function wpuxss_eml_load_media_options_page() {
+
+        global $pagenow;
+
+        $hook_suffix = $pagenow = 'options-media.php';
+
+        do_action( "load-{$hook_suffix}" );
+        do_action( 'admin_enqueue_scripts', $hook_suffix );
+        do_action( "admin_print_styles-{$hook_suffix}" );
+        do_action( "admin_print_scripts-{$hook_suffix}" );
+        do_action( "admin_head-{$hook_suffix}" );
+
+        add_filter( 'admin_body_class', 'wpuxss_eml_admin_body_class_for_media_options_page' );
+        add_filter( 'admin_title', 'wpuxss_eml_admin_title_for_media_options_page', 10, 2 );
+    }
+}
+
+
+
+/**
+ *  wpuxss_eml_admin_body_class_for_media_options_page
+ *
+ *  Ensure compatibility with default options-media.php for third-parties
+ *
+ *  @since    2.3.6
+ *  @created  16/12/16
+ */
+
+if ( ! function_exists( 'wpuxss_eml_admin_body_class_for_media_options_page' ) ) {
+
+    function wpuxss_eml_admin_body_class_for_media_options_page( $admin_body_class ) {
+
+        $hook_suffix = 'options-media.php';
+
+        $admin_body_class .= preg_replace('/[^a-z0-9_-]+/i', '-', $hook_suffix);
+
+        return $admin_body_class;
+    }
+}
+
+
+
+/**
+ *  wpuxss_eml_admin_title_for_media_options_page
+ *
+ *  @since    2.3.6
+ *  @created  16/12/16
+ */
+
+if ( ! function_exists( 'wpuxss_eml_admin_title_for_media_options_page' ) ) {
+
+    function wpuxss_eml_admin_title_for_media_options_page( $admin_title, $title ) {
+
+        $admin_title = __('Media Settings','enhanced-media-library') . $admin_title;
+
+        return $admin_title;
+    }
+}
+
+
+
+/**
+ *  wpuxss_eml_media_options_page
+ *
+ *  Ensure compatibility with default options-media.php for third-parties
+ *
+ *  @since    2.3.6
+ *  @created  16/12/16
+ */
+
+if ( ! function_exists( 'wpuxss_eml_media_options_page' ) ) {
+
+    function wpuxss_eml_media_options_page() {
+
+        $hook_suffix = 'options-media.php';
+
+        do_action( $hook_suffix );
+    }
 }
 
 
@@ -942,6 +1019,8 @@ if ( ! function_exists( 'wpuxss_eml_settings_cleanup' ) ) {
             delete_option( $option );
         }
 
+        delete_site_transient( 'eml_license_active' );
+
 
         deactivate_plugins( wpuxss_get_eml_basename() );
 
@@ -1124,7 +1203,6 @@ if ( ! function_exists( 'wpuxss_eml_print_taxonomies_options' ) ) {
             wp_die( __( 'You do not have sufficient permissions to access this page.', 'enhanced-media-library' ) );
 
         $wpuxss_eml_taxonomies = get_option( 'wpuxss_eml_taxonomies' );
-        $taxonomies = get_taxonomies( array(),'names' );
         $title = __('Media Settings'); ?>
 
 
@@ -1312,28 +1390,30 @@ if ( ! function_exists( 'wpuxss_eml_print_taxonomies_options' ) ) {
 
                                                 foreach ( $taxonomies as $taxonomy ) {
 
-                                                    if ( $taxonomy->name != 'post_format' ) {
-
-                                                        $html .= '<li class="wpuxss-non-eml-taxonomy" id="' . $taxonomy->name . '">';
-                                                        $html .= '<input name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][eml_media]" type="hidden" value="' . $wpuxss_eml_taxonomies[$taxonomy->name]['eml_media'] . '" />';
-                                                        $html .= '<label><input class="wpuxss-eml-assigned" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][assigned]" type="checkbox" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['assigned'], false ) . ' title="' . __('Assign Taxonomy','enhanced-media-library') . '" />' . $taxonomy->label . '</label>';
-                                                        $html .= '<a class="wpuxss-eml-button-edit" title="' . __('Edit Taxonomy','enhanced-media-library') . '" href="javascript:;">' . __('Edit','enhanced-media-library') . ' &darr;</a>';
-                                                        $html .= '<div class="wpuxss-eml-taxonomy-edit" style="display:none;">';
-
-                                                        $html .= '<h4>' . __('Settings','enhanced-media-library') . '</h4>';
-                                                        $html .= '<ul>';
-                                                        $html .= '<li><input type="checkbox" class="wpuxss-eml-admin_filter" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][admin_filter]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-admin_filter" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['admin_filter'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-admin_filter">' . __('Filter for List View','enhanced-media-library') . '</label></li>';
-                                                        $html .= '<li><input type="checkbox" class="wpuxss-eml-media_uploader_filter" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][media_uploader_filter]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_uploader_filter" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['media_uploader_filter'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_uploader_filter">' . __('Filter for Grid View / Media Popup','enhanced-media-library') . '</label></li>';
-                                                        $html .= '<li><input type="checkbox" class="wpuxss-eml-media_popup_taxonomy_edit" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][media_popup_taxonomy_edit]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_popup_taxonomy_edit" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['media_popup_taxonomy_edit'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_popup_taxonomy_edit">' . __('Edit in Media Popup','enhanced-media-library') . '</label></li>';
-
-                                                        $options = '';
-                                                        $html .= apply_filters( 'wpuxss_eml_extend_non_media_taxonomy_options', $options, $taxonomy, $post_type, $wpuxss_eml_taxonomies );
-
-                                                        $html .= '</ul>';
-
-                                                        $html .= '</div>';
-                                                        $html .= '</li>';
+                                                    if ( $taxonomy->name == 'post_format' ) {
+                                                        continue;
                                                     }
+
+
+                                                    $html .= '<li class="wpuxss-non-eml-taxonomy" id="' . $taxonomy->name . '">';
+                                                    $html .= '<input name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][eml_media]" type="hidden" value="' . $wpuxss_eml_taxonomies[$taxonomy->name]['eml_media'] . '" />';
+                                                    $html .= '<label><input class="wpuxss-eml-assigned" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][assigned]" type="checkbox" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['assigned'], false ) . ' title="' . __('Assign Taxonomy','enhanced-media-library') . '" />' . $taxonomy->label . '</label>';
+                                                    $html .= '<a class="wpuxss-eml-button-edit" title="' . __('Edit Taxonomy','enhanced-media-library') . '" href="javascript:;">' . __('Edit','enhanced-media-library') . ' &darr;</a>';
+                                                    $html .= '<div class="wpuxss-eml-taxonomy-edit" style="display:none;">';
+
+                                                    $html .= '<h4>' . __('Settings','enhanced-media-library') . '</h4>';
+                                                    $html .= '<ul>';
+                                                    $html .= '<li><input type="checkbox" class="wpuxss-eml-admin_filter" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][admin_filter]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-admin_filter" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['admin_filter'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-admin_filter">' . __('Filter for List View','enhanced-media-library') . '</label></li>';
+                                                    $html .= '<li><input type="checkbox" class="wpuxss-eml-media_uploader_filter" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][media_uploader_filter]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_uploader_filter" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['media_uploader_filter'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_uploader_filter">' . __('Filter for Grid View / Media Popup','enhanced-media-library') . '</label></li>';
+                                                    $html .= '<li><input type="checkbox" class="wpuxss-eml-media_popup_taxonomy_edit" name="wpuxss_eml_taxonomies[' . $taxonomy->name . '][media_popup_taxonomy_edit]" id="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_popup_taxonomy_edit" value="1" ' . checked( 1, $wpuxss_eml_taxonomies[$taxonomy->name]['media_popup_taxonomy_edit'], false ) . ' /><label for="wpuxss_eml_taxonomies-' . $taxonomy->name . '-media_popup_taxonomy_edit">' . __('Edit in Media Popup','enhanced-media-library') . '</label></li>';
+
+                                                    $options = '';
+                                                    $html .= apply_filters( 'wpuxss_eml_extend_non_media_taxonomy_options', $options, $taxonomy, $post_type, $wpuxss_eml_taxonomies );
+
+                                                    $html .= '</ul>';
+
+                                                    $html .= '</div>';
+                                                    $html .= '</li>';
                                                 } ?>
 
                                                 <?php if ( ! empty( $html ) ) : ?>

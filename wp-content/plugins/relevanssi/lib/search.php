@@ -7,6 +7,8 @@ function relevanssi_query($posts, $query = false) {
 	global $relevanssi_active;
 	global $wp_query;
 
+	if (!$wp_query) return $posts;
+
 	$search_ok = true; 							// we will search!
 	if (!is_search()) {
 		$search_ok = false;						// no, we can't
@@ -21,6 +23,11 @@ function relevanssi_query($posts, $query = false) {
 	}
 
 	if ($wp_query->is_admin && empty($wp_query->query_vars['s'])) {
+		$search_ok = false;
+	}
+
+	// Required so that the admin dashboard page search works.
+	if ($wp_query->is_admin && $wp_query->query_vars['post_type'] == 'page') {
 		$search_ok = false;
 	}
 
@@ -51,7 +58,23 @@ function relevanssi_search($args) {
 	$relevanssi_table = $relevanssi_variables['relevanssi_table'];
 
 	$filtered_args = apply_filters( 'relevanssi_search_filters', $args );
-	extract($filtered_args);
+	$q = $filtered_args['q'];
+	$tax_query = $filtered_args['tax_query'];
+	$tax_query_relation = $filtered_args['tax_query_relation'];
+	$post_query = $filtered_args['post_query'];
+	$parent_query = $filtered_args['parent_query'];
+	$meta_query = $filtered_args['meta_query'];
+	$date_query = $filtered_args['date_query'];
+	$expost = $filtered_args['expost'];
+	$post_type = $filtered_args['post_type'];
+	$post_status = $filtered_args['post_status'];
+	$operator = $filtered_args['operator'];
+	$search_blogs = $filtered_args['search_blogs'];
+	$author = $filtered_args['author'];
+	$orderby = $filtered_args['orderby'];
+	$order = $filtered_args['order'];
+	$fields = $filtered_args['fields'];
+	$sentence = $filtered_args['sentence'];
 
 	$hits = array();
 
@@ -355,6 +378,11 @@ function relevanssi_search($args) {
 
 	$remove_stopwords = apply_filters('relevanssi_remove_stopwords_in_titles', true);
 	if (function_exists('wp_encode_emoji')) $q = wp_encode_emoji($q);
+	if ($sentence) {
+		$q = str_replace('"', '', $q);
+		$q = '"' . $q . '"';
+	}
+
 	$phrases = relevanssi_recognize_phrases($q);
 
 	if (function_exists('relevanssi_recognize_negatives')) {
@@ -561,8 +589,12 @@ function relevanssi_search($args) {
 			!empty($post_type_weights['post_tag']) ? $tag = $post_type_weights['post_tag'] : $tag = $relevanssi_variables['post_type_weight_defaults']['post_tag'];
 			!empty($post_type_weights['category']) ? $cat = $post_type_weights['category'] : $cat = $relevanssi_variables['post_type_weight_defaults']['category'];
 
-			$query = "SELECT relevanssi.*, relevanssi.title * $title_boost + relevanssi.content + relevanssi.comment * $comment_boost + relevanssi.tag * $tag + relevanssi.link * $link_boost + relevanssi.author + relevanssi.category * $cat + relevanssi.excerpt + relevanssi.taxonomy + relevanssi.customfield + relevanssi.mysqlcolumn AS tf
-					  FROM $relevanssi_table AS relevanssi $query_join WHERE $term_cond $query_restrictions";
+			$query = "SELECT relevanssi.*, relevanssi.title * $title_boost +
+				relevanssi.content + relevanssi.comment * $comment_boost +
+				relevanssi.tag * $tag + relevanssi.link * $link_boost +
+				relevanssi.author + relevanssi.category * $cat + relevanssi.excerpt +
+				relevanssi.taxonomy + relevanssi.customfield + relevanssi.mysqlcolumn AS tf
+				FROM $relevanssi_table AS relevanssi $query_join WHERE $term_cond $query_restrictions";
 			// Clean: $query_restrictions is escaped, $term_cond is escaped
 
 			$query = apply_filters('relevanssi_query_filter', $query);
@@ -580,8 +612,13 @@ function relevanssi_search($args) {
 						$existing_ids[] = $match->doc;
 					}
 					$existing_ids = implode(',', $existing_ids);
-					$query = "SELECT relevanssi.*, relevanssi.title * $title_boost + relevanssi.content + relevanssi.comment * $comment_boost + relevanssi.tag * $tag + relevanssi.link * $link_boost + relevanssi.author + relevanssi.category * $cat + relevanssi.excerpt + relevanssi.taxonomy + relevanssi.customfield + relevanssi.mysqlcolumn AS tf
-						  FROM $relevanssi_table AS relevanssi WHERE relevanssi.doc IN ($post_ids_to_add) AND relevanssi.doc NOT IN ($existing_ids) AND $term_cond";
+					$query = "SELECT relevanssi.*, relevanssi.title * $title_boost +
+					relevanssi.content + relevanssi.comment * $comment_boost +
+					relevanssi.tag * $tag + relevanssi.link * $link_boost +
+					relevanssi.author + relevanssi.category * $cat + relevanssi.excerpt +
+					relevanssi.taxonomy + relevanssi.customfield + relevanssi.mysqlcolumn AS tf
+					FROM $relevanssi_table AS relevanssi WHERE relevanssi.doc IN ($post_ids_to_add)
+					AND relevanssi.doc NOT IN ($existing_ids) AND $term_cond";
 					// Clean: no unescaped user inputs
 					$matches_to_add = $wpdb->get_results($query);
 					$matches = array_merge($matches, $matches_to_add);
@@ -593,15 +630,17 @@ function relevanssi_search($args) {
 
 			$total_hits += count($matches);
 
-			$query = "SELECT COUNT(DISTINCT(relevanssi.doc)) FROM $relevanssi_table AS relevanssi $query_join WHERE $term_cond $query_restrictions";
+			$query = "SELECT COUNT(DISTINCT(relevanssi.doc)) FROM $relevanssi_table AS relevanssi
+				$query_join WHERE $term_cond $query_restrictions";
 			// Clean: $query_restrictions is escaped, $term_cond is escaped
 			$query = apply_filters('relevanssi_df_query_filter', $query);
 
 			$df = $wpdb->get_var($query);
 
 			if ($df < 1 && "sometimes" == $fuzzy) {
-				$query = "SELECT COUNT(DISTINCT(relevanssi.doc)) FROM $relevanssi_table AS relevanssi $query_join
-					WHERE (relevanssi.term LIKE '$term%' OR relevanssi.term_reverse LIKE CONCAT(REVERSE('$term), %')) $query_restrictions";
+				$query = "SELECT COUNT(DISTINCT(relevanssi.doc)) FROM $relevanssi_table AS relevanssi
+					$query_join WHERE (relevanssi.term LIKE '$term%'
+					OR relevanssi.term_reverse LIKE CONCAT(REVERSE('$term), %')) $query_restrictions";
 				// Clean: $query_restrictions is escaped, $term is escaped
 				$query = apply_filters('relevanssi_df_query_filter', $query);
 				$df = $wpdb->get_var($query);
@@ -681,7 +720,7 @@ function relevanssi_search($args) {
 					$match->weight = $match->weight * $post_type_weights[$type];
 				}
 
-				$match = apply_filters('relevanssi_match', $match, $idf);
+				$match = apply_filters('relevanssi_match', $match, $idf, $term);
 
 				if ($match->weight == 0) continue; // the filters killed the match
 
@@ -833,6 +872,60 @@ function relevanssi_do_query(&$query) {
 		if ($operator != "OR" && $operator != "AND") $operator = get_option("relevanssi_implicit_operator");
 		$multi_args['operator'] = $operator;
 
+		$meta_query = array();
+		if ( ! empty( $query->query_vars["meta_query"] ) ) {
+ 			$meta_query = $query->query_vars["meta_query"];
+ 		}
+
+		if ( isset( $query->query_vars["customfield_key"] ) ) {
+			$build_meta_query = array();
+
+			// Use meta key
+			$build_meta_query['key'] = $query->query_vars["customfield_key"];
+
+			/**
+			 * Check the value is not empty for ordering purpose,
+			 * Set it or not for the current meta query
+			 */
+			if ( ! empty( $query->query_vars["customfield_value"] ) ) {
+				$build_meta_query['value'] = $query->query_vars["customfield_value"];
+			}
+
+			// Set the compare
+			$build_meta_query['compare'] = '=';
+
+			$meta_query[] = $build_meta_query;
+ 		}
+
+		if ( ! empty($query->query_vars["meta_key"] ) || ! empty($query->query_vars["meta_value"] ) || ! empty( $query->query_vars["meta_value_num"] ) ) {
+
+			$build_meta_query = array();
+
+			// Use meta key
+			$build_meta_query['key'] = $query->query_vars["meta_key"];
+
+ 			$value = null;
+			if ( ! empty( $query->query_vars["meta_value"] ) ) {
+				$value = $query->query_vars["meta_value"];
+			} elseif ( ! empty( $query->query_vars["meta_value_num"] ) ) {
+				$value = $query->query_vars["meta_value_num"];
+			}
+
+			/**
+			 * Check the meta value, as it could be not set for ordering purpose
+			 * set it or not for the current meta query
+			 */
+			if ( ! empty( $value ) ) {
+				$build_meta_query['value'] = $value;
+			}
+
+			// Set meta compare
+			$build_meta_query['compare'] = ! empty( $query->query_vars["meta_compare"] ) ? $query->query_vars["meta_compare"] : '=';
+
+			$meta_query[] = $build_meta_query;
+ 		}
+
+		$multi_args['meta_query'] = $meta_query;
 		if (function_exists('relevanssi_search_multi')) {
 			$return = relevanssi_search_multi($multi_args);
 		}
@@ -994,25 +1087,57 @@ function relevanssi_do_query(&$query) {
 			$parent_query = array('parent not in' => $query->query_vars['post_parent__not_in']);
 		}
 
+ 		$meta_query_relation = apply_filters('relevanssi_default_meta_query_relation', 'AND');
 		$meta_query = array();
-		$meta_query_relation = apply_filters('relevanssi_default_meta_query_relation', 'AND');
+		if ( ! empty( $query->query_vars["meta_query"] ) ) {
+ 			$meta_query = $query->query_vars["meta_query"];
+ 		}
 
-		if (!empty($query->query_vars["meta_query"])) {
-			$meta_query = $query->query_vars["meta_query"];
-		}
-		if (isset($query->query_vars["customfield_key"])) {
-			isset($query->query_vars["customfield_value"]) ? $value = $query->query_vars["customfield_value"] : $value = null;
-			$meta_query[] = array('key' => $query->query_vars["customfield_key"], 'value' => $value, 'compare' => '=');
-		}
-		if (!empty($query->query_vars["meta_key"]) ||
-			!empty($query->query_vars["meta_value"]) ||
-			!empty($query->query_vars["meta_value_num"])) {
-			$value = null;
-			if (!empty($query->query_vars["meta_value"])) $value = $query->query_vars["meta_value"];
-			if (!empty($query->query_vars["meta_value_num"])) $value = $query->query_vars["meta_value_num"];
-			!empty($query->query_vars["meta_compare"]) ? $compare = $query->query_vars["meta_compare"] : $compare = '=';
-			$meta_query[] = array('key' => $query->query_vars["meta_key"], 'value' => $value, 'compare' => $compare);
-		}
+		if ( isset( $query->query_vars["customfield_key"] ) ) {
+			$build_meta_query = array();
+
+			// Use meta key
+			$build_meta_query['key'] = $query->query_vars["customfield_key"];
+
+			/**
+		 	 * Check the value is not empty for ordering purpose,
+		 	 * Set it or not for the current meta query
+		 	 */
+		 	if ( ! empty( $query->query_vars["customfield_value"] ) ) {
+				$build_meta_query['value'] = $query->query_vars["customfield_value"];
+			}
+
+			// Set the compare
+			$build_meta_query['compare'] = '=';
+			$meta_query[] = $build_meta_query;
+ 		}
+
+		if ( ! empty($query->query_vars["meta_key"] ) || ! empty($query->query_vars["meta_value"] ) || ! empty( $query->query_vars["meta_value_num"] ) ) {
+			$build_meta_query = array();
+
+			// Use meta key
+			$build_meta_query['key'] = $query->query_vars["meta_key"];
+
+ 			$value = null;
+			if ( ! empty( $query->query_vars["meta_value"] ) ) {
+				$value = $query->query_vars["meta_value"];
+			} elseif ( ! empty( $query->query_vars["meta_value_num"] ) ) {
+				$value = $query->query_vars["meta_value_num"];
+			}
+
+			/**
+		 	 * Check the meta value, as it could be not set for ordering purpose
+			 * set it or not for the current meta query
+			 */
+			if ( ! empty( $value ) ) {
+				$build_meta_query['value'] = $value;
+			}
+
+			// Set meta compare
+			$build_meta_query['compare'] = ! empty( $query->query_vars["meta_compare"] ) ? $query->query_vars["meta_compare"] : '=';
+
+			$meta_query[] = $build_meta_query;
+ 		}
 
 		$date_query = false;
 		if (!empty($query->date_query)) {
@@ -1062,6 +1187,11 @@ function relevanssi_do_query(&$query) {
 		isset($query->query_vars['orderby']) ? $orderby = $query->query_vars['orderby'] : $orderby = null;
 		isset($query->query_vars['order']) ? $order = $query->query_vars['order'] : $order = null;
 
+		$sentence = false;
+		if (isset($query->query_vars['sentence']) && !empty($query->query_vars['sentence'])) {
+			$sentence = true;
+		}
+
 		$fields = "";
 		if (!empty($query->query_vars['fields'])) {
 			if ($query->query_vars['fields'] == 'ids') {
@@ -1095,7 +1225,8 @@ function relevanssi_do_query(&$query) {
 			'author' => $author,
 			'orderby' => $orderby,
 			'order' => $order,
-			'fields' => $fields);
+			'fields' => $fields,
+			'sentence' => $sentence);
 
 		$return = relevanssi_search($search_params);
 	}

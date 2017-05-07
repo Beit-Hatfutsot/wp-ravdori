@@ -189,115 +189,107 @@ if ( ! function_exists( 'wpuxss_eml_tax_options_validate' ) ) {
 
 
 /**
- *  wpuxss_eml_ajax_query_attachments
+ *  wpuxss_eml_ajax_query_attachments_args
  *
- *  Based on /wp-admin/includes/ajax-actions.php
- *
- *  @since    1.0
- *  @created  03/08/13
+ *  @since    2.3.2
+ *  @created  24/09/16
  */
 
-add_action( 'wp_ajax_query-attachments', 'wpuxss_eml_ajax_query_attachments', 0 );
+add_filter( 'ajax_query_attachments_args', 'wpuxss_eml_ajax_query_attachments_args' );
 
-if ( ! function_exists( 'wpuxss_eml_ajax_query_attachments' ) ) {
+if ( ! function_exists( 'wpuxss_eml_ajax_query_attachments_args' ) ) {
 
-    function wpuxss_eml_ajax_query_attachments() {
+    function wpuxss_eml_ajax_query_attachments_args( $query ) {
 
-        global $wp_version;
+        $wpuxss_eml_taxonomies = get_option( 'wpuxss_eml_taxonomies', array() );
+        $tax_query = array();
+        $eml_query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
+        $processed_taxonomies = get_object_taxonomies( 'attachment', 'object' );
+        $keys = array(
+            'uncategorized'
+        );
 
-        if ( ! current_user_can( 'upload_files' ) )
-            wp_send_json_error();
+        foreach ( $processed_taxonomies as $taxonomy => $params ) {
+            if ( isset( $eml_query[$taxonomy] ) ) {
+                $keys[] = $taxonomy;
+            }
+        }
 
-        $query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
+        $eml_query = array_intersect_key( $eml_query, array_flip( $keys ) );
+        $query = array_merge( $query, $eml_query );
 
         $uncategorized = ( isset( $query['uncategorized'] ) && $query['uncategorized'] ) ? 1 : 0;
 
 
-        $query = array_intersect_key( $query, array_flip( array(
-            's', 'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
-            'post_parent', 'post__in', 'post__not_in', 'year', 'monthnum'
-        ) ) );
+        foreach ( $processed_taxonomies as $taxonomy_name => $params ) {
 
-        foreach ( get_object_taxonomies( 'attachment', 'names' ) as $taxonomy ) {
+            if ( ! array_key_exists( $taxonomy_name, $wpuxss_eml_taxonomies ) ) {
+                continue;
+            }
 
             if ( $uncategorized ) {
 
-                $terms = get_terms( $taxonomy, array( 'fields' => 'ids', 'get' => 'all' ) );
+                $terms = get_terms( $taxonomy_name, array( 'fields' => 'ids', 'get' => 'all' ) );
 
-                $tax_query[] = array(
-                    'taxonomy' => $taxonomy,
-                    'field' => 'term_id',
-                    'terms' => $terms,
-                    'operator' => 'NOT IN',
-                );
+                if ( ! empty( $terms ) ) {
+
+                    $tax_query[] = array(
+                        'taxonomy' => $taxonomy_name,
+                        'field' => 'term_id',
+                        'terms' => $terms,
+                        'operator' => 'NOT IN'
+                    );
+
+                    unset( $query['uncategorized'] );
+                }
             }
             else {
 
-                if ( isset( $_REQUEST['query'][$taxonomy] ) && $_REQUEST['query'][$taxonomy] ) {
+                if ( isset( $query[$taxonomy_name] ) && $query[$taxonomy_name] ) {
 
-                    if( is_numeric( $_REQUEST['query'][$taxonomy] ) ||
-                        is_array( $_REQUEST['query'][$taxonomy] ) ) {
+                    if( is_numeric( $query[$taxonomy_name] ) || is_array( $query[$taxonomy_name] ) ) {
 
                         $tax_query[] = array(
-                            'taxonomy' => $taxonomy,
+                            'taxonomy' => $taxonomy_name,
                             'field' => 'term_id',
-                            'terms' => (array) $_REQUEST['query'][$taxonomy]
+                            'terms' => (array) $query[$taxonomy_name]
                         );
                     }
-                    elseif ( 'not_in' === $_REQUEST['query'][$taxonomy] ) {
+                    elseif ( 'not_in' === $query[$taxonomy_name] ) {
 
-                        $terms = get_terms( $taxonomy, array('fields'=>'ids','get'=>'all') );
+                        $terms = get_terms( $taxonomy_name, array('fields'=>'ids','get'=>'all') );
 
                         $tax_query[] = array(
-                            'taxonomy' => $taxonomy,
+                            'taxonomy' => $taxonomy_name,
                             'field' => 'term_id',
                             'terms' => $terms,
                             'operator' => 'NOT IN',
                         );
                     }
-                    elseif ( 'in' === $_REQUEST['query'][$taxonomy] ) {
+                    elseif ( 'in' === $query[$taxonomy_name] ) {
 
-                        $terms = get_terms( $taxonomy, array('fields'=>'ids','get'=>'all') );
+                        $terms = get_terms( $taxonomy_name, array('fields'=>'ids','get'=>'all') );
 
                         $tax_query[] = array(
-                            'taxonomy' => $taxonomy,
+                            'taxonomy' => $taxonomy_name,
                             'field' => 'term_id',
                             'terms' => $terms,
                             'operator' => 'IN',
                         );
                     }
+
+                    unset( $query[$taxonomy_name] );
                 }
             }
         } // endforeach
 
         if ( ! empty( $tax_query ) ) {
+
             $tax_query['relation'] = 'AND';
             $query['tax_query'] = $tax_query;
         }
 
-        $query['post_type'] = 'attachment';
-
-        if ( MEDIA_TRASH
-            && ! empty( $_REQUEST['query']['post_status'] )
-            && 'trash' === $_REQUEST['query']['post_status'] ) {
-
-            $query['post_status'] = 'trash';
-        }
-        else {
-
-            $query['post_status'] = 'inherit';
-        }
-
-        if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) )
-            $query['post_status'] .= ',private';
-
-        $query = apply_filters( 'ajax_query_attachments_args', $query );
-        $query = new WP_Query( $query );
-
-        $posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
-        $posts = array_filter( $posts );
-
-        wp_send_json_success( $posts );
+        return $query;
     }
 }
 
@@ -346,7 +338,7 @@ if ( ! function_exists( 'wpuxss_eml_restrict_manage_posts' ) ) {
                     array(
                         'show_option_all'    =>  __( 'Filter by', 'enhanced-media-library' ) . ' ' . $taxonomy->labels->singular_name,
                         'show_option_in'     =>  '— ' . __( 'All', 'enhanced-media-library' ) . ' ' . $taxonomy->labels->name . ' —',
-                        'show_option_not_in' =>  '— ' . __( 'Not in', 'enhanced-media-library' ) . ' ' . $taxonomy->labels->singular_name . ' —',
+                        'show_option_not_in' =>  '— ' . __( 'Not in a', 'enhanced-media-library' ) . ' ' . $taxonomy->labels->singular_name . ' —',
                         'taxonomy'           =>  $taxonomy->name,
                         'name'               =>  $taxonomy->name,
                         'orderby'            =>  'name',
@@ -585,13 +577,21 @@ if ( ! function_exists( 'wpuxss_eml_attachment_fields_to_edit' ) ) {
 
     function wpuxss_eml_attachment_fields_to_edit( $form_fields, $post ) {
 
+        if ( ! function_exists( 'wp_terms_checklist' ) ) {
+            return $form_fields;
+        }
+
+
         $wpuxss_eml_tax_options = get_option('wpuxss_eml_tax_options');
+
 
         foreach( $form_fields as $field => $args ) {
 
-            if ( isset( $args['hierarchical'] ) &&
-                 function_exists( 'wp_terms_checklist' ) &&
-                 ( (bool) $wpuxss_eml_tax_options['edit_all_as_hierarchical'] || (bool) $args['hierarchical'] ) ) {
+            if ( ! taxonomy_exists( $field ) ) {
+                continue;
+            }
+
+            if ( (bool) $wpuxss_eml_tax_options['edit_all_as_hierarchical'] || (bool) $args['hierarchical'] ) {
 
                 ob_start();
 
@@ -611,7 +611,11 @@ if ( ! function_exists( 'wpuxss_eml_attachment_fields_to_edit' ) ) {
                 $form_fields[$field]['input'] = 'html';
                 $form_fields[$field]['html'] = $html;
             }
-        }
+            else {
+                $values = wp_get_object_terms( $post->ID, $field, array( 'fields' => 'names' ) );
+                $form_fields[$field]['value'] = join(', ', $values);
+            } // if
+        } // foreach
 
         return $form_fields;
     }
@@ -879,10 +883,15 @@ if ( ! function_exists( 'wpuxss_eml_save_attachment_compat' ) ) {
 
                 $term_ids = array_map( 'trim', preg_split( '/,+/', $attachment_data[ $taxonomy ] ) );
             }
-            elseif ( isset( $_REQUEST['tax_input'] ) && isset( $_REQUEST['tax_input'][ $taxonomy ] ) ) {
+            elseif ( isset( $_REQUEST['tax_input'] ) ) {
 
-                $term_ids = array_keys( $_REQUEST['tax_input'][ $taxonomy ], 1 );
-                $term_ids = array_map( 'intval', $term_ids );
+                if ( ! isset( $_REQUEST['tax_input'][ $taxonomy ] ) ) {
+                    continue;
+                }
+                else {
+                    $term_ids = array_keys( $_REQUEST['tax_input'][ $taxonomy ], 1 );
+                    $term_ids = array_map( 'intval', $term_ids );
+                }
             }
 
             wp_set_object_terms( $id, $term_ids, $taxonomy, false );
@@ -1254,6 +1263,99 @@ if ( ! function_exists('wpuxss_eml_pre_get_posts') ) {
             }
         }
     }
+}
+
+
+
+/**
+ *  wpuxss_eml_print_media_templates
+ *
+ *  @since    2.4
+ *  @created  07/01/17
+ */
+
+add_action( 'print_media_templates', 'wpuxss_eml_print_media_templates' );
+
+if ( ! function_exists( 'wpuxss_eml_print_media_templates' ) ) {
+
+    function wpuxss_eml_print_media_templates() {
+
+        global $wp_version;
+
+
+        if ( version_compare( $wp_version, '4.3', '<' ) ) {
+
+            $remove_button = '<a class="close media-modal-icon" href="#" title="' . esc_attr__('Remove') . '"></a>';
+
+            $deselect_button = '<a class="check" href="#" title="' . esc_attr__('Deselect') . '" tabindex="-1"><div class="media-modal-icon"></div></a>';
+
+        }
+        else {
+
+            $remove_button = '<button type="button" class="button-link attachment-close media-modal-icon"><span class="screen-reader-text">' . __( 'Remove' ) . '</span></button>';
+
+            $deselect_button = '<button type="button" class="button-link check" tabindex="-1"><span class="media-modal-icon"></span><span class="screen-reader-text">' . __( 'Deselect' ) . '</span></button>';
+
+        } ?>
+
+
+        <script type="text/html" id="tmpl-attachment-grid-view">
+
+            <div class="attachment-preview js--select-attachment type-{{ data.type }} subtype-{{ data.subtype }} {{ data.orientation }}">
+                <div class="eml-attacment-inline-toolbar">
+                    <# if ( data.can.save && data.buttons.edit ) { #>
+                        <i class="eml-icon dashicons dashicons-edit edit" data-name="edit"></i>
+                    <# } #>
+                </div>
+                <div class="thumbnail">
+                    <# if ( data.uploading ) { #>
+                        <div class="media-progress-bar"><div style="width: {{ data.percent }}%"></div></div>
+                    <# } else if ( 'image' === data.type && data.sizes ) { #>
+                        <div class="centered">
+                            <img src="{{ data.size.url }}" draggable="false" alt="" />
+                        </div>
+                    <# } else { #>
+                        <div class="centered">
+                            <# if ( data.image && data.image.src && data.image.src !== data.icon ) { #>
+                                <img src="{{ data.image.src }}" class="thumbnail" draggable="false" alt="" />
+                            <# } else if ( data.sizes && data.sizes.medium ) { #>
+                                <img src="{{ data.sizes.medium.url }}" class="thumbnail" draggable="false" alt="" />
+                            <# } else { #>
+                                <img src="{{ data.icon }}" class="icon" draggable="false" alt="" />
+                            <# } #>
+                        </div>
+                        <div class="filename">
+                            <div>{{ data.filename }}</div>
+                        </div>
+                    <# } #>
+                </div>
+                <# if ( data.buttons.close ) { #>
+                    <?php echo $remove_button; ?>
+                <# } #>
+            </div>
+            <# if ( data.buttons.check ) { #>
+                <?php echo $deselect_button; ?>
+            <# } #>
+            <#
+            var maybeReadOnly = data.can.save || data.allowLocalEdits ? '' : 'readonly';
+            if ( data.describe ) {
+                if ( 'image' === data.type ) { #>
+                    <input type="text" value="{{ data.caption }}" class="describe" data-setting="caption"
+                        placeholder="<?php esc_attr_e('Caption this image&hellip;'); ?>" {{ maybeReadOnly }} />
+                <# } else { #>
+                    <input type="text" value="{{ data.title }}" class="describe" data-setting="title"
+                        <# if ( 'video' === data.type ) { #>
+                            placeholder="<?php esc_attr_e('Describe this video&hellip;'); ?>"
+                        <# } else if ( 'audio' === data.type ) { #>
+                            placeholder="<?php esc_attr_e('Describe this audio file&hellip;'); ?>"
+                        <# } else { #>
+                            placeholder="<?php esc_attr_e('Describe this media file&hellip;'); ?>"
+                        <# } #> {{ maybeReadOnly }} />
+                <# }
+            } #>
+        </script>
+
+    <?php }
 }
 
 ?>
