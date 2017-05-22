@@ -152,6 +152,7 @@ get_header();
                                 'STORY_SUBJECTS[]':
                                 {
                                     required: true,
+									maxlength: 4
                                 },
                                 /*'STORY_LANGUAGE[]':
                                 {
@@ -192,6 +193,7 @@ get_header();
                                     'STORY_SUBJECTS[]':
                                     {
                                         required: "שדה חובה",
+										maxlength: "ניתן לבחור עד 4 נושאים",
                                     },
 
                                    /* 'STORY_LANGUAGE[]':
@@ -984,7 +986,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <div class="row">
-                        <h2 class="title-underline" >* נושאים</h2>
+                        <h2 class="title-underline" >* נושאים (ניתן לבחור עד 4 נושאים)</h2>
                         <div class="col-sm-12">סמנו מילים המתארות באופן הטוב ביותר את הנושאים המרכזיים בסיפור. </div>
                         <div class="col-sm-12 voffset3"></div>
                         <label id="lblSubjectsErrors"><?php showBackendErrors( $errors , IWizardStep4Fields::STORY_SUBJECTS ); ?></label>
