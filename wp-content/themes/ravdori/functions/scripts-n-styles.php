@@ -114,6 +114,7 @@ function BH_register_scripts() {
         wp_register_script( 'chained'         ,	JS_DIR . '/jquery.chained.min.js'                         ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'alphanum'         ,	JS_DIR . '/jquery.alphanum.js'                         ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'select-togglebutton'        ,	JS_DIR . '/select-togglebutton.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
+		wp_register_script( 'running-numbers'        ,	JS_DIR . '/jquery.running-numbers.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
 }
 
 function BH_load_theme_scripts() {

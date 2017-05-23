@@ -75,3 +75,6 @@ require_once('functions/embeds.php');
 
 // Disable comments
 require_once('functions/comments.php');
+
+// Shortcodes
+require_once('functions/shortcodes.php');

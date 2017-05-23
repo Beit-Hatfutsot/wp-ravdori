@@ -1673,6 +1673,22 @@ h3.story-personal-view {
 .pagination > li > a, .pagination > li > span {
   color: #47C3D3; }
 
+#homepage-numbers-strip {
+						background: #47C3D3;
+						color: #fff;
+						padding: 35px 15px;
+						font-size: 23px;
+						line-height: 50px;
+					    margin-right: 1px;
+						margin-left: 1px;
+}  
+
+#homepage-numbers-strip .running-numbers__cube__number {
+	    font-weight: 600;
+		font-size: 2em;
+}
+  
+  
 /**********/
 /* footer */
 /**********/
