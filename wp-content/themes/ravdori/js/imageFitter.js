@@ -63,7 +63,7 @@ function addCaption ( $imgElem , imgCaption , gutter , imgId  , isRight )
 
     $figureElement  = '<figure id="' + imgId + '" class="wp-caption portrait" itemtype="http://schema.org/ImageObject" style="' + imgStyle + '">';
     $figureElement +=       '<figcaption class="wp-caption-text" itemprop="description">';
-    $figureElement +=           imgCaption.replace(/^"(.*)"$/, '$1'); // remove quotes at beginning and end
+    $figureElement +=           imgCaption.replace(/^"(.*)"$/, '$1').replace(/\\/g, ''); // remove quotes at beginning and end
     $figureElement +=       '</figcaption>';
     $figureElement += '</figure>';
 
