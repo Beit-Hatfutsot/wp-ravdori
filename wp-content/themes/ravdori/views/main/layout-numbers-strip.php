@@ -14,13 +14,15 @@
     <div class="col-sm-12">
         <div class="row">
 
+			<div class="col-sm-4 text-center">
+				<?php  echo BH_sc_running_counter( array( 'number' => 'cities' , 'title' => 'יישובים משתתפים בתוכנית') ); ?>
+            </div>
+			
+			
             <div class="col-sm-4 text-center">
 				<?php  echo BH_sc_running_counter( array( 'number' => 'schools' , 'title' => 'בתי ספר משתתפים בתוכנית') ); ?>
             </div>
 			
-			<div class="col-sm-4 text-center">
-				<?php  echo BH_sc_running_counter( array( 'number' => 'cities' , 'title' => 'יישובים משתתפים בתוכנית') ); ?>
-            </div>
 			
 			<div class="col-sm-4 text-center">
                 <?php  echo BH_sc_running_counter( array( 'number' => 'stories' , 'title' => 'סיפורים') ); ?>
