@@ -349,6 +349,7 @@ class BH_Step4Controller extends BH_Controller{
                 SCHOOLS_TAXONOMY   =>  array( $step1Data[ IWizardStep1Fields::SCHOOL_NAME] , $step1Data[ IWizardStep1Fields::COUNTRY ] , $step1Data[ IWizardStep1Fields::CITY ] ,$district->term_id ),
             ),
             'post_type'      => STORY_POST_TYPE,
+			'post_date' 	 =>  current_time( 'mysql' ),
             'post_status'    => 'draft'
         );
 
@@ -386,27 +387,33 @@ class BH_Step4Controller extends BH_Controller{
             $terms  = array();
             $values = array();
             $dictionary = $step4Data[IWizardStep4Fields::DICTIONARY];
+			
+			if (is_array($dictionary) || is_object($dictionary))
+			{
+				foreach ( $dictionary as $term ){
 
-            foreach ( $dictionary as $term ){
+					$terms[]  = $term['text-input'];
+					$values[] = $term['textarea-input1'];
 
-                $terms[]  = $term['text-input'];
-                $values[] = $term['textarea-input1'];
+				}
 
-            }
-
-            BH_delete_all_post_dictionary_terms( $post_id );
-            BH_add_dictionary_terms( $terms ,$values , $post_id );
-
+				BH_delete_all_post_dictionary_terms( $post_id );
+				BH_add_dictionary_terms( $terms ,$values , $post_id );
+			}
+			
             $terms  = array();
             $quotes = $step4Data[ IWizardStep4Fields::QUOTES ];
+			
+			if (is_array($quotes) || is_object($quotes))
+			{			
+				foreach ( $quotes as $quote )
+				{
+					$terms[]  = $quote['textarea-input2'];
+				}
 
-            foreach ( $quotes as $quote )
-            {
-                $terms[]  = $quote['textarea-input2'];
-            }
-
-            BH_delete_all_post_quotes( $post_id );
-            BH_add_quotes( $terms , $post_id  );
+				BH_delete_all_post_quotes( $post_id );
+				BH_add_quotes( $terms , $post_id  );
+			}
         }
 
     }

@@ -24,6 +24,7 @@ get_header();
         var media_uploader = null;
 
 
+		
         function open_media_uploader_image_adult( )
         {
             media_uploader = wp.media({
@@ -106,7 +107,7 @@ get_header();
                 // Those 2 lines force the media library to show the upload tab first
                 wp.media.controller.Library.prototype.defaults.contentUserSetting = false;
                 wp.media.controller.FeaturedImage.prototype.defaults.contentUserSetting = false;
-
+				wp.media.model.settings.post.id = null;
 
                 $("#wizard-form-step4").validate({
                     errorPlacement: function (error, element)
@@ -612,7 +613,6 @@ get_header();
 $isStorySaved = $wizardSessionManager->getField( 'do-saving' );
 
 $wizardSessionManager->setField( 'do-saving' , false );
-
 
 ?>
     <section class="page-content">
