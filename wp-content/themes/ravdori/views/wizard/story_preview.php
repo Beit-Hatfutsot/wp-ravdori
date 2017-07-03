@@ -23,11 +23,13 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 
     var $ = jQuery;
 
+	
+      function disableF5(e) { if ((e.which || e.keyCode) == 116) e.preventDefault(); };
+	  $(document).on("keydown", disableF5);
+
+	  
     /* Fields validation */
     $().ready(function () {
-
-        $('#story-post').load('<?php echo  get_permalink($post_id) ; ?> .page-content' , function() {
-            $.getScript(" <?php echo get_bloginfo('stylesheet_directory') . '/js/imageFitter.js'?>");
 
             <?php
                     global $wizardSessionManager;
@@ -36,7 +38,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 
             <?php if ( !empty( $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] ) ): ?>
 
-            <?php $feedback =   $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] ;?>
+            <?php $feedback =  json_encode( $step4Data[ IWizardStep4Fields::RAVDORI_FEEDBACK ] , JSON_UNESCAPED_UNICODE );?>
             var feedbackText;
 
             <?php if ($feedback): ?>
@@ -45,7 +47,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
             feedbackText += 'הזוית האישית';
             feedbackText += '</h3></p>';
             feedbackText += '<p>';
-            feedbackText += '<?php echo  addslashes( ( $feedback ) );?>'.replace( /\n/g, "<br />" ).replace(/\\/g, '');
+            feedbackText += <?php echo  $feedback;?>.replace( /\n/g, "<br />" );
             feedbackText += '</p>';
 
             $('.single-story .entry').append( feedbackText );
@@ -54,41 +56,8 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
             <?php endif;?>
             <?php endif;?>
 
-        });
-
-
     }); // Ready
-
-
-
-
-     jQuery(document).ajaxStart(function () {});
-
-
-
-    jQuery(document).ajaxComplete(function () {
-
-
-        var caption2 = '<?php echo $step4Data[ IWizardStep4Fields::IMAGE_ADULT_DESC ]; ?>';
-        var caption1 = '<?php echo $step4Data[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ]; ?>';
-
-        var $wrapper = $('.portrait-wrapper');
-        // set the image sizes on load
-        fitImages($wrapper.children().get(0), $wrapper.children().get(1), 20 , caption1 , caption2);
-
-
-    });
-
-
-
-
-
-
-
 </script>
-
-
-
 
 <style>
     .fb-share-button,
@@ -117,9 +86,46 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
                     </div>
 
 
-                    <div id="story-post" style="margin-right: -16px;"></div>
+                    <div id="story-post" class="row" style="margin-right: -16px;">
+					<!-- Story Data -->
+								<?php 
+									global $post;
+									$old_post = $post;
+									$post = get_post( $post_id );
+									setup_postdata( $post );
+							?>
+                    
+                            <div class="col-xs-4">
+                                  <?php include(locate_template('views/sidebar/sidebar.php')); ?>
+                            </div>
 
-
+								<div class="col-xs-8 white-shadow-box">
+									<article class="post single-story print-only" id="post-<?php the_ID(); ?>">
+											<?php 
+													global $post;
+													$old_post = $post;
+													$post = get_post( $post_id );
+													setup_postdata( $post );
+											?>
+									
+											<?php include(locate_template('views/story/meta.php'));  ?>
+											
+											<?php 
+													global $post;
+													$old_post = $post;
+													$post = get_post( $post_id );
+													setup_postdata( $post );
+											?>
+											
+											<?php include(locate_template('views/story/loop.php'));  ?>
+                                    </article>
+							   </div>
+							   
+					<?php $post= $old_post; ?>
+					
+					<!-- -->
+					
+					
                     <div class="submit">
                         <div class="publish-story-caption">
                             <input type="submit" style="float: left;margin-left: 23px;" value="סיום ושליחת סיפור &#9664;"/>
@@ -128,17 +134,25 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 
                     <input type="hidden" name="step" value="<?php echo IWizardStep5Fields::ID; ?>"/>
                     <?php wp_nonce_field( 'nonce_author_details_form_action' , 'nonce_author_details' ); ?>
-
-                </form>
-
-                <form name="step3"  class="wizard-form" method="post">
+					
+					
+				<form name="step3"  class="wizard-form" method="post">
                     <input name="progstep" value="4" type="hidden">
 
-                    <div class="submit">
+                    <div class="submit" style="width: 16.6%; height: 91px;">
                             <input type="submit" value="&#9654; הקודם"/>
                     </div>
 
                 </form>
+				
+				
+					</div>
+
+
+
+                </form>
+
+
               </div>
             </div>
         </div>
