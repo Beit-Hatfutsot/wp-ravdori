@@ -11,7 +11,7 @@ msgstr ""
 "Language: he_IL\n"
 "Project-Id-Version: Plugins - Akismet - Stable (latest release)\n"
 
-#: class.akismet.php:456
+#: class.akismet.php:451
 msgid "Comment not found."
 msgstr "התגובה לא נמצא."
 
@@ -356,11 +356,11 @@ msgstr "אקיזמט סימן תגובה זו כתגובת זבל במהלך ב�
 msgid "Akismet cleared this comment during an automatic retry."
 msgstr "אקיזמט אישר תגובה זו במהלך סריקה אוטומטית."
 
-#: class.akismet.php:1146
+#: class.akismet.php:1174
 msgid "Please <a href=\"%1$s\">upgrade WordPress</a> to a current version, or <a href=\"%2$s\">downgrade to version 2.4 of the Akismet plugin</a>."
 msgstr "נא <a href=\"%1$s\">לשדרג את וורדפרס</a> לגרסה עדכנית, או <a href=\"%2$s\">לחזור לגרסה 2.4 של תוסף אקיזמט</a>."
 
-#: class.akismet.php:1146
+#: class.akismet.php:1174
 msgid "Akismet %s requires WordPress %s or higher."
 msgstr "לאקיזמט %s נדרשת גרסת וורדפרס %s או מעלה."
 

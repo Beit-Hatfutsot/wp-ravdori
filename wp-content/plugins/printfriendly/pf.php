@@ -5,11 +5,18 @@ Plugin Name: Print, PDF & Email by PrintFriendly
 Plugin URI: http://www.printfriendly.com
 Description: PrintFriendly & PDF button for your website. Optimizes your pages and brand for print, pdf, and email.
 Name and URL are included to ensure repeat visitors and new visitors when printed versions are shared.
-Version: 3.7.5
+Version: 3.8.8
 Author: Print, PDF, & Email by PrintFriendly
 Author URI: http://www.PrintFriendly.com
 
 Changelog :
+3.8.7 - Bug fix.
+3.8.6 - Allow default image setting to be small medium or large.
+3.8.5 - Bug fix.
+3.8.4 - Bug fix.
+3.8.1 - Improve automatic error reporting.
+3.8.0 - Add automatic error reporting.
+3.7.6 - WooCommerce support improvments: remove upsells from print preview.
 3.7.5 - WooCommerce support improvments: fix DOMDocument.loadHTML warnings.
 3.7.4 - Added CSS Relative Position and Z-Index to button to avoid content covering the button.
 3.7.3 - Always use https
@@ -100,6 +107,12 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
    */
   class PrintFriendly_WordPress {
     /**
+     * Current plugin version.
+     * @var string
+     */
+    var $plugin_version = '3.8.7';
+
+    /**
      * The hook, used for text domain as well as hooks on pages and in get requests for admin.
      * @var string
      */
@@ -121,7 +134,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * Database version, used to allow for easy upgrades to / additions in plugin options between plugin versions.
      * @var int
      */
-    var $db_version = 9;
+    var $db_version = 12;
 
     /**
      * Settings page, used within the plugin to reliably load the plugins admin JS and CSS files only on the admin page.
@@ -130,11 +143,10 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
     var $settings_page = '';
 
     /**
-     * Helps don't print related products for WooCommerce
-     *
-     * @since 3.5
+     * GetSentry error reporting client
+     * @var Raven_Client
      */
-    var $wc_should_print = true;
+    var $raven_client = null;
 
     /**
      * Constructor
@@ -142,194 +154,144 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @since 3.0
      */
     function __construct() {
-      // delete_option( $this->option_name );
+      try {
+        // delete_option( $this->option_name );
 
-      // Retrieve the plugin options
-      $this->options = get_option( $this->option_name );
+        // Retrieve the plugin options
+        $this->options = get_option( $this->option_name );
 
-      // If the options array is empty, set defaults
-      if ( ! is_array( $this->options ) )
-        $this->set_defaults();
+        // If the options array is empty, set defaults
+        if ( ! is_array( $this->options ) )
+          $this->set_defaults();
 
-      /**
-       * Set page content selection option "Wordpress Standard/Strict" to "WP Template"
-       */
-      if( isset( $this->options['pf_algo'] ) && $this->options['pf_algo'] == 'ws' ){
-        $this->options['pf_algo'] = 'wp';
-        update_option( $this->option_name, $this->options );
-      }
+        // Sentry PHP SDK supports PHP 5.3 and higher.
+        if( isset( $this->options['enable_error_reporting'] ) && $this->options['enable_error_reporting'] == 'yes' && version_compare(PHP_VERSION, '5.3.0') >= 0) {
+          $this->init_error_reporting();
+        }
 
-      // If the version number doesn't match, upgrade
-      if ( $this->db_version > $this->options['db_version'] )
-        $this->upgrade();
+        /**
+         * Set page content selection option "Wordpress Standard/Strict" to "WP Template"
+         */
+        if( isset( $this->options['pf_algo'] ) && $this->options['pf_algo'] == 'ws' ){
+          $this->options['pf_algo'] = 'wp';
+          update_option( $this->option_name, $this->options );
+        }
 
-      add_action( 'wp_head', array( &$this, 'front_head' ) );
-      // automaticaly add the link
-      if( !$this->is_manual() ) {
-        add_filter( 'the_content', array( &$this, 'show_link' ) );
-        add_filter( 'the_excerpt', array( &$this, 'show_link' ) );
-      }
+        // If the version number doesn't match, upgrade
+        if ( $this->db_version > $this->options['db_version'] )
+          $this->upgrade();
 
-      add_action('the_content', array(&$this, 'add_pf_content_class_around_content_hook'));
+        add_action( 'wp_head', array( &$this, 'front_head' ) );
+        // automaticaly add the link
+        if( !$this->is_manual() ) {
+          add_filter( 'the_content', array( &$this, 'show_link' ) );
+          add_filter( 'the_excerpt', array( &$this, 'show_link' ) );
+        }
 
-      // WooCommerce hooks
-      add_filter('woocommerce_get_price_html', array(&$this, 'woocommerce_get_price_html'), 10, 2);
+        add_action('the_content', array(&$this, 'add_pf_content_class_around_content_hook'));
 
-      add_filter('woocommerce_single_product_image_html', array(&$this, 'woocommerce_single_product_image_html'));
-      add_filter('woocommerce_single_product_image_thumbnail_html', array(&$this, 'woocommerce_single_product_image_thumbnail_html'));
+        // Admin hooks
+        if ( is_admin() ) {
+          // Hook into init for registration of the option and the language files
+          add_action( 'admin_init', array( &$this, 'init' ) );
 
-      add_filter('woocommerce_up_sells_columns', array(&$this, 'woocommerce_up_sells_columns'));
+          // Register the settings page
+          add_action( 'admin_menu', array( &$this, 'add_config_page' ) );
 
-      // Admin hooks
-      if ( is_admin() ) {
-        // Hook into init for registration of the option and the language files
-        add_action( 'admin_init', array( &$this, 'init' ) );
+          // Register the contextual help
+          add_filter( 'contextual_help', array( &$this, 'contextual_help' ), 10, 2 );
 
-        // Register the settings page
-        add_action( 'admin_menu', array( &$this, 'add_config_page' ) );
+          // Enqueue the needed scripts and styles
+          add_action( 'admin_enqueue_scripts',array( &$this, 'admin_enqueue_scripts' ) );
 
-        // Register the contextual help
-        add_filter( 'contextual_help', array( &$this, 'contextual_help' ), 10, 2 );
-
-        // Enqueue the needed scripts and styles
-        add_action( 'admin_enqueue_scripts',array( &$this, 'admin_enqueue_scripts' ) );
-
-        // Register a link to the settings page on the plugins overview page
-        add_filter( 'plugin_action_links', array( &$this, 'filter_plugin_actions' ), 10, 2 );
-    }
-  }
-
-  /**
-   * Do not print related products
-   *
-   * @since 3.5
-   */
-  function woocommerce_up_sells_columns( $columns ) {
-    $this->wc_should_print = false;
-    return $columns;
-  }
-
-  /**
-   * Add pf-content class to WooCommerce Product Price
-   *
-   * @since 3.5
-   */
-  function woocommerce_get_price_html( $price ) {
-    if ( $this->is_content_algo_on($price) ) {
-      return $this->add_class($price, 'pf-content');
-    } else {
-      return $price;
-    }
-  }
-
-  /**
-   * Add pf-content class to WooCommerce main Product Image
-   *
-   * @since 3.5
-   */
-  function woocommerce_single_product_image_html( $image ) {
-    if ( $this->is_content_algo_on($image) ) {
-      return $this->add_class($image, 'pf-content');
-    } else {
-      return $image;
-    }
-  }
-
-  /**
-   * Add pf-content class to WooCommerce Product Images from gallery
-   *
-   * @since 3.5
-   */
-  function woocommerce_single_product_image_thumbnail_html( $image ) {
-    return $this->add_class($image, 'pf-content pf-gallery-img', 'img');
-  }
-
-  /**
-   * Adds class to elements by tagname
-   *
-   * @since 3.5
-   */
-  function add_class( $html, $class_name, $tagName = NULL ) {
-    if(!$this->wc_should_print || $html == "")
-      return $html;
-
-    $dom = new DOMDocument();
-
-    // libxml throws errors for HTML5 tags, ignore them
-    $old = libxml_use_internal_errors(TRUE);
-    libxml_clear_errors();
-    $dom->loadHTML($html);
-    $errors = libxml_get_errors();
-    libxml_use_internal_errors($old);
-
-    // Handle HTML5 tags errors
-    $re = 'Tag (figcaption|figure) invalid';
-    foreach ($errors as $error) {
-      if (!preg_match($re, $error->message)) {
-        // TODO: send error to sentry
-        // trigger_error(__METHOD__ . ": $error->message on line $error->line.", E_USER_WARNING);
-        return $html;
+          // Register a link to the settings page on the plugins overview page
+          add_filter( 'plugin_action_links', array( &$this, 'filter_plugin_actions' ), 10, 2 );
+        }
+      } catch(Exception $e) {
+        $this->raven_catch($e);
       }
     }
 
-    // Use body tag if nothing passed to $tagName parameter
-    if (is_null($tagName)) {
-      $elements = $dom->getElementsByTagName('body')->item(0)->childNodes;
-    } else {
-      $elements = $dom->getElementsByTagName($tagName);
+    function init_error_reporting() {
+      try {
+        require_once 'vendor/PrintFriendly/Raven/Autoloader.php';
+
+        PrintFriendly_Raven_Autoloader::register();
+
+        $this->raven_client = new PrintFriendly_Raven_Client('https://46a55182ffbe477c8cf1cb0f1cee36c2:a32ee5b4fad940c4808845b618147f21@sentry.io/171161', array(
+          'release' => $this->plugin_version,
+          'timeout' => 4
+        ));
+
+        $this->raven_client->tags_context(array(
+          'wordpress-version' => get_bloginfo('version'),
+          'php-version' => PHP_VERSION
+        ));
+
+        $this->raven_client->setSendCallback(array( &$this, 'raven_callback' ));
+      } catch (Exception $e) {
+        if (!ini_get('display_errors')) {
+          error_log('PrintFriendly init_error_reporting Error: ' . $e);
+        }
+
+        $this->raven_catch($e);
+      }
     }
 
-    // return original html if we can't parse it with DOMDocument
-    if ($elements->length == 0) {
-      return $html;
+    function raven_callback($data) {
+      try {
+        return isset($data) && preg_match('/printfriendly/', json_encode($data));
+      } catch (Exception $e) {
+        return true;
+      }
     }
 
-    // Find all ElementNodes and add class
-    foreach($elements as $element) {
-      if ($element->nodeType != XML_ELEMENT_NODE)
-        continue;
-
-      $element->setAttribute('class', $element->getAttribute('class') . ' ' . $class_name);
+    function raven_catch($e) {
+      if (isset($this->raven_client)) {
+        try {
+          $this->raven_client->captureException($e);
+        } catch(Exception $e) {}
+      }
     }
 
-    return $dom->saveHTML();
-  }
-
-  /**
-  * Adds wraps content in pf-content class to help Printfriendly algo determine the content
-  *
-  * @since 3.2.8
-  *
-  **/
-  function add_pf_content_class_around_content_hook($content = false) {
-    if( $this->is_content_algo_on($content) ) {
-        add_action( 'wp_footer', array( &$this, 'print_script_footer' ));
-        return '<div class="pf-content">'.$content.'</div>';
-    } else {
-        return $content;
+    /**
+    * Adds wraps content in pf-content class to help Printfriendly algo determine the content
+    *
+    * @since 3.2.8
+    *
+    **/
+    function add_pf_content_class_around_content_hook($content = false) {
+      try {
+        if( $this->is_wp_algo_on($content) ) {
+            add_action( 'wp_footer', array( &$this, 'print_script_footer' ));
+            return '<div class="pf-content">'.$content.'</div>';
+        } else {
+            return $content;
+        }
+      } catch (Exception $e) {
+        $this->raven_catch($e);
+      }
     }
-  }
 
-  /**
-  *  Override to check if print-only command is being used
-  *
-  *  @since 3.3.0
-  **/
-  function print_only_override($content) {
-    $pattern = '/class=[\"]print-only|class=[\']print-only|print-only/';
-    $pf_pattern = '/class=[\"]pf-content|class=[\']pf-content|pf-content/';
-    return (preg_match($pattern, $content) || preg_match($pf_pattern, $content)) ;
-  }
+    /**
+    *  Override to check if print-only command is being used
+    *
+    *  @since 3.3.0
+    **/
+    function print_only_override($content) {
+      $pattern = '/class=[\"]print-only|class=[\']print-only|print-only/';
+      $pf_pattern = '/class=[\"]pf-content|class=[\']pf-content|pf-content/';
+      return (preg_match($pattern, $content) || preg_match($pf_pattern, $content)) ;
+    }
 
-  /**
-  *  Check if Content Algorithm is selected and content doesn't use print-only
-  *
-  *  @since 3.5.4
-  **/
-  function is_content_algo_on($content) {
-    return isset($this->options['pf_algo']) && $content && $this->options['pf_algo'] == 'wp' && !$this->print_only_override($content);
-  }
-
+    /**
+    *  Check if WP Algorithm is selected and content doesn't use print-only
+    *
+    *  @since 3.5.4
+    **/
+    function is_wp_algo_on($content) {
+      return !class_exists('WooCommerce') && isset($this->options['pf_algo']) && $content && $this->options['pf_algo'] == 'wp' && !$this->print_only_override($content);
+    }
 
     /**
      * PHP 4 Compatible Constructor
@@ -345,12 +307,14 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      *
      * @since 3.0
      */
-    function front_head() { ?>
+    function front_head() {
+      try {
+?>
     <style type="text/css" media="screen">
-          div.printfriendly a, div.printfriendly a:link, div.printfriendly a:hover, div.printfriendly a:visited {
-            text-decoration: none;
-            border: none;
-          }
+      div.printfriendly a, div.printfriendly a:link, div.printfriendly a:hover, div.printfriendly a:visited {
+        text-decoration: none;
+        border: none;
+      }
     </style>
    <?php
 
@@ -404,6 +368,9 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
           }
         </style>
 <?php
+      } catch (Exception $e) {
+        $this->raven_catch($e);
+      }
     }
 
     /**
@@ -430,7 +397,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
           var pfHeaderImgUrl = '<?php echo esc_js(esc_url($image_url)); ?>';
           var pfHeaderTagline = '<?php echo esc_js($tagline); ?>';
           var pfdisableClickToDel = '<?php echo esc_js($this->options['click_to_delete']); ?>';
-          var pfHideImages = '<?php echo esc_js($this->options['hide-images']); ?>';
+          var pfImagesSize = '<?php echo esc_js($this->options['images-size']); ?>';
           var pfImageDisplayStyle = '<?php echo esc_js($this->options['image-style']); ?>';
           var pfDisableEmail = '<?php echo esc_js($this->options['email']); ?>';
           var pfDisablePDF = '<?php echo esc_js($this->options['pdf']); ?>';
@@ -454,42 +421,44 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @return string $button or $content with the button added to the content when appropriate, just the content when button shouldn't be added or just button when called manually.
      */
     function show_link( $content = false ) {
-      $is_manual = $this->is_manual();
+      try {
+        $is_manual = $this->is_manual();
 
-      if( !$content && !$is_manual )
-        return "";
+        if( !$content && !$is_manual )
+          return "";
 
-      $button = $this->getButton();
-      if ( $is_manual )
-      {
-        // Hook the script call now, so it only get's loaded when needed, and need is determined by the user calling pf_button
-        add_action( 'wp_footer', array( &$this, 'print_script_footer' ) );
-        return $button;
-      }
-
-      else
-      {
-        if ( (is_page() && ( isset($this->options['show_on_pages']) && 'on' === $this->options['show_on_pages'] ) )
-          || (is_home() && ( ( isset($this->options['show_on_homepage']) && 'on' === $this->options['show_on_homepage'] ) && $this->category_included() ) )
-          || (is_tax() && ( ( isset($this->options['show_on_taxonomies']) && 'on' === $this->options['show_on_taxonomies'] ) && $this->category_included() ) )
-          || (is_category() && ( ( isset($this->options['show_on_categories']) && 'on' === $this->options['show_on_categories'] ) && $this->category_included() ) )
-          || (is_single() && ( ( isset($this->options['show_on_posts']) && 'on' === $this->options['show_on_posts'] ) && $this->category_included() ) ) )
+        $button = $this->getButton();
+        if ( $is_manual )
         {
           // Hook the script call now, so it only get's loaded when needed, and need is determined by the user calling pf_button
           add_action( 'wp_footer', array( &$this, 'print_script_footer' ) );
-
-          if ( $this->options['content_placement'] == 'before' )
-            return $button.$content;
-          else
-            return $content.$button;
+          return $button;
         }
+
         else
         {
-          return $content;
+          if ( (is_page() && ( isset($this->options['show_on_pages']) && 'on' === $this->options['show_on_pages'] ) )
+            || (is_home() && ( ( isset($this->options['show_on_homepage']) && 'on' === $this->options['show_on_homepage'] ) && $this->category_included() ) )
+            || (is_tax() && ( ( isset($this->options['show_on_taxonomies']) && 'on' === $this->options['show_on_taxonomies'] ) && $this->category_included() ) )
+            || (is_category() && ( ( isset($this->options['show_on_categories']) && 'on' === $this->options['show_on_categories'] ) && $this->category_included() ) )
+            || (is_single() && ( ( isset($this->options['show_on_posts']) && 'on' === $this->options['show_on_posts'] ) && $this->category_included() ) ) )
+          {
+            // Hook the script call now, so it only get's loaded when needed, and need is determined by the user calling pf_button
+            add_action( 'wp_footer', array( &$this, 'print_script_footer' ) );
+
+            if ( $this->options['content_placement'] == 'before' )
+              return $button.$content;
+            else
+              return $content.$button;
+          }
+          else
+          {
+            return $content;
+          }
         }
-
+      } catch (Exception $e) {
+        $this->raven_catch($e);
       }
-
     }
 
 
@@ -529,7 +498,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
           if($this->google_analytics_enabled()) {
               $onclick = $onclick.' onclick="'.$analytics_code.'"';
           }
-          $href = "https://www.printfriendly.com/print?headerImageUrl=".urlencode($this->options['image_url'])."&headerTagline=".urlencode($this->options['tagline'])."&pfCustomCSS=".urlencode($this->options['custom_css_url'])."&imageDisplayStyle=".urlencode($this->options['image-style'])."&disableClickToDel=".urlencode($this->options['click_to_delete'])."&disablePDF=".urlencode($this->options['pdf'])."&disablePrint=".urlencode($this->options['print'])."&disableEmail=".urlencode($this->options['email'])."&hideImages=".urlencode($this->options['hide-images'])."&url=".urlencode(get_permalink())."&source=wp";
+          $href = "https://www.printfriendly.com/print?headerImageUrl=".urlencode($this->options['image_url'])."&headerTagline=".urlencode($this->options['tagline'])."&pfCustomCSS=".urlencode($this->options['custom_css_url'])."&imageDisplayStyle=".urlencode($this->options['image-style'])."&disableClickToDel=".urlencode($this->options['click_to_delete'])."&disablePDF=".urlencode($this->options['pdf'])."&disablePrint=".urlencode($this->options['print'])."&disableEmail=".urlencode($this->options['email'])."&imagesSize=".urlencode($this->options['images-size'])."&url=".urlencode(get_permalink())."&source=wp";
         }
         if ( !is_singular() && '' != $onclick && $js_enabled)  {
           $onclick = '';
@@ -577,11 +546,15 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @since 3.0
      */
     function init() {
-      // Allow for localization
-      load_plugin_textdomain( $this->hook, false, basename( dirname( __FILE__ ) ) . '/languages' );
+      try {
+        // Allow for localization
+        load_plugin_textdomain( $this->hook, false, basename( dirname( __FILE__ ) ) . '/languages' );
 
-      // Register our option array
-      register_setting( $this->option_name, $this->option_name, array( &$this, 'options_validate' ) );
+        // Register our option array
+        register_setting( $this->option_name, $this->option_name, array( &$this, 'options_validate' ) );
+      } catch (Exception $e) {
+        $this->raven_catch($e);
+      }
     }
 
     /**
@@ -728,13 +701,16 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
         $valid_input['image-style'] = 'right';
 
 
-      foreach( array( 'click_to_delete', 'hide-images', 'email', 'pdf', 'print', ) as $opt ) {
+      foreach( array( 'click_to_delete', 'email', 'pdf', 'print', ) as $opt ) {
         if( !isset( $input[$opt] ) || !in_array( $input[$opt], array( '0', '1' ) ) ) {
           $valid_input[$opt] = '0';
-    }
+        }
       }
       unset( $opt );
 
+      if( !isset( $input['images-size'] ) || !in_array( $input['images-size'], array( 'full-size', 'remove-images', 'large', 'medium', 'small' ) ) ) {
+        $valid_input['images-size'] = 'full-size';
+      }
 
 // @todo custom css url validation
       if ( !isset( $input['custom_css_url'] ) || empty( $input['custom_css_url'] ) )
@@ -770,10 +746,14 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @since 3.0
      */
     function add_config_page() {
-      $this->settings_page = add_options_page( __( 'PrintFriendly Options', $this->hook ), __( 'Print Friendly & PDF', $this->hook ), 'manage_options', $this->hook, array( &$this, 'config_page' ) );
+      try {
+        $this->settings_page = add_options_page( __( 'PrintFriendly Options', $this->hook ), __( 'Print Friendly & PDF', $this->hook ), 'manage_options', $this->hook, array( &$this, 'config_page' ) );
 
-      //register  callback gets call prior your own page gets rendered
-      add_action('load-'.$this->settings_page, array(&$this, 'on_load_printfriendly'));
+        //register  callback gets call prior your own page gets rendered
+        add_action('load-'.$this->settings_page, array(&$this, 'on_load_printfriendly'));
+      } catch (Exception $e) {
+        $this->raven_catch($e);
+      }
     }
 
     /**
@@ -782,11 +762,15 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @since 3.0
      */
     function contextual_help( $contextual_help, $screen_id ) {
-      if ( $this->settings_page == $screen_id ) {
-        $contextual_help = '<strong>'.__( "Need Help?", $this->hook ).'</strong><br/>'
-          .sprintf( __( "Be sure to check out the %s!", $this->hook), '<a href="https://wordpress.org/extend/plugins/printfriendly/faq/">'.__( "Frequently Asked Questions", $this->hook ).'</a>' );
+      try {
+        if ( $this->settings_page == $screen_id ) {
+          $contextual_help = '<strong>'.__( "Need Help?", $this->hook ).'</strong><br/>'
+            .sprintf( __( "Be sure to check out the %s!", $this->hook), '<a href="https://wordpress.org/extend/plugins/printfriendly/faq/">'.__( "Frequently Asked Questions", $this->hook ).'</a>' );
+        }
+        return $contextual_help;
+      } catch (Exception $e) {
+        $this->raven_catch($e);
       }
-      return $contextual_help;
     }
 
     /**
@@ -796,16 +780,20 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @param string $hook_suffix hook to check against whether the current page is the PrintFriendly settings page.
      */
     function admin_enqueue_scripts( $screen_id ) {
-      if ( $this->settings_page == $screen_id ) {
-        $ver = '3.2.5';
-        wp_register_script( 'pf-color-picker', plugins_url( 'colorpicker.js', __FILE__ ), array( 'jquery', 'media-upload' ), $ver );
-        wp_register_script( 'pf-admin-js', plugins_url( 'admin.js', __FILE__ ), array( 'jquery', 'media-upload' ), $ver );
+      try {
+        if ( $this->settings_page == $screen_id ) {
+          $ver = '3.2.5';
+          wp_register_script( 'pf-color-picker', plugins_url( 'colorpicker.js', __FILE__ ), array( 'jquery', 'media-upload' ), $ver );
+          wp_register_script( 'pf-admin-js', plugins_url( 'admin.js', __FILE__ ), array( 'jquery', 'media-upload' ), $ver );
 
-        wp_enqueue_script( 'pf-color-picker' );
-        wp_enqueue_script( 'pf-admin-js' );
+          wp_enqueue_script( 'pf-color-picker' );
+          wp_enqueue_script( 'pf-admin-js' );
 
 
-        wp_enqueue_style( 'printfriendly-admin-css', plugins_url( 'admin.css', __FILE__ ), array(), $ver);
+          wp_enqueue_style( 'printfriendly-admin-css', plugins_url( 'admin.css', __FILE__ ), array(), $ver);
+        }
+      } catch (Exception $e) {
+        $this->raven_catch($e);
       }
     }
 
@@ -818,15 +806,20 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @return array $links the links with the settings link added to it if appropriate.
      */
     function filter_plugin_actions( $links, $file ){
-      // Static so we don't call plugin_basename on every plugin row.
-      static $this_plugin;
-      if ( ! $this_plugin ) $this_plugin = plugin_basename( __FILE__ );
+      try {
+        // Static so we don't call plugin_basename on every plugin row.
+        static $this_plugin;
+        if ( ! $this_plugin ) $this_plugin = plugin_basename( __FILE__ );
 
-      if ( $file == $this_plugin ){
-        $settings_link = '<a href="options-general.php?page='.$this->hook.'">' . __( 'Settings', $this->hook ) . '</a>';
-        array_unshift( $links, $settings_link ); // before other links
+        if ( $file == $this_plugin ){
+          $settings_link = '<a href="options-general.php?page='.$this->hook.'">' . __( 'Settings', $this->hook ) . '</a>';
+          array_unshift( $links, $settings_link ); // before other links
+        }
+
+        return $links;
+      } catch (Exception $e) {
+        $this->raven_catch($e);
       }
-      return $links;
     }
 
     /**
@@ -835,52 +828,57 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      * @since 3.0
      */
     function set_defaults() {
-      // Set some defaults
-      $this->options = array(
-        'button_type' => 'pf-button.gif',
-        'content_position' => 'left',
-        'content_placement' => 'after',
-        'custom_image' => 'https://cdn.printfriendly.com/pf-icon.gif',
-        'custom_text' => 'Print Friendly',
-        'enable_css' => 'on',
-        'margin_top' => '12',
-        'margin_right' => '12',
-        'margin_bottom' => '12',
-        'margin_left' => '12',
-        'show_on_posts' => 'on',
-        'show_on_pages' => 'on',
-        'text_color' => '#6D9F00',
-        'text_size' => 14,
-        'logo' => 'favicon',
-        'image_url' => '',
-        'tagline' => '',
-        'click_to_delete' => '0', // 0 - allow, 1 - do not allow
-        'hide-images' => '0', // 0 - show images, 1 - hide images
-        'image-style' => 'right', // 'right', 'left', 'none', 'block'
-        'email' => '0', // 0 - allow, 1 - do not allow
-        'pdf' => '0', // 0 - allow, 1 - do not allow
-        'print' => '0', // 0 - allow, 1 - do not allow
-        'password_protected' => 'no',
-        'javascript' => 'yes',
-        'custom_css_url' => '',
-        'enable_google_analytics' => 'no',
-        'pf_algo' => 'wp'
-//        'category_ids' => array('all'),
-      );
+      try {
+        // Set some defaults
+        $this->options = array(
+          'button_type' => 'pf-button.gif',
+          'content_position' => 'left',
+          'content_placement' => 'after',
+          'custom_image' => 'https://cdn.printfriendly.com/pf-icon.gif',
+          'custom_text' => 'Print Friendly',
+          'enable_css' => 'on',
+          'margin_top' => '12',
+          'margin_right' => '12',
+          'margin_bottom' => '12',
+          'margin_left' => '12',
+          'show_on_posts' => 'on',
+          'show_on_pages' => 'on',
+          'text_color' => '#6D9F00',
+          'text_size' => 14,
+          'logo' => 'favicon',
+          'image_url' => '',
+          'tagline' => '',
+          'click_to_delete' => '0', // 0 - allow, 1 - do not allow
+          'hide-images' => '0', // 0 - show images, 1 - hide images
+          'image-style' => 'right', // 'right', 'left', 'none', 'block'
+          'email' => '0', // 0 - allow, 1 - do not allow
+          'pdf' => '0', // 0 - allow, 1 - do not allow
+          'print' => '0', // 0 - allow, 1 - do not allow
+          'password_protected' => 'no',
+          'javascript' => 'yes',
+          'custom_css_url' => '',
+          'enable_google_analytics' => 'no',
+          'enable_error_reporting' => 'yes',
+          'pf_algo' => 'wp',
+          'images-size' => 'full-size'
+        );
 
-      // Check whether the old badly named singular options are there, if so, use the data and delete them.
-      foreach ( array_keys( $this->options ) as $opt ) {
-        $old_opt = get_option( 'pf_'.$opt );
-        if ( $old_opt !== false ) {
-          $this->options[$opt] = $old_opt;
-          delete_option( 'pf_'.$opt );
+        // Check whether the old badly named singular options are there, if so, use the data and delete them.
+        foreach ( array_keys( $this->options ) as $opt ) {
+          $old_opt = get_option( 'pf_'.$opt );
+          if ( $old_opt !== false ) {
+            $this->options[$opt] = $old_opt;
+            delete_option( 'pf_'.$opt );
+          }
         }
+
+        // This should always be set to the latest immediately when defaults are pushed in.
+        $this->options['db_version'] = $this->db_version;
+
+        update_option( $this->option_name, $this->options );
+      } catch (Exception $e) {
+        $this->raven_catch($e);
       }
-
-      // This should always be set to the latest immediately when defaults are pushed in.
-      $this->options['db_version'] = $this->db_version;
-
-      update_option( $this->option_name, $this->options );
     }
 
     /**
@@ -980,23 +978,10 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
       // update options to version 6
       // Replacement for db version 5 - should also be run for those already upgraded
       if($this->options['db_version'] < 6) {
-
-/*        $additional_options = array(
-          'category_ids' => array(),
-        );
-
-    if( !isset( $this->options['category_ids'] ) || ( isset( $this->options['category_ids'] ) && 0 === count( $this->options['category_ids'] ) ) ) {
-          $additional_options['category_ids'][] = 'all';
-    }
-
-        $this->options = array_merge($this->options, $additional_options);
-*/
         unset($this->options['category_ids']);
       }
 
-
       if($this->options['db_version'] < 7) {
-
         $additional_options = array(
           'hide-images' => '0',
           'image-style' => 'right',
@@ -1004,13 +989,29 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 
         $this->options = array_merge($this->options, $additional_options);
       }
+
       if($this->options['db_version'] < 8) {
-    $this->options['enable_google_analytics'] = 'no';
-    }
+        $this->options['enable_google_analytics'] = 'no';
+      }
 
       if($this->options['db_version'] < 9) {
-    $this->options['pf_algo'] = 'wp';
-    }
+       $this->options['pf_algo'] = 'wp';
+      }
+
+      if($this->options['db_version'] < 10) {
+        $this->options['enable_error_reporting'] = 'yes';
+      }
+
+      if($this->options['db_version'] < 11) {
+        if (!isset($this->options['custom_css_url'])) {
+          $this->options['custom_css_url'] = '';
+        }
+      }
+
+      if($this->options['db_version'] < 12) {
+        $this->options['images-size'] = $this->options['hide-images'] == '1' ? 'remove-images' : 'full-size';
+      }
+
       $this->options['db_version'] = $this->db_version;
 
       update_option( $this->option_name, $this->options );
@@ -1164,12 +1165,16 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
      *
      */
     function is_manual() {
-      return !(isset($this->options['show_on_posts']) ||
-            isset($this->options['show_on_pages']) ||
-            isset($this->options['show_on_homepage']) ||
-            isset($this->options['show_on_categories']) ||
-//            (isset($this->options['category_ids']) && count($this->options['category_ids']) > 0) ||
-            isset($this->options['show_on_taxonomies']));
+      try {
+        return !(isset($this->options['show_on_posts']) ||
+              isset($this->options['show_on_pages']) ||
+              isset($this->options['show_on_homepage']) ||
+              isset($this->options['show_on_categories']) ||
+  //            (isset($this->options['category_ids']) && count($this->options['category_ids']) > 0) ||
+              isset($this->options['show_on_taxonomies']));
+      } catch (Exception $e) {
+        $this->raven_catch($e);
+      }
    }
 
 
@@ -1241,6 +1246,12 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 
         add_meta_box('categorydiv', __('Only display when post is in:', $this->hook), 'post_categories_meta_box', 'settings_page_'. $this->hook, 'normal', 'core');
       }
+    }
+
+    function console_log( $data ) {
+      echo '<script>';
+      echo 'console.log(' . json_encode( $data ) . ')';
+      echo '</script>';
     }
 
     /**
@@ -1420,11 +1431,14 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
                 <option value="1" <?php selected( $this->options['click_to_delete'], '1' ); ?>><?php _e( "Not Allow", $this->hook ); ?></option>
               </select>
             </label>
-            <label for="hide-images">
+            <label for="images-size">
               <?php _e( "Images", $this->hook ); ?>
-              <select name="<?php echo $this->option_name; ?>[hide-images]" id="hide-images">
-                <option value="0" <?php selected( $this->options['hide-images'], '0' ); ?>><?php _e( "Include", $this->hook ); ?></option>
-                <option value="1" <?php selected( $this->options['hide-images'], '1' ); ?>><?php _e( "Exclude", $this->hook ); ?></option>
+              <select name="<?php echo $this->option_name; ?>[images-size]" id="images-size">
+                <option value="full-size" <?php selected( $this->options['images-size'], 'full-size' ); ?>><?php _e( "Full Size", $this->hook ); ?></option>
+                <option value="large" <?php selected( $this->options['images-size'], 'large' ); ?>><?php _e( "Large", $this->hook ); ?></option>
+                <option value="medium" <?php selected( $this->options['images-size'], 'medium' ); ?>><?php _e( "Medium", $this->hook ); ?></option>
+                <option value="small" <?php selected( $this->options['images-size'], 'small' ); ?>><?php _e( "Small", $this->hook ); ?></option>
+                <option value="remove-images" <?php selected( $this->options['images-size'], 'remove-images' ); ?>><?php _e( "Remove Images", $this->hook ); ?></option>
               </select>
             </label>
             <label for="image-style">
@@ -1494,12 +1508,31 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
             <option value="no" <?php $this->selected( 'enable_google_analytics', 'no' ); ?>> <?php _e( "No", $this->hook ); ?></option>
           </select>
         </label>
-
+        <label for="pf-error-reporting"><?php _e( 'Error Reporting', $this->hook ); ?>
+          <span class="description no-italics" ><?php _e( 'Ensure PrintFriendly is working - Automatically send anonymous alert if PrintFriendly encounters an error.', $this->hook ); ?>
+          <br>
+          <select id="pf-error-reporting" name="<?php echo $this->option_name; ?>[enable_error_reporting]">
+            <option value="yes" <?php $this->selected( 'enable_error_reporting', 'yes' ); ?>> <?php _e( "Yes", $this->hook ); ?></option>
+            <option value="no" <?php $this->selected( 'enable_error_reporting', 'no' ); ?>> <?php _e( "No", $this->hook ); ?></option>
+          </select>
+        </label>
         <label for="pf-algo-usage"><?php _e( 'My Page Content Selected By:', $this->hook ); ?>  <span class="description no-italics" ><?php _e( 'Change this setting if your content is not showing in the preview.', $this->hook ); ?></span><br>
+
+        <?php
+          if (class_exists('WooCommerce')) {
+        ?>
+          <span><strong>Not available for woocommerce</strong></span>
+        <?php
+        } else {
+        ?>
           <select id="pf-algo-usage" name="<?php echo $this->option_name; ?>[pf_algo]">
             <option value="wp" <?php $this->selected( 'pf_algo', 'wp' ); ?>> <?php _e( 'WP Template', $this->hook ); ?></option>
             <option value="pf" <?php $this->selected( 'pf_algo', 'pf' ); ?>> <?php _e( "Content Algorithm", $this->hook ); ?></option>
           </select>
+        <?php
+        }
+        ?>
+
         </label>
 
         <p class="submit">
@@ -1514,6 +1547,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 
         </form>
       </div>
+
 <?php
     }
   }
@@ -1532,10 +1566,4 @@ add_shortcode( 'printfriendly', 'pf_show_link' );
 function pf_show_link() {
   global $printfriendly;
   return $printfriendly->getButton(true);
-}
-
-function console_log( $data ) {
-  echo '<script>';
-  echo 'console.log(' . json_encode( $data ) . ')';
-  echo '</script>';
 }

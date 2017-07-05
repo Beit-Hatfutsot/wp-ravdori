@@ -18,7 +18,7 @@ class Post_Category_Filter {
      *
      * @var     string
      */
-    const VERSION = '1.5.0';
+    const VERSION = '1.6.0';
 
     /**
      * Unique identifier for your plugin.
@@ -109,7 +109,7 @@ class Post_Category_Filter {
         $screen = get_current_screen();
 
         return array(
-            'placeholder' => __( 'Filter Categories', 'admin-category-filter' ),
+            'placeholder' => esc_html__( 'Filter %s', 'admin-category-filter' ),
             'screenName'  => $screen->base
         );
     }
