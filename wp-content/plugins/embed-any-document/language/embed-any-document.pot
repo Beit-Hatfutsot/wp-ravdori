@@ -1,8 +1,7 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Embed Any Document\n"
-"POT-Creation-Date: 2017-05-03 15:45+0530\n"
+"POT-Creation-Date: 2016-05-12 11:39+0530\n"
 "PO-Revision-Date: 2016-05-12 11:40+0530\n"
 "Last-Translator: \n"
 "Language-Team: Awsm Innovations <hello@awsm.in>\n"
@@ -10,203 +9,190 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.6.10\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e\n"
+"X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../awsm-embed.php:98 ../inc/popup.php:8
+#: ../aswm-embed.php:92 ../inc/popup.php:6
 msgid "Add Document"
 msgstr ""
 
-#: ../awsm-embed.php:125
+#: ../aswm-embed.php:116
 msgid "Settings"
 msgstr ""
 
-#: ../awsm-embed.php:153 ../awsm-embed.php:180
+#: ../aswm-embed.php:137 ../aswm-embed.php:164
 msgid "Download"
 msgstr ""
 
-#: ../awsm-embed.php:159
+#: ../aswm-embed.php:143
 msgid "Nothing to insert"
 msgstr ""
 
-#: ../awsm-embed.php:160
+#: ../aswm-embed.php:144
 msgid "Invalid URL"
 msgstr ""
 
-#: ../awsm-embed.php:161 ../inc/popup.php:28
+#: ../aswm-embed.php:145 ../inc/popup.php:22
 msgid "Add URL"
 msgstr ""
 
-#: ../awsm-embed.php:162
+#: ../aswm-embed.php:146
 msgid "Verifying..."
 msgstr ""
 
-#: ../awsm-embed.php:163
+#: ../aswm-embed.php:147
 msgid "From URL"
 msgstr ""
 
-#: ../awsm-embed.php:164
+#: ../aswm-embed.php:148
 msgid "Select"
 msgstr ""
 
-#: ../awsm-embed.php:254
-msgid "Embedded Document"
-msgstr ""
-
-#: ../awsm-embed.php:258
+#: ../aswm-embed.php:230
 msgid "No Url Found"
 msgstr ""
 
-#: ../awsm-embed.php:269
-msgid "Embed Any Document"
-msgstr ""
-
-#: ../awsm-embed.php:277
+#: ../aswm-embed.php:244
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: ../awsm-embed.php:328
+#: ../aswm-embed.php:289
 msgid "Buy Pro Version"
 msgstr ""
 
-#: ../awsm-embed.php:330
-#, php-format
-msgid "Add From %1$s"
-msgstr ""
-
-#: ../inc/popup.php:6
+#: ../inc/popup.php:4
 msgid "Close"
 msgstr ""
 
-#: ../inc/popup.php:16
+#: ../inc/popup.php:13
 msgid "Upload Document"
 msgstr ""
 
-#: ../inc/popup.php:19
+#: ../inc/popup.php:14
 msgid "Add from URL"
 msgstr ""
 
-#: ../inc/popup.php:26
+#: ../inc/popup.php:20
 msgid "Enter document URL"
 msgstr ""
 
-#: ../inc/popup.php:30
+#: ../inc/popup.php:24
 msgid "back"
 msgstr ""
 
-#: ../inc/popup.php:43
+#: ../inc/popup.php:37
 msgid "Advanced Options"
 msgstr ""
 
-#: ../inc/popup.php:46 ../inc/settings.php:16
+#: ../inc/popup.php:40 ../inc/settings.php:14
 msgid "Width"
 msgstr ""
 
-#: ../inc/popup.php:49 ../inc/settings.php:20
+#: ../inc/popup.php:41 ../inc/settings.php:18
 msgid "Height"
 msgstr ""
 
-#: ../inc/popup.php:53 ../inc/settings.php:28
+#: ../inc/popup.php:43 ../inc/settings.php:26
 msgid "Show Download Link"
 msgstr ""
 
-#: ../inc/popup.php:55 ../inc/settings.php:31
+#: ../inc/popup.php:45 ../inc/settings.php:29
 msgid "For all users"
 msgstr ""
 
-#: ../inc/popup.php:55 ../inc/settings.php:31
+#: ../inc/popup.php:45 ../inc/settings.php:29
 msgid "For Logged-in users"
 msgstr ""
 
-#: ../inc/popup.php:55 ../inc/settings.php:31
+#: ../inc/popup.php:45 ../inc/settings.php:29
 msgid "No Download"
 msgstr ""
 
-#: ../inc/popup.php:60 ../inc/settings.php:37
+#: ../inc/popup.php:50 ../inc/settings.php:35
 msgid "Download Text"
 msgstr ""
 
-#: ../inc/popup.php:64 ../inc/popup.php:71
+#: ../inc/popup.php:54 ../inc/popup.php:61
 msgid "Viewer"
 msgstr ""
 
-#: ../inc/popup.php:66
+#: ../inc/popup.php:56
 msgid "Google Docs Viewer"
 msgstr ""
 
-#: ../inc/popup.php:66
+#: ../inc/popup.php:56
 msgid "Microsoft Office Online"
 msgstr ""
 
-#: ../inc/popup.php:73
+#: ../inc/popup.php:63
 msgid "Box"
 msgstr ""
 
-#: ../inc/popup.php:74
+#: ../inc/popup.php:64
 msgid "Drive"
 msgstr ""
 
-#: ../inc/popup.php:81
+#: ../inc/popup.php:71
 msgid "Shortcode Preview"
 msgstr ""
 
-#: ../inc/popup.php:90
+#: ../inc/popup.php:80
 msgid "Insert"
 msgstr ""
 
-#: ../inc/popup.php:90
+#: ../inc/popup.php:80
 msgid "Loading..."
 msgstr ""
 
-#: ../inc/popup.php:94
+#: ../inc/popup.php:84
 msgid "Cancel"
 msgstr ""
 
-#: ../inc/settings.php:9
+#: ../inc/settings.php:7
 msgid "General Settings"
 msgstr ""
 
-#: ../inc/settings.php:14
+#: ../inc/settings.php:12
 msgid "Default Size"
 msgstr ""
 
-#: ../inc/settings.php:24
+#: ../inc/settings.php:22
 msgid "Enter values in pixels or percentage (Example: 500px or 100%)"
 msgstr ""
 
-#: ../inc/settings.php:73
+#: ../inc/settings.php:63
 msgid "Like the plugin?"
 msgstr ""
 
-#: ../inc/settings.php:74
+#: ../inc/settings.php:63
 msgid "Rate Now!"
 msgstr ""
 
-#: ../inc/settings.php:79
+#: ../inc/settings.php:68
 msgid "Need Help?"
 msgstr ""
 
-#: ../inc/settings.php:80
+#: ../inc/settings.php:68
 msgid "Open a Ticket"
 msgstr ""
 
-#: ../inc/settings.php:88
+#: ../inc/settings.php:75
 msgid "How to Embed Documents?"
 msgstr ""
 
-#: ../inc/settings.php:91
+#: ../inc/settings.php:76
 msgid "About Viewers"
 msgstr ""
 
-#: ../inc/settings.php:94
+#: ../inc/settings.php:77
 msgid "Shortcode & Attributes"
 msgstr ""
 
-#: ../inc/settings.php:97
+#: ../inc/settings.php:78
 msgid "FAQs"
 msgstr ""
