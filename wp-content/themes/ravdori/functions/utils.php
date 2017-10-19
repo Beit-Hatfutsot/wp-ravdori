@@ -42,6 +42,28 @@ function aasort (&$array, $key) {
 
 
 
+/**
+ * Removes duplicate entries from multidimensional array
+ *
+ * @param Array $array: multidimensional array to remove the duplicates entries from
+ */
+function array_unique_multidimensional( $array )
+{
+
+  $result = array_map("unserialize", array_unique(array_map("serialize", $array)));
+
+  foreach ($result as $key => $value)
+  {
+    if ( is_array($value) )
+    {
+      $result[$key] = super_unique($value);
+    }
+  }
+
+	return 	$result;
+	
+}
+
 
 function dump_debug($input, $collapse=false) {
     $recursive = function($data, $level=0) use (&$recursive, $collapse) {
