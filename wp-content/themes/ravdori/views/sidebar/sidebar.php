@@ -1,6 +1,22 @@
 <aside class="sidebar">
     <div class="sidebar-title"></div>
+	
+	    <!-- Beit Hatfuzut section -->
 
+    <?php $bh_title = get_field('acf-options-BH-title' , 'options'); ?>
+    <?php if ( $bh_title ): ?>
+    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h2 class="title red"><?php echo $bh_title; ?></h2>
+                        </div>
+                    </div>
+
+                    <div class="dictionary-term-translation">
+                        <?php the_field('acf-options-BH-text' , 'options');?>
+                    </div>
+    <?php endif; ?>
+	
 
     <!-- Dictionary section -->
 

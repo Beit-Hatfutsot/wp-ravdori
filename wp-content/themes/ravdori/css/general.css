@@ -1913,6 +1913,11 @@ a.no-underline {
 	 word-break: normal !important;
      padding: 0px !important;
  } 
-  
+
+
+a.external-link {
+   background: url("../images/general/external.png") center left no-repeat;
+   padding-left: 16px;   
+}   
   
 /*# sourceMappingURL=general.css.map */
