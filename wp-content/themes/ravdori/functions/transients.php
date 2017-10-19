@@ -69,3 +69,15 @@ function get_taxonomy_hierarchy( $taxonomy, $parent = 0 ) {
 // Used above in the usort as a compering method
 function cmp( $a, $b ) { return strcmp( $a->name, $b->name ); }
 
+
+
+/* Clear Transient */
+
+// Create a simple function to delete the location transient
+function term_delete_transient() {
+     delete_transient( LOCATION_TRANSIENT_ID );
+}
+// Add the function to the creation, edit and deletion hooks of a taxonomy,  so it runs when categories/tags are edited / created / deleted
+add_action( 'create_term'  , 'term_delete_transient' );
+add_action( 'edit_term'    , 'term_delete_transient' );
+add_action( 'delete_term'  , 'term_delete_transient' );
