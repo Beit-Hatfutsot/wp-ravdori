@@ -866,7 +866,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                             <?php $terms = $stepData[IWizardStep4Fields::DICTIONARY]; ?>
 
-                            <?php if ( !isset( $terms ) ): ?>
+                            <?php if ( !isset( $terms ) OR empty( $terms ) ): ?>
 
                                 <div data-repeater-item class="row">
                                     <div class="col-sm-12">
@@ -935,7 +935,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                             <?php $quotes = $stepData[IWizardStep4Fields::QUOTES]; ?>
 
-                            <?php if ( !isset( $quotes ) ): ?>
+                            <?php if ( !isset( $quotes ) OR empty($quotes) ): ?>
 
                                 <div data-repeater-item class="row">
 
