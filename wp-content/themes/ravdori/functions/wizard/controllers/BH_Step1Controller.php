@@ -196,9 +196,15 @@ class BH_Step1Controller extends BH_Controller {
 
     /**
      * This function will be raise when this is the first time
-     * the step visited by the user (no session fields exists for this step).
      */
-    protected function onStepFirstLoad() {}
+    protected function onStepFirstLoad() {
+		
+		global $wizardSessionManager;
+		
+		// Set the locale file by the lang GET param
+		$wizardSessionManager->setField( IWizardSessionFields::LANGUAGE_LOCALE , get_language_locale_filename_by_get_param( true ) );
+		
+	}
 
 
     /**

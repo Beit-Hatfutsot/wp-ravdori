@@ -13,6 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 get_header();
 ?>
 
+
+<?php 
+
+global $wizardSessionManager;
+
+// Get the current local
+$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale =  $locale["locale_file"];
+
+?>
+
     <script>
 
 
@@ -52,7 +63,7 @@ get_header();
                 {
 
 
-                    $('.imgContainerAdultPast').html('קובץ שגוי');
+                    $('.imgContainerAdultPast').html('<?php BH__e('קובץ שגוי' , 'BH', $locale);?>');
                 }
 
 
@@ -86,7 +97,7 @@ get_header();
                 }
                 else
                 {
-                    $('.imgContainerYoung').html('קובץ שגוי');
+                    $('.imgContainerYoung').html('<?php BH__e('קובץ שגוי' , 'BH', $locale);?>');
                 }
 
 
@@ -166,35 +177,35 @@ get_header();
 
                                     <?php echo IWizardStep4Fields::STORY_TITLE;?>:
                                     {
-                                        required: "שדה חובה",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
                                     },
                                     <?php echo IWizardStep4Fields::STORY_SUBTITLE;?>:
                                     {
-                                        required: "שדה חובה",
-                                        maxlength: "ניתן לכתוב עד 150 תווים",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                                        maxlength: "<?php BH__e('ניתן לכתוב עד 150 תווים' , 'BH', $locale);?>",
 
                                     },
                                     <?php echo IWizardStep4Fields::STORY_CONTENT;?>:
                                     {
-                                        required: "שדה חובה",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
                                     },
 
                                     <?php echo IWizardStep4Fields::IMAGE_ADULT_DESC;?>:
                                     {
-                                        required: "שדה חובה",
-                                        maxlength: "ניתן לכתוב עד 40 תווים",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                                        maxlength: "<?php BH__e('ניתן לכתוב עד 40 תווים' , 'BH', $locale);?>",
                                     },
 
                                     <?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC;?>:
                                     {
-                                        required: "שדה חובה",
-                                        maxlength: "ניתן לכתוב עד 40 תווים",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                                        maxlength: "<?php BH__e('ניתן לכתוב עד 40 תווים' , 'BH', $locale);?>",
                                     },
 
                                     'STORY_SUBJECTS[]':
                                     {
-                                        required: "שדה חובה",
-										maxlength: "ניתן לבחור עד 4 נושאים",
+                                        required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+										maxlength: "<?php BH__e('ניתן לבחור עד 4 נושאים' , 'BH', $locale);?>",
                                     },
 
                                    /* 'STORY_LANGUAGE[]':
@@ -233,7 +244,7 @@ get_header();
             // to the server, etc.  If a hide callback is not given the item
             // will be deleted.
             hide: function (deleteElement) {
-                if(confirm('למחוק ערך מילון?')) {
+                if(confirm("<?php BH__e('למחוק ערך מילון?' , 'BH', $locale);?>")) {
                     $(this).slideUp(deleteElement);
                 }
             },
@@ -261,7 +272,7 @@ get_header();
             // to the server, etc.  If a hide callback is not given the item
             // will be deleted.
             hide: function (deleteElement) {
-                if(confirm('למחוק ציטוט?')) {
+                if(confirm("<?php BH__e('למחוק ציטוט?' , 'BH', $locale);?>")) {
                     $(this).slideUp(deleteElement);
                 }
             },
@@ -286,27 +297,27 @@ get_header();
             // Quotes
             $("textarea[name*='<?php echo IWizardStep4Fields::QUOTES . '['?>']").each(function(){
 
-                var tmpError = "<li><strong>ציטוטים: </strong>";
+                var tmpError = "<li><strong><?php BH__e('ציטוטים:' , 'BH', $locale);?> </strong>";
                 var hasError = false;
 
                 // If empty
                 if ($.trim($(this).val()).length == 0)
                 {
-                    $(this).before("<label class='quote_error'><span class='error'>שדה חובה</span></label>");
+                    $(this).before("<label class='quote_error'><span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
 
                     hasError = true;
-                    tmpError += "<span>שדה חובה</span>";
+                    tmpError += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span>";
                 }
 
                 // If more then 15 chars
                 if ( $(this).val().replace(/^[\s,.;]+/, "").replace(/[\s,.;]+$/, "").split(/[\s,.;]+/).length > 15 )
                 {
-                    $(this).before("<label class='quote_error'><span class='error'>ניתן לרשום עד 15 מילים</span></label>");
+                    $(this).before("<label class='quote_error'><span class='error'><?php BH__e('ניתן לרשום עד 15 מילים' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
 
                     hasError = true;
-                    tmpError += "<span>ניתן לרשום עד 15 מילים</span>";
+                    tmpError += "<span><?php BH__e('ניתן לרשום עד 15 מילים' , 'BH', $locale);?></span>";
                 }
 
                 if ( hasError )
@@ -320,7 +331,7 @@ get_header();
             // Dictionary term
             $("textarea[name*='<?php echo IWizardStep4Fields::DICTIONARY . '['?>']").each(function(){
 
-                var tmpError = "<li><strong>ערך מילון: </strong>";
+                var tmpError = "<li><strong><?php BH__e('ערך מילון:' , 'BH', $locale);?> </strong>";
                 var hasError = false;
 
                 // If empty
@@ -330,7 +341,7 @@ get_header();
                     isFormValid = false;
 
                     hasError = true;
-                    tmpError += "<span>שדה חובה</span>";
+                    tmpError += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span>";
                 }
 
                 if ( hasError )
@@ -345,17 +356,17 @@ get_header();
             // Dictionary term value
             $("input[name*='<?php echo IWizardStep4Fields::DICTIONARY . '['?>']").each(function(){
 
-                var tmpError = "<li><strong>פירוש מילון: </strong>";
+                var tmpError = "<li><strong><?php BH__e('פירוש מילון:' , 'BH', $locale);?> </strong>";
                 var hasError = false;
 
                 // If empty
                 if ($.trim($(this).val()).length == 0)
                 {
-                    $(this).before("<label class='dictionary_error'><span class='error'>שדה חובה</span></label>");
+                    $(this).before("<label class='dictionary_error'><span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
 
                     hasError = true;
-                    tmpError += "<span>שדה חובה</span>";
+                    tmpError += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span>";
                 }
 
                 if ( hasError )
@@ -370,11 +381,11 @@ get_header();
             // Story subjects
             if ( $("input[name*='<?php echo IWizardStep4Fields::STORY_SUBJECTS . '['?>']:checked").length <=0 )
             {
-                $('#lblSubjectsErrors').html("<span class='error'>שדה חובה</span>");
+                $('#lblSubjectsErrors').html("<span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span>");
                 isFormValid = false;
 
-                errorsMessages += "<li><strong>נושאי סיפור: </strong>";
-                errorsMessages += "<span>שדה חובה</span></li>";
+                errorsMessages += "<li><strong><?php BH__e('נושאי סיפור:' , 'BH', $locale);?> </strong>";
+                errorsMessages += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span></li>";
                 errorCount++;
             }
 
@@ -383,11 +394,11 @@ get_header();
             // If there is no image loaded
             if (  !($(".imgContainerAdultPast").find("img").length > 0)  )
             {
-                $("#lblImgContainerAdultPast").html("<span class='error'>שדה חובה</span>");
+                $("#lblImgContainerAdultPast").html("<span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span>");
                 isFormValid = false;
 
-                errorsMessages += "<li><strong>העלאת תמונה מעברו של המספר: </strong>";
-                errorsMessages += "<span>שדה חובה</span></li>";
+                errorsMessages += "<li><strong><?php BH__e('העלאת תמונה מעברו של המספר:' , 'BH', $locale);?> </strong>";
+                errorsMessages += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span></li>";
                 errorCount++;
             }
 
@@ -396,11 +407,11 @@ get_header();
             // If there is no image loaded
             if (  !($(".imgContainerYoung").find("img").length > 0)  )
             {
-                $("#lblImgContainerYoung").html("<span class='error'>שדה חובה</span>");
+                $("#lblImgContainerYoung").html("<span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span>");
                 isFormValid = false;
 
-                errorsMessages += "<li><strong>העלאת תמונה משותפת של המספר והמתעד: </strong>";
-                errorsMessages += "<span>שדה חובה</span></li>";
+                errorsMessages += "<li><strong><?php BH__e('העלאת תמונה משותפת של המספר והמתעד:' , 'BH', $locale);?> </strong>";
+                errorsMessages += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span></li>";
                 errorCount++;
             }
 
@@ -443,31 +454,31 @@ get_header();
                     switch ( item.element.name )
                     {
                         case "<?php echo IWizardStep4Fields::STORY_TITLE;?>":
-                            msg = "שם הסיפור: ";
+                            msg = "<?php BH__e('שם הסיפור:' , 'BH', $locale);?> ";
                         break;
 
                         case "<?php echo IWizardStep4Fields::STORY_SUBTITLE;?>":
-                            msg = "כותרת משנה: ";
+                            msg = "<?php BH__e('כותרת משנה:' , 'BH', $locale);?> ";
                             break;
 
                         case "<?php echo IWizardStep4Fields::STORY_CONTENT;?>":
-                            msg = "תוכן הסיפור: ";
+                            msg = "<?php BH__e('תוכן הסיפור:' , 'BH', $locale);?> ";
                             break;
 
                         case "<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC;?>":
-                            msg = "תיאור תמונת מספר: ";
+                            msg = "<?php BH__e('תיאור תמונת מספר:' , 'BH', $locale);?> ";
                             break;
 
                         case "<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC;?>":
-                            msg = " תיאור תמונת מספר ומתעד: ";
+                            msg = " <?php BH__e('תיאור תמונת מספר ומתעד:' , 'BH', $locale);?> ";
                             break;
 
                         case "<?php echo IWizardStep4Fields::STORY_SUBJECTS;?>[]":
-                            msg = "נושאי הסיפור: ";
+                            msg = "<?php BH__e('נושאי הסיפור:' , 'BH', $locale);?> ";
                             break;
 
                         case "<?php echo IWizardStep4Fields::STORY_LANGUAGE;?>[]":
-                            msg = "שפת הסיפור: ";
+                            msg = "<?php BH__e('שפת הסיפור:' , 'BH', $locale);?> ";
                             break;
 
                     };
@@ -477,9 +488,9 @@ get_header();
 
                 errorsMessages += "</ul>";
 
-                $("#wizard-js-errors strong.error-title").html("קיימות "
+                $("#wizard-js-errors strong.error-title").html("<?php BH__e('קיימות' , 'BH', $locale);?> "
                     + errorCount
-                    + " שגיאות:");
+                    + " <?php BH__e('שגיאות:' , 'BH', $locale);?>");
 
 
 
@@ -523,10 +534,10 @@ get_header();
 
             if ( wordcount > 15 )
             {
-                $(this).prev("label.quote-error").html("<span class='error'>ניתן לכתוב עד 15 מילים</span>");
+                $(this).prev("label.quote-error").html("<span class='error'><?php BH__e('ניתן לכתוב עד 15 מילים' , 'BH', $locale);?></span>");
 
-                errorsMessages += "<strong>ציטוטים</strong>";
-                errorsMessages += "<span>ניתן לכתוב עד 15 מילים</span>";
+                errorsMessages += "<strong><?php BH__e('ציטוטים' , 'BH', $locale);?></strong>";
+                errorsMessages += "<span><?php BH__e('ניתן לכתוב עד 15 מילים' , 'BH', $locale);?></span>";
 
                 kp_e.preventDefault();
             }
@@ -540,7 +551,15 @@ get_header();
 
         }); //ready
 
-
+	
+	$( window ).load(function() {
+		
+		/* Change the tinyMce button accroding to the translation */
+		jQuery('#insert-media-button').get(0).lastChild.nodeValue = "<?php BH__e('הוספת מדיה' , 'BH', $locale); ?>"
+		jQuery('.awsm-embed.button').get(0).lastChild.nodeValue   = "<?php BH__e('הוספת מסמך' , 'BH', $locale); ?>";
+		
+	}); // Window.load
+	
 
         // Ajax - Autosave function
         var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
@@ -591,7 +610,7 @@ get_header();
                         "hideMethod": "fadeOut"
                     }
 
-                    toastr.info('הסיפור נשמר אוטומטית');
+                    toastr.info('<?php BH__e('הסיפור נשמר אוטומטית' , 'BH', $locale);?>');
                     // This makes it able to send new request on the next interval
                     response = true;
                 });
@@ -631,8 +650,8 @@ $wizardSessionManager->setField( 'do-saving' , false );
                     </div>
 
                     <div class="upper-save-area">
-                        <input type="submit" style="float: left;margin-left: 23px;" value="שמור והמשך &#9664;"/>
-                        <input id="submitSaveUpper" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="שמור"/>
+                        <input type="submit" style="float: left;margin-left: 23px;" value="<?php BH__e('שמור והמשך &#9664;' , 'BH', $locale);?>"/>
+                        <input id="submitSaveUpper" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 
                     <div class="col-sm-7">
@@ -642,7 +661,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                     <?php  if ( $isStorySaved ):  ?>
                         <div class="alert alert-success">
                             <a href="#" class="close" data-dismiss="alert" style="text-decoration: none;">&times;</a>
-                            <strong> הסיפור נשמר בהצלחה </strong>
+                            <strong> <?php BH__e('הסיפור נשמר בהצלחה' , 'BH', $locale);?> </strong>
                         </div>
                     <?php endif; ?>
 
@@ -658,7 +677,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                     <!-- Story Title  -->
                     <div class="element-input col-sm-6" >
-                        <label id="lblStoryTitle" for="<?php echo IWizardStep4Fields::STORY_TITLE ;?>" class="title">* שם הסיפור
+                        <label id="lblStoryTitle" for="<?php echo IWizardStep4Fields::STORY_TITLE ;?>" class="title"><?php BH__e('* שם הסיפור' , 'BH', $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep4Fields::STORY_TITLE ); ?>
                         </label>
 
@@ -678,14 +697,14 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                class="large" type="text"
                                name="<?php echo IWizardStep4Fields::STORY_TITLE ;?>"
                                value="<?php echo $storyTitle;?>"
-                               placeholder = "איך תקראו לסיפור"
+                               placeholder = "<?php BH__e('איך תקראו לסיפור' , 'BH', $locale);?>"
                         />
                     </div>
 
 
                     <!-- Secondary text  -->
                     <div class="element-input col-sm-6" >
-                        <label for="<?php echo IWizardStep4Fields::STORY_SUBTITLE ;?>" class="title">* כותרת משנה
+                        <label for="<?php echo IWizardStep4Fields::STORY_SUBTITLE ;?>" class="title"><?php BH__e('* כותרת משנה' , 'BH', $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep4Fields::STORY_SUBTITLE ); ?>
                         </label>
 
@@ -705,7 +724,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                value="<?php echo $storySubTitle ?>"
                                type="text"
                                name="<?php echo IWizardStep4Fields::STORY_SUBTITLE ;?>"
-                               placeholder="תיאור קצר של עיקר הסיפור"
+                               placeholder="<?php BH__e('תיאור קצר של עיקר הסיפור' , 'BH', $locale);?>"
                         />
 
                     </div>
@@ -716,10 +735,10 @@ $wizardSessionManager->setField( 'do-saving' , false );
                     <!-- Content  -->
                     <div class="element-input" style="width: 98% !important;">
                         <label for="<?php echo IWizardStep4Fields::STORY_CONTENT ;?>" class="title">
-                            <span>* תוכן הסיפור</span>
+                            <span><?php BH__e('* תוכן הסיפור' , 'BH', $locale);?></span>
                             <div>
                                 <strong>
-                                    להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון (url) ולהדביקה בתוכן הסיפור
+                                    <?php BH__e('להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון (url) ולהדביקה בתוכן הסיפור' , 'BH', $locale);?>
                                 </strong>
                             </div>
                             <?php showBackendErrors( $errors , IWizardStep4Fields::STORY_CONTENT ); ?>
@@ -773,7 +792,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                         <div class="col-sm-6">
-                            <h2>* העלאת תמונה משותפת של המספר והמתעד</h2>
+                            <h2><?php BH__e('* העלאת תמונה משותפת של המספר והמתעד' , 'BH', $locale);?></h2>
                             <label id="lblImgContainerYoung"><?php showBackendErrors( $errors , IWizardStep4Fields::IMAGE_ADULT_STUDENT ); ?></label>
                             <div class="imgContainerYoung text-center">
                                 <?php
@@ -782,25 +801,25 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                 echo '<input type="hidden" name="' . IWizardStep4Fields::IMAGE_ADULT_STUDENT . '" value="' . $imgChild . '">';
                                 ?>
                             </div>
-                            <input type="button" class="step4LoadImgButton" onclick="open_media_uploader_image_young();" value="בחר / החלף תמונה"/>
+                            <input type="button" class="step4LoadImgButton" onclick="open_media_uploader_image_young();" value="<?php BH__e('בחר / החלף תמונה' , 'BH', $locale);?>"/>
 
                             <?php $imgStudentDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ]; 
 								  $imgStudentDesc = htmlentities( stripslashesFull( $imgStudentDesc )  , ENT_QUOTES ); 
 							?>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ?>">* תיאור תמונת מספר ומתעד</label>
+                                    <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ?>"><?php BH__e('* תיאור תמונת מספר ומתעד' , 'BH', $locale);?></label>
                                     <textarea id="<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ?>"
                                               name="<?php echo IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ?>"
-                                              placeholder="עד 40 תווים"><?php echo ( isset($imgStudentDesc) ? $imgStudentDesc : "" );?></textarea>
+                                              placeholder="<?php BH__e('עד 40 תווים' , 'BH', $locale);?>"><?php echo ( isset($imgStudentDesc) ? $imgStudentDesc : "" );?></textarea>
 
-                                    <div class="wizard-filed-desc">להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן הסיפור</div>
+                                    <div class="wizard-filed-desc"><?php BH__e('להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן הסיפור' , 'BH', $locale);?></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-sm-6">
-                            <h2>* העלאת תמונה מעברו של המספר</h2>
+                            <h2><?php BH__e('* העלאת תמונה מעברו של המספר' , 'BH', $locale);?></h2>
                             <label id="lblImgContainerAdultPast"><?php showBackendErrors( $errors , IWizardStep4Fields::IMAGE_ADULT ); ?></label>
 
                             <?php
@@ -822,7 +841,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                 echo '<input type="hidden" name="' . IWizardStep4Fields::IMAGE_ADULT . '" value="' . $imgAdultPast . '">';
                                 ?>
                             </div>
-                            <input class="step4LoadImgButton" type="button" onclick="open_media_uploader_image_adult();"  value="בחר / החלף תמונה" />
+                            <input class="step4LoadImgButton" type="button" onclick="open_media_uploader_image_adult();"  value="<?php BH__e('בחר / החלף תמונה' , 'BH', $locale);?>" />
 
                             <?php 
 								  $imgAdultDesc = $stepData[ IWizardStep4Fields::IMAGE_ADULT_DESC ]; 
@@ -830,11 +849,11 @@ $wizardSessionManager->setField( 'do-saving' , false );
 							?>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC ?>">* תיאור תמונת מספר</label>
+                                    <label for="<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC ?>"><?php BH__e('* תיאור תמונת מספר' , 'BH', $locale);?></label>
                                     <textarea id="<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC ?>"
                                               name="<?php echo IWizardStep4Fields::IMAGE_ADULT_DESC ?>"
-                                              placeholder="עד 40 תווים"><?php echo ( isset($imgAdultDesc) ? $imgAdultDesc : "" );?></textarea>
-                                    <div class="wizard-filed-desc">להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן הסיפור</div>
+                                              placeholder="<?php BH__e('עד 40 תווים' , 'BH', $locale);?>"><?php echo ( isset($imgAdultDesc) ? $imgAdultDesc : "" );?></textarea>
+                                    <div class="wizard-filed-desc"><?php BH__e('להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן הסיפור' , 'BH', $locale);?></div>
                                 </div>
                             </div>
                         </div>
@@ -850,14 +869,14 @@ $wizardSessionManager->setField( 'do-saving' , false );
     <div class="col-sm-6">
                     <!-- Dictionary Repeater  -->
                     <div id="dictionary-repeater">
-                        <h2 class="title-underline">* מילון</h2>
+                        <h2 class="title-underline"><?php BH__e('* מילון' , 'BH', $locale);?></h2>
 
                         <div class="col-sm-12">
-
-                            אנחנו רוצים לדעת אם למדתם מילים חדשות במהלך העבודה
+<?php BH__e( "                 אנחנו רוצים לדעת אם למדתם מילים חדשות במהלך העבודה
                             המשותפת שלכם. האם למדתם מלים בשפה אחרת? האם למדתם מלים חדשות בעברית?
-                            האם למדתם ביטויים שלא הכרתם?
-
+                            האם למדתם ביטויים שלא הכרתם?" 
+	, "BH" , $locale);
+?>
                         </div>
 
                         <label><?php showBackendErrors( $errors , IWizardStep4Fields::DICTIONARY ); ?></label>
@@ -870,17 +889,17 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                                 <div data-repeater-item class="row">
                                     <div class="col-sm-12">
-                                        <label for="text-input">כתבו כאן את המילה:</label>
-                                        <input type="text" placeholder="או הביטוי" name="text-input" value="" style="width: 100%" />
+                                        <label for="text-input"><?php BH__e('כתבו כאן את המילה:' , 'BH', $locale);?></label>
+                                        <input type="text" placeholder="<?php BH__e('או הביטוי' , 'BH', $locale);?>" name="text-input" value="" style="width: 100%" />
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <label for="textarea-input1">כתבו כאן את פירושה:</label>
+                                        <label for="textarea-input1"><?php BH__e('כתבו כאן את פירושה:' , 'BH', $locale);?></label>
                                         <textarea name="textarea-input1" style="width: 100%"></textarea>
                                     </div>
 
                                     <div class="col-sm-12  text-left">
-                                        <input class="btnRemove" data-repeater-delete="" type="button" value="מחיקת ערך מילון"/>
+                                        <input class="btnRemove" data-repeater-delete="" type="button" value="<?php BH__e('מחיקת ערך מילון' , 'BH', $locale);?>"/>
                                     </div>
                                 </div>
 
@@ -890,17 +909,17 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                                     <div data-repeater-item class="row voffset5">
                                         <div class="col-sm-12">
-                                            <label for="text-input">כתבו כאן את המילה:</label>
-                                            <input type="text" placeholder="או הביטוי"  name="text-input" style="width: 100%" value="<?php echo htmlentities( stripslashesFull($term['text-input'])  , ENT_QUOTES ); ?>"/>
+                                            <label for="text-input"><?php BH__e('כתבו כאן את המילה:' , 'BH', $locale);?></label>
+                                            <input type="text" placeholder="<?php BH__e('או הביטוי' , 'BH', $locale);?>"  name="text-input" style="width: 100%" value="<?php echo htmlentities( stripslashesFull($term['text-input'])  , ENT_QUOTES ); ?>"/>
                                         </div>
 
                                         <div class="col-sm-12">
-                                            <label for="textarea-input1">כתבו כאן את פירושה:</label>
+                                            <label for="textarea-input1"><?php BH__e('כתבו כאן את פירושה:' , 'BH', $locale);?></label>
                                             <textarea name="textarea-input1" style="width: 100%"><?php echo htmlentities( stripslashesFull($term['textarea-input1'])  , ENT_QUOTES ); ?></textarea>
                                         </div>
 
                                         <div class="col-sm-12 text-left">
-                                            <input class="btnRemove" data-repeater-delete="" type="button" value="מחיקת ערך מילון"/>
+                                            <input class="btnRemove" data-repeater-delete="" type="button" value="<?php BH__e('מחיקת ערך מילון' , 'BH', $locale);?>"/>
                                         </div>
                                     </div>
 
@@ -911,7 +930,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                         </div>
                                 <span data-repeater-create="" class="btnAdd">
-                                        <span class="glyphicon glyphicon-plus"></span> הוספת ערך מילון
+                                        <span class="glyphicon glyphicon-plus"></span> <?php BH__e('הוספת ערך מילון' , 'BH', $locale);?>
                                 </span>
                     </div>
     </div>
@@ -922,11 +941,11 @@ $wizardSessionManager->setField( 'do-saving' , false );
         <div class="col-sm-6">
                     <!-- Quotes Repeater  -->
                     <div id="quotes-repeater">
-                        <h2 class="title-underline">* ציטוטים</h2>
+                        <h2 class="title-underline"><?php BH__e('* ציטוטים' , 'BH', $locale);?></h2>
 
                         <div class="col-sm-12">
 <div>
-    האם יש ציטוט או משפט מיוחד בעל מסר ומשמעות שלמדת מהמבוגר?<br/><br/>
+    <?php BH__e('האם יש ציטוט או משפט מיוחד בעל מסר ומשמעות שלמדת מהמבוגר?' , 'BH', $locale);?><br/><br/>
 </div>
                         </div>
 
@@ -940,13 +959,13 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                 <div data-repeater-item class="row">
 
                                     <div class="col-sm-12">
-                                        <label for="textarea-input2">כתבו כאן את הציטוט (עד 15 מילים)</label>
+                                        <label for="textarea-input2"><?php BH__e('כתבו כאן את הציטוט (עד 15 מילים)' , 'BH', $locale);?></label>
                                         <label class="quote-error"></label>
-                                        <textarea name="textarea-input2" placeholder="עד 15 מילה" style="width: 100%"></textarea>
+                                        <textarea name="textarea-input2" placeholder="<?php BH__e('עד 15 מילה' , 'BH', $locale);?>" style="width: 100%"></textarea>
                                     </div>
 
                                     <div class="col-sm-12 text-left">
-                                        <input class="btnRemove" data-repeater-delete="" type="button"  value="מחיקת ציטוט" />
+                                        <input class="btnRemove" data-repeater-delete="" type="button"  value="<?php BH__e('מחיקת ציטוט' , 'BH', $locale);?>" />
                                     </div>
 
                                 </div>
@@ -958,13 +977,13 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                     <div data-repeater-item class="row voffset5">
 
                                         <div class="col-sm-12">
-                                            <label for="textarea-input2">כתבו כאן את הציטוט</label>
+                                            <label for="textarea-input2"><?php BH__e('כתבו כאן את הציטוט' , 'BH', $locale);?></label>
                                             <label class="quote-error"></label>
-                                            <textarea name="textarea-input2"  placeholder="עד 15 מילה"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? stripslashesFull ( $quote['textarea-input2'] ) : "" ;?></textarea>
+                                            <textarea name="textarea-input2"  placeholder="<?php BH__e('עד 15 מילה' , 'BH', $locale);?>"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? stripslashesFull ( $quote['textarea-input2'] ) : "" ;?></textarea>
                                         </div>
 
                                         <div class="col-sm-12 text-left">
-                                            <input class="btnRemove" data-repeater-delete="" type="button"  value="מחיקת ציטוט" />
+                                            <input class="btnRemove" data-repeater-delete="" type="button"  value="<?php BH__e('מחיקת ציטוט' , 'BH', $locale);?>" />
                                         </div>
 
                                     </div>
@@ -975,7 +994,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                         </div>
                                 <span data-repeater-create="" class="btnAdd">
-                                        <span class="glyphicon glyphicon-plus"></span>הוספת ציטוט
+                                        <span class="glyphicon glyphicon-plus"></span><?php BH__e('הוספת ציטוט' , 'BH', $locale);?>
                                 </span>
                     </div>
 
@@ -986,8 +1005,8 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <div class="row">
-                        <h2 class="title-underline" >* נושאים (ניתן לבחור עד 4 נושאים)</h2>
-                        <div class="col-sm-12">סמנו מילים המתארות באופן הטוב ביותר את הנושאים המרכזיים בסיפור. </div>
+                        <h2 class="title-underline" ><?php BH__e('* נושאים (ניתן לבחור עד 4 נושאים)' , 'BH', $locale);?></h2>
+                        <div class="col-sm-12"><?php BH__e('סמנו מילים המתארות באופן הטוב ביותר את הנושאים המרכזיים בסיפור.' , 'BH', $locale);?> </div>
                         <div class="col-sm-12 voffset3"></div>
                         <label id="lblSubjectsErrors"><?php showBackendErrors( $errors , IWizardStep4Fields::STORY_SUBJECTS ); ?></label>
                         <?php
@@ -1027,8 +1046,8 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <div class="row">
-                        <h2 class="title-underline" >שפת כתיבת הסיפור</h2>
-                        <div class="col-sm-12">סמן את שפת כתיבת הסיפור</div>
+                        <h2 class="title-underline" ><?php BH__e('שפת כתיבת הסיפור' , 'BH', $locale);?></h2>
+                        <div class="col-sm-12"><?php BH__e('סמן את שפת כתיבת הסיפור' , 'BH', $locale);?></div>
                         <div class="col-sm-12 voffset3"></div>
                         <label id="lblSubjectsErrors"><?php showBackendErrors( $errors , IWizardStep4Fields::STORY_LANGUAGE ); ?></label>
                         <?php
@@ -1068,8 +1087,8 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <div class="row">
-                        <h2 class="title-underline">תגיות</h2>
-                        <div class="col-sm-12">האם בית ספרכם מפעיל את התכנית במודל מיוחד? בשיתוף פעולה עם ארגון חיצוני? אנא סמנו. </div>
+                        <h2 class="title-underline"><?php BH__e('תגיות' , 'BH', $locale);?></h2>
+                        <div class="col-sm-12"><?php BH__e('האם בית ספרכם מפעיל את התכנית במודל מיוחד? בשיתוף פעולה עם ארגון חיצוני? אנא סמנו.' , 'BH', $locale);?> </div>
                         <div class="col-sm-12 voffset3"></div>
                         <label><?php showBackendErrors( $errors , IWizardStep4Fields::STORY_SUBTOPICS ); ?></label>
                         <?php
@@ -1114,17 +1133,17 @@ $wizardSessionManager->setField( 'do-saving' , false );
 							$feedback = htmlentities( stripslashesFull($feedback)  , ENT_QUOTES ); 
 					?>
                     <div>
-                        <h2>מהזוית האישית - מספר ומתעד</h2>
+                        <h2><?php BH__e('מהזוית האישית - מספר ומתעד' , 'BH', $locale);?></h2>
                         <label><?php showBackendErrors( $errors , IWizardStep4Fields::RAVDORI_FEEDBACK ); ?></label>
                         <textarea name="<?php echo IWizardStep4Fields::RAVDORI_FEEDBACK; ?>"
-                                  placeholder="ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים להגיד ולאחל אחד לשני?"
+                                  placeholder="<?php BH__e('ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים להגיד ולאחל אחד לשני?' , 'BH', $locale);?>"
                                   style="width: 100%"><?php echo ( isset($feedback) ? $feedback : "" ) ?></textarea>
                     </div>
 
 
                     <div class="submit">
-                        <input type="submit" style="float: left;margin-left: 23px;" value="שמור והמשך &#9664;"/>
-                        <input id="submitSaveBottom" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="שמור"/>
+                        <input type="submit" style="float: left;margin-left: 23px;" value="<?php BH__e('שמור והמשך &#9664;' , 'BH', $locale);?>"/>
+                        <input id="submitSaveBottom" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 
 
@@ -1138,7 +1157,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                     <input name="progstep" value="3" type="hidden">
 
                     <div class="submit">
-                        <input type="submit" value="&#9654; הקודם" style="background-color: #999999;" />
+                        <input type="submit" value="<?php BH__e('&#9654; הקודם' , 'BH', $locale);?>" style="background-color: #999999;" />
                     </div>
 
                 </form>

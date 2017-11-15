@@ -1,0 +1,1245 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: G2G: Generation to Generation\n"
+"POT-Creation-Date: 2017-11-13 12:47+0200\n"
+"PO-Revision-Date: 2017-11-13 15:56+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: functions/backend/backend-admin-page.php:23
+#: functions/backend/backend-admin-page.php:77
+#: functions/backend/backend-story-cpt.php:20
+msgid "מילון"
+msgstr ""
+
+#: functions/backend/backend-admin-page.php:24
+#: functions/backend/backend-admin-page.php:149
+#: functions/backend/backend-story-cpt.php:21
+#: views/wizard/story_details.php:528
+msgid "ציטוטים"
+msgstr ""
+
+#: functions/backend/backend-admin-page.php:40
+#: functions/backend/backend-story-cpt.php:40
+msgid "ערך"
+msgstr ""
+
+#: functions/backend/backend-admin-page.php:40
+#: functions/backend/backend-story-cpt.php:40
+msgid "תרגום"
+msgstr ""
+
+#: functions/backend/backend-admin-page.php:110
+#: functions/backend/backend-story-cpt.php:69
+msgid "ציטוט"
+msgstr ""
+
+#: functions/backend/backend-story-cpt.php:266
+msgid "תוכן הסיפור"
+msgstr ""
+
+#: functions/backend/backend.php:185 functions/backend/backend.php:304
+#: views/dictionary/dictionary.php:44
+#: views/main/layout-quotes-dictionary.php:38
+#: views/main/layout-quotes-dictionary.php:62 views/quotes/quotes.php:38
+msgid "מתוך: "
+msgstr ""
+
+#: functions/backend/backend.php:361
+msgid "הוספת ערך חדש"
+msgstr ""
+
+#: functions/menus.php:18
+msgid "Main Menu"
+msgstr ""
+
+#: functions/menus.php:19
+msgid "Footer Menu"
+msgstr ""
+
+#: functions/menus.php:501
+msgid "Home"
+msgstr ""
+
+#: functions/pagination.php:31
+msgid "&laquo;"
+msgstr ""
+
+#: functions/pagination.php:32
+msgid "&raquo;"
+msgstr ""
+
+#: functions/post-types.php:38 functions/post-types.php:40
+msgid "סיפורים"
+msgstr ""
+
+#: functions/post-types.php:39
+msgid "סיפור"
+msgstr ""
+
+#: functions/post-types.php:41
+msgid "הוסף חדש"
+msgstr ""
+
+#: functions/post-types.php:42
+msgid "הוסף סיפור חדש"
+msgstr ""
+
+#: functions/post-types.php:43 functions/post-types.php:101
+msgid "ערוך"
+msgstr ""
+
+#: functions/post-types.php:44
+msgid "ערוך סיפור"
+msgstr ""
+
+#: functions/post-types.php:45
+msgid "סיפור חדש"
+msgstr ""
+
+#: functions/post-types.php:46 functions/post-types.php:47
+msgid "הצג סיפור"
+msgstr ""
+
+#: functions/post-types.php:48
+msgid "חיפוש סיפורים"
+msgstr ""
+
+#: functions/post-types.php:49
+msgid "לא נמצאו סיפורים"
+msgstr ""
+
+#: functions/post-types.php:50
+msgid "לא נמצאו סיפורים בפח המיחזור"
+msgstr ""
+
+#: functions/post-types.php:51
+msgid "סיפור אב"
+msgstr ""
+
+#: functions/post-types.php:96 functions/post-types.php:98
+msgid "אנשי צוות"
+msgstr ""
+
+#: functions/post-types.php:97
+msgid "איש צוות"
+msgstr ""
+
+#: functions/post-types.php:99
+msgid "הוסף איש צוות"
+msgstr ""
+
+#: functions/post-types.php:100
+msgid "הוסף איש צוות חדש"
+msgstr ""
+
+#: functions/post-types.php:102
+msgid "ערוך איש צוות"
+msgstr ""
+
+#: functions/post-types.php:103
+msgid "איש צוות חדש"
+msgstr ""
+
+#: functions/post-types.php:104 functions/post-types.php:105
+msgid "הצג איש צוות"
+msgstr ""
+
+#: functions/post-types.php:106
+msgid "חיפוש אנשי צוות"
+msgstr ""
+
+#: functions/post-types.php:107 views/team/team.php:97
+msgid "לא נמצאו אנשי צוות"
+msgstr ""
+
+#: functions/post-types.php:108
+msgid "לא נמצאו אנשי צוות בפח המיחזור"
+msgstr ""
+
+#: functions/post-types.php:109
+msgid "איש צוות אב"
+msgstr ""
+
+#: functions/post-types.php:156 functions/post-types.php:158
+msgid "כתבות"
+msgstr ""
+
+#: functions/post-types.php:157
+msgid "כתבה"
+msgstr ""
+
+#: functions/post-types.php:159
+msgid "הוסף כתבה"
+msgstr ""
+
+#: functions/post-types.php:160
+msgid "הוסף כתבה חדשה"
+msgstr ""
+
+#: functions/post-types.php:161
+msgid "עריכה"
+msgstr ""
+
+#: functions/post-types.php:162
+msgid "עריכת כתבה"
+msgstr ""
+
+#: functions/post-types.php:163
+msgid "כתבה חדשה"
+msgstr ""
+
+#: functions/post-types.php:164 functions/post-types.php:165
+msgid "הצגת כתבה"
+msgstr ""
+
+#: functions/post-types.php:166
+msgid "חיפוש כתבה"
+msgstr ""
+
+#: functions/post-types.php:167 views/press/press.php:59
+msgid "לא נמצאו כתבות"
+msgstr ""
+
+#: functions/post-types.php:168
+msgid "לא נמצאו כתבות בסל המיחזור"
+msgstr ""
+
+#: functions/post-types.php:169
+msgid "כתבה אה"
+msgstr ""
+
+#: functions/post-types.php:238 functions/post-types.php:248
+msgid "Author"
+msgstr ""
+
+#: functions/post-types.php:270
+msgid "כותרת הסיפור"
+msgstr ""
+
+#: functions/post-types.php:271
+msgid "שם המבוגר"
+msgstr ""
+
+#: functions/post-types.php:272
+msgid "מנחה מתעד"
+msgstr ""
+
+#: functions/post-types.php:273
+msgid "יישוב"
+msgstr ""
+
+#: functions/post-types.php:274
+msgid "מחוז"
+msgstr ""
+
+#: functions/post-types.php:275
+msgid "בית ספר"
+msgstr ""
+
+#: functions/post-types.php:277
+msgid "Date"
+msgstr ""
+
+#: functions/post-types.php:278 functions/taxonomies.php:79
+#: functions/taxonomies.php:80 views/header/header.php:52
+msgid "נושאים"
+msgstr ""
+
+#: functions/post-types.php:280 functions/taxonomies.php:151
+#: functions/taxonomies.php:152
+msgid "שפות"
+msgstr ""
+
+#: functions/post-types.php:281
+msgid "מצב פרסום"
+msgstr ""
+
+#: functions/post-types.php:476
+msgid "הצג את כל ה"
+msgstr ""
+
+#: functions/post-types.php:672 functions/post-types.php:673
+msgid "ייצוא"
+msgstr ""
+
+#: functions/post-types.php:729 functions/post-types.php:783
+msgid "Error exporting post."
+msgstr ""
+
+#: functions/post-types.php:805
+#, php-format
+msgid "הסיפורים הוצאו בהצלחה"
+msgid_plural "%s סיפורים הוצאו"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/post-types.php:1060
+msgid "מספר הסיפורים שהמבוגר פרסם"
+msgstr ""
+
+#: functions/story.php:215
+msgid "מאת: "
+msgstr ""
+
+#: functions/story.php:221
+msgid "ארץ לידה: "
+msgstr ""
+
+#: functions/story.php:227
+msgid "מנחה: "
+msgstr ""
+
+#: functions/story.php:233
+msgid "שם המורה: "
+msgstr ""
+
+#: functions/story.php:239
+msgid "שם ועיר בית הספר: "
+msgstr ""
+
+#: functions/story.php:246
+msgid "תאריך פרסום: "
+msgstr ""
+
+#: functions/story.php:252
+msgid "נושאי הסיפור:  "
+msgstr ""
+
+#: functions/taxonomies.php:41
+msgctxt "Taxonomy General Name"
+msgid "בתי ספר"
+msgstr ""
+
+#: functions/taxonomies.php:42
+msgctxt "Taxonomy General Name"
+msgid "בית ספר"
+msgstr ""
+
+#: functions/taxonomies.php:43
+msgid "בתי ספר"
+msgstr ""
+
+#: functions/taxonomies.php:44
+msgid "כל בתי הספר"
+msgstr ""
+
+#: functions/taxonomies.php:45
+msgid "הורה"
+msgstr ""
+
+#: functions/taxonomies.php:46
+msgid "הורה:"
+msgstr ""
+
+#: functions/taxonomies.php:47
+msgid "שם בית ספר חדש"
+msgstr ""
+
+#: functions/taxonomies.php:48
+msgid "הוסף בית ספר"
+msgstr ""
+
+#: functions/taxonomies.php:49
+msgid "ערוך בית ספר"
+msgstr ""
+
+#: functions/taxonomies.php:50
+msgid "הצג בית ספר"
+msgstr ""
+
+#: functions/taxonomies.php:51
+msgid "עדכן בית ספר"
+msgstr ""
+
+#: functions/taxonomies.php:52
+msgid "הפרדת בתי ספר עם פסיקים"
+msgstr ""
+
+#: functions/taxonomies.php:53
+msgid "חיפוש בתי ספר"
+msgstr ""
+
+#: functions/taxonomies.php:54
+msgid "הוספה או הסרה של בתי ספר"
+msgstr ""
+
+#: functions/taxonomies.php:55
+msgid "בחירת בתי הספר הנופצים ביותר"
+msgstr ""
+
+#: functions/taxonomies.php:56
+msgid "לא נמצאו בתי ספר"
+msgstr ""
+
+#: functions/taxonomies.php:81
+msgid "חיפוש נושאים"
+msgstr ""
+
+#: functions/taxonomies.php:82
+msgid "נושאים נפוצים"
+msgstr ""
+
+#: functions/taxonomies.php:83
+msgid "כל הנושאים"
+msgstr ""
+
+#: functions/taxonomies.php:84 functions/taxonomies.php:85
+msgid "נושא אב"
+msgstr ""
+
+#: functions/taxonomies.php:86
+msgid "עריכת נושא"
+msgstr ""
+
+#: functions/taxonomies.php:87
+msgid "עדכון נושא"
+msgstr ""
+
+#: functions/taxonomies.php:88
+msgid "הוסף נושא חדש"
+msgstr ""
+
+#: functions/taxonomies.php:89
+msgid "שם נושא חדש"
+msgstr ""
+
+#: functions/taxonomies.php:90
+msgid "הפרד נושאים עם פסיקים"
+msgstr ""
+
+#: functions/taxonomies.php:91
+msgid "הוספה או הסרה של נושאים"
+msgstr ""
+
+#: functions/taxonomies.php:92
+msgid "בחירת הנושאים הנפוצים ביותר"
+msgstr ""
+
+#: functions/taxonomies.php:115 functions/taxonomies.php:116
+msgid "נושאי משנה"
+msgstr ""
+
+#: functions/taxonomies.php:117
+msgid "חיפוש נושאי משנה"
+msgstr ""
+
+#: functions/taxonomies.php:118
+msgid "נושאי משנה נפוצים"
+msgstr ""
+
+#: functions/taxonomies.php:119
+msgid "כל נושאי המשנה"
+msgstr ""
+
+#: functions/taxonomies.php:120 functions/taxonomies.php:121
+msgid "נושא משנה אב"
+msgstr ""
+
+#: functions/taxonomies.php:122
+msgid "עריכת נושא משנה"
+msgstr ""
+
+#: functions/taxonomies.php:123
+msgid "עדכון נושא משנה"
+msgstr ""
+
+#: functions/taxonomies.php:124
+msgid "הוסף נושא משנה"
+msgstr ""
+
+#: functions/taxonomies.php:125
+msgid "שם נושא משנה חדש"
+msgstr ""
+
+#: functions/taxonomies.php:126
+msgid "הפרד נושאי משנה עם פסיקים"
+msgstr ""
+
+#: functions/taxonomies.php:127
+msgid "הוספה או הסרה של נושאי משנה"
+msgstr ""
+
+#: functions/taxonomies.php:128
+msgid "בחירת נושאי המשנה הנפוצים ביותר"
+msgstr ""
+
+#: functions/taxonomies.php:153
+msgid "חיפוש שפות"
+msgstr ""
+
+#: functions/taxonomies.php:154
+msgid "שפות נפוצות"
+msgstr ""
+
+#: functions/taxonomies.php:155
+msgid "כל השפות"
+msgstr ""
+
+#: functions/taxonomies.php:156
+msgid "שפת אב"
+msgstr ""
+
+#: functions/taxonomies.php:157
+msgid "שפת אב פסיק"
+msgstr ""
+
+#: functions/taxonomies.php:158
+msgid "עריכת שפה"
+msgstr ""
+
+#: functions/taxonomies.php:159
+msgid "עדכון שפה"
+msgstr ""
+
+#: functions/taxonomies.php:160
+msgid "הוסף שפה חדשה"
+msgstr ""
+
+#: functions/taxonomies.php:161
+msgid "שפת משנה חדשה"
+msgstr ""
+
+#: functions/taxonomies.php:162
+msgid "הפרד שפות עם פסיקים"
+msgstr ""
+
+#: functions/taxonomies.php:163
+msgid "הוספה או הסרה של שפות"
+msgstr ""
+
+#: functions/taxonomies.php:164
+msgid "בחירת השפות הנפוצות ביותר"
+msgstr ""
+
+#: functions/wizard/consts.php:30
+msgid "מסך כניסה"
+msgstr ""
+
+#: functions/wizard/consts.php:31
+msgid "קליטת פרטי משתמש"
+msgstr ""
+
+#: functions/wizard/consts.php:32
+msgid "קליטת פרטי מתעד"
+msgstr ""
+
+#: functions/wizard/consts.php:33
+msgid "קליטת פרטי סיפור"
+msgstr ""
+
+#: functions/wizard/consts.php:34
+msgid "תצוגה מקדימה ואישור"
+msgstr ""
+
+#: functions/wizard/controllers/BH_Step5Controller.php:108
+#: views/wizard/story_preview.php:47
+msgid "הזוית האישית"
+msgstr ""
+
+#: search.php:19
+#, php-format
+msgid "תוצאות חיפוש עבור:  %s"
+msgstr ""
+
+#: views/components/not-found.php:3
+msgid "לא נמצאו רשומות מתאימות"
+msgstr ""
+
+#: views/components/not-found.php:4
+msgid "חזור אל "
+msgstr ""
+
+#: views/components/not-found.php:4
+msgid "עמוד הבית"
+msgstr ""
+
+#: views/components/search-form.php:1
+msgid " חיפוש חופשי"
+msgstr ""
+
+#: views/footer/footer.php:26
+msgid "בית הספר הבינלאומי ללימודי העם היהודי"
+msgstr ""
+
+#: views/footer/footer.php:27
+msgid "בית התפוצות - מוזיאון העם היהודי"
+msgstr "Beit Hatfutsot – The Museum of the Jewish People"
+
+#: views/footer/footer.php:28
+msgid "ת.ד 39359, תל-אביב 61392"
+msgstr ""
+
+#: views/header/header.php:38
+msgid "חפש לפי: "
+msgstr ""
+
+#: views/header/header.php:43
+msgid "ביה\"ס/  ישוב"
+msgstr ""
+
+#: views/header/header.php:60
+msgid "ארץ מוצא"
+msgstr ""
+
+#: views/header/header.php:133
+msgid "העלאת סיפור"
+msgstr ""
+
+#: views/header/header.php:142
+msgid "מאגר סיפורי מורשת"
+msgstr ""
+
+#: views/header/header.php:143
+msgid "אוצר אנושי מתכנית הקשר הרב דורי"
+msgstr ""
+
+#: views/main/layout-banner.php:61
+msgid "לקריאת הסיפור"
+msgstr ""
+
+#: views/main/layout-quotes-dictionary.php:22
+msgid "ציטוט נבחר:"
+msgstr ""
+
+#: views/main/layout-quotes-dictionary.php:50
+msgid "מהמילון: "
+msgstr ""
+
+#: views/main/layout-rav-dori.php:24
+msgid "הקשר הרב הדורי"
+msgstr ""
+
+#: views/main/layout-useful-links.php:23
+msgid "קישורים נוספים"
+msgstr ""
+
+#: views/page/404.php:12
+msgid "404"
+msgstr ""
+
+#: views/page/404.php:13
+msgid "עמוד לא קיים"
+msgstr ""
+
+#: views/page/404.php:14
+msgid "העמוד שביקשת לא קיים"
+msgstr ""
+
+#: views/page/404.php:16
+msgid "חזרה אל עמוד הבית"
+msgstr ""
+
+#: views/page/search.php:6
+#, php-format
+msgid "Search Results for: &#8216;%s&#8217;"
+msgstr ""
+
+#: views/page/search.php:6
+msgid "Search Results"
+msgstr ""
+
+#: views/search/search-city-topbar.php:260
+msgid "טוען..."
+msgstr ""
+
+#: views/sidebar/sidebar.php:32
+msgid "מהמילון"
+msgstr ""
+
+#: views/sidebar/sidebar.php:47
+msgid "עוד מהמילון"
+msgstr ""
+
+#: views/sidebar/sidebar.php:69
+msgid "ציטוט נבחר"
+msgstr ""
+
+#: views/sidebar/sidebar.php:87
+msgid "עוד ציטוטים"
+msgstr ""
+
+#: views/sidebar/sidebar.php:119
+msgid "סיפורים מומלצים"
+msgstr ""
+
+#: views/sidebar/sidebar.php:152
+msgid "עוד סיפורים"
+msgstr ""
+
+#: views/sidebar/sidebar.php:171
+msgid "נושאי סיפור"
+msgstr ""
+
+#: views/team/team.php:55
+msgid " טלפון:"
+msgstr ""
+
+#: views/team/team.php:66
+msgid "נייד:"
+msgstr ""
+
+#: views/team/team.php:77
+msgid "מייל:"
+msgstr ""
+
+#: views/wizard/author_details.php:70 views/wizard/author_details.php:76
+#: views/wizard/author_details.php:119 views/wizard/login.php:68
+#: views/wizard/login.php:74 views/wizard/login.php:80
+#: views/wizard/login.php:86 views/wizard/login.php:91
+#: views/wizard/recorder_details.php:55 views/wizard/recorder_details.php:61
+#: views/wizard/story_details.php:169 views/wizard/story_details.php:173
+#: views/wizard/story_details.php:179 views/wizard/story_details.php:184
+#: views/wizard/story_details.php:190 views/wizard/story_details.php:196
+#: views/wizard/story_details.php:295 views/wizard/story_details.php:299
+#: views/wizard/story_details.php:333 views/wizard/story_details.php:354
+#: views/wizard/story_details.php:358 views/wizard/story_details.php:373
+#: views/wizard/story_details.php:377 views/wizard/story_details.php:386
+#: views/wizard/story_details.php:390 views/wizard/story_details.php:399
+#: views/wizard/story_details.php:403
+msgid "שדה חובה"
+msgstr ""
+
+#: views/wizard/author_details.php:71
+msgid "שם פרטי חייב להכיל לפחות 2 אותיות"
+msgstr ""
+
+#: views/wizard/author_details.php:77
+msgid "שם משפחה חייב להכיל לפחות 2 אותיות"
+msgstr ""
+
+#: views/wizard/author_details.php:82 views/wizard/recorder_details.php:56
+msgid "שם חייב להכיל לפחות 2 אותיות"
+msgstr ""
+
+#: views/wizard/author_details.php:110
+msgid "שנת לידה חייבת להיות גדולה משנת עלייה"
+msgstr ""
+
+#: views/wizard/author_details.php:158
+msgid "בחרו ארץ לידה"
+msgstr ""
+
+#: views/wizard/author_details.php:158 views/wizard/author_details.php:159
+#: views/wizard/author_details.php:160 views/wizard/author_details.php:161
+#: views/wizard/login.php:111 views/wizard/login.php:112
+#: views/wizard/login.php:113
+msgid "לא נמצאו תוצאות ל - "
+msgstr "No results found for - "
+
+#: views/wizard/author_details.php:159 views/wizard/author_details.php:313
+msgid "בחרו שנת לידה"
+msgstr "Please choose a year of birth"
+
+#: views/wizard/author_details.php:160
+msgid "בחרו שנת עליה"
+msgstr ""
+
+#: views/wizard/author_details.php:253
+msgid "הבא"
+msgstr "Continue"
+
+#: views/wizard/author_details.php:257
+msgid "יצירת סיפור חדש"
+msgstr ""
+
+#: views/wizard/author_details.php:266
+msgid "* שם פרטי:"
+msgstr "* First name:"
+
+#: views/wizard/author_details.php:271
+msgid "ושם שני אם יודעים"
+msgstr ""
+
+#: views/wizard/author_details.php:278
+msgid "* שם משפחה:"
+msgstr "* Last name:"
+
+#: views/wizard/author_details.php:284
+msgid "שם המשפחה שלי"
+msgstr "My last name"
+
+#: views/wizard/author_details.php:292
+msgid "שם משפחה לפני הנישואין או שינוי:"
+msgstr ""
+
+#: views/wizard/author_details.php:297
+msgid "שם נעורים"
+msgstr ""
+
+#: views/wizard/author_details.php:301
+msgid "שנת לידה"
+msgstr "Year of birth"
+
+#: views/wizard/author_details.php:306
+msgid "* שנת לידה"
+msgstr "* Year of birth"
+
+#: views/wizard/author_details.php:328
+msgid "ארץ לידה"
+msgstr "Country of birth"
+
+#: views/wizard/author_details.php:329
+msgid "* ארץ לידה"
+msgstr "* Country of birth"
+
+#: views/wizard/author_details.php:360
+msgid "עיר לידה"
+msgstr "City and state of birth"
+
+#: views/wizard/author_details.php:365 views/wizard/author_details.php:366
+msgid "שנת עליה"
+msgstr ""
+
+#: views/wizard/author_details.php:376
+msgid "בחרו שנת עלייה"
+msgstr ""
+
+#: views/wizard/author_details.php:391 views/wizard/story_details.php:634
+#: views/wizard/story_details.php:1126
+msgid "שמור והמשך &#9664;"
+msgstr "Save and Continue &#9664;"
+
+#: views/wizard/author_details.php:420
+msgid "סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי"
+msgstr ""
+
+#: views/wizard/author_details.php:423
+msgid "שימו לב! "
+msgstr ""
+
+#: views/wizard/author_details.php:426
+msgid ""
+"אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל "
+"אחרת."
+msgstr ""
+
+#: views/wizard/author_details.php:426
+msgid "אין לתעד שני אנשים שונים על אותה כתובת מייל."
+msgstr ""
+
+#: views/wizard/author_details.php:427
+msgid "להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:"
+msgstr ""
+
+#: views/wizard/author_details.php:457
+msgid "סיפורים ממתינים לאישור"
+msgstr ""
+
+#: views/wizard/author_details.php:478
+msgid "סיפורים מפורסמים"
+msgstr ""
+
+#: views/wizard/author_details.php:502 views/wizard/recorder_details.php:207
+#: views/wizard/story_details.php:635 views/wizard/story_details.php:1127
+msgid "שמור"
+msgstr "Save"
+
+#: views/wizard/author_details.php:517 views/wizard/recorder_details.php:219
+#: views/wizard/story_details.php:1141 views/wizard/story_preview.php:143
+msgid "&#9654; הקודם"
+msgstr "&#9654; Previous"
+
+#: views/wizard/components/progressbar.php:113
+msgid "העלאת סיפור בחמישה שלבים פשוטים:"
+msgstr ""
+
+#: views/wizard/login.php:97
+msgid "יש לאשר את תנאי השימוש"
+msgstr ""
+
+#: views/wizard/login.php:111
+msgid "בחרו מדינה"
+msgstr ""
+
+#: views/wizard/login.php:112
+msgid "בחרו עיר"
+msgstr ""
+
+#: views/wizard/login.php:113
+msgid "בחרו בית ספר"
+msgstr ""
+
+#: views/wizard/login.php:196
+msgid "* כתובת מייל:"
+msgstr ""
+"E-mail address (of the adult whose story is being told. Each story needs a "
+"different e-mail address):"
+
+#: views/wizard/login.php:200
+msgid "לא נשלח ספאם"
+msgstr ""
+
+#: views/wizard/login.php:215
+msgid "בחר מדינה"
+msgstr ""
+
+#: views/wizard/login.php:216
+msgid "* מדינה"
+msgstr "* Country"
+
+#: views/wizard/login.php:258
+msgid "* עיר:"
+msgstr "* City and state:"
+
+#: views/wizard/login.php:309
+msgid "בחר בית ספר"
+msgstr ""
+
+#: views/wizard/login.php:310
+msgid "* בית ספר:"
+msgstr "* Name of school:"
+
+#: views/wizard/login.php:368
+msgid "קוד בית ספר"
+msgstr ""
+
+#: views/wizard/login.php:369
+msgid "* קוד בית הספר:"
+msgstr ""
+
+#: views/wizard/login.php:387 views/wizard/login.php:390
+msgid "אישור תנאי שימוש"
+msgstr ""
+
+#: views/wizard/login.php:390
+msgid "אישור "
+msgstr ""
+
+#: views/wizard/login.php:390
+msgid "תנאי שימוש"
+msgstr ""
+
+#: views/wizard/login.php:400
+msgid "המשך &#9664;"
+msgstr "&#9664; Continue"
+
+#: views/wizard/recorder_details.php:138
+msgid "* שמות התלמידים:"
+msgstr ""
+
+#: views/wizard/recorder_details.php:153 views/wizard/recorder_details.php:198
+msgid "קודם שם פרטי ואח''כ שם משפחה"
+msgstr ""
+
+#: views/wizard/recorder_details.php:156 views/wizard/recorder_details.php:177
+#: views/wizard/recorder_details.php:201
+msgid "לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח"
+msgstr ""
+
+#: views/wizard/recorder_details.php:163
+msgid "* כיתה:"
+msgstr "* Grade:"
+
+#: views/wizard/recorder_details.php:183
+msgid "שם המורה מוביל התוכנית"
+msgstr "Teacher"
+
+#: views/wizard/story_details.php:55 views/wizard/story_details.php:89
+msgid "קובץ שגוי"
+msgstr "Wrong File"
+
+#: views/wizard/story_details.php:174
+msgid "ניתן לכתוב עד 150 תווים"
+msgstr "Up to 150 characters"
+
+#: views/wizard/story_details.php:185 views/wizard/story_details.php:191
+msgid "ניתן לכתוב עד 40 תווים"
+msgstr "Up to 40 characters"
+
+#: views/wizard/story_details.php:197
+msgid "ניתן לבחור עד 4 נושאים"
+msgstr "Up to 4 topics"
+
+#: views/wizard/story_details.php:236
+msgid "למחוק ערך מילון?"
+msgstr ""
+
+#: views/wizard/story_details.php:264
+msgid "למחוק ציטוט?"
+msgstr ""
+
+#: views/wizard/story_details.php:289
+msgid "ציטוטים:"
+msgstr "Quotes:"
+
+#: views/wizard/story_details.php:305 views/wizard/story_details.php:309
+msgid "ניתן לרשום עד 15 מילים"
+msgstr "Up to 15 words"
+
+#: views/wizard/story_details.php:323
+msgid "ערך מילון:"
+msgstr "Word/expression:"
+
+#: views/wizard/story_details.php:348
+msgid "פירוש מילון:"
+msgstr "Meaning:"
+
+#: views/wizard/story_details.php:376
+msgid "נושאי סיפור:"
+msgstr "Central Themes in the Story"
+
+#: views/wizard/story_details.php:389
+msgid "העלאת תמונה מעברו של המספר:"
+msgstr "A Picture from the Adult's Past\""
+
+#: views/wizard/story_details.php:402
+msgid "העלאת תמונה משותפת של המספר והמתעד:"
+msgstr "A Joint Picture:"
+
+#: views/wizard/story_details.php:446
+msgid "שם הסיפור:"
+msgstr "Headline (pick a catchy title):"
+
+#: views/wizard/story_details.php:450
+msgid "כותרת משנה:"
+msgstr "Secondary Headline (giving the reader a taste of the story):"
+
+#: views/wizard/story_details.php:454
+msgid "תוכן הסיפור:"
+msgstr ""
+"The Story: Write the story. Try to mention as many details as possible, "
+"including significant family names, places and dates, to record the most "
+"authentic, rich and accurate narrative as possible."
+
+#: views/wizard/story_details.php:458
+msgid "תיאור תמונת מספר:"
+msgstr "Caption:"
+
+#: views/wizard/story_details.php:462
+msgid "תיאור תמונת מספר ומתעד:"
+msgstr "Caption:"
+
+#: views/wizard/story_details.php:466
+msgid "נושאי הסיפור:"
+msgstr "Central Themes in the Story"
+
+#: views/wizard/story_details.php:470
+msgid "שפת הסיפור:"
+msgstr "Language:"
+
+#: views/wizard/story_details.php:480
+msgid "קיימות"
+msgstr "There are"
+
+#: views/wizard/story_details.php:482
+msgid "שגיאות:"
+msgstr "Errors:"
+
+#: views/wizard/story_details.php:526 views/wizard/story_details.php:529
+msgid "ניתן לכתוב עד 15 מילים"
+msgstr "Up to 15 words"
+
+#: views/wizard/story_details.php:594
+msgid "הסיפור נשמר אוטומטית"
+msgstr ""
+
+#: views/wizard/story_details.php:645
+msgid "הסיפור נשמר בהצלחה"
+msgstr ""
+
+#: views/wizard/story_details.php:661
+msgid "* שם הסיפור"
+msgstr "* Headline"
+
+#: views/wizard/story_details.php:681
+msgid "איך תקראו לסיפור"
+msgstr ""
+
+#: views/wizard/story_details.php:688
+msgid "* כותרת משנה"
+msgstr "* Secondary Headline"
+
+#: views/wizard/story_details.php:708
+msgid "תיאור קצר של עיקר הסיפור"
+msgstr ""
+
+#: views/wizard/story_details.php:719
+msgid "* תוכן הסיפור"
+msgstr ""
+"The Story: Write the story. Try to mention as many details as possible, "
+"including significant family names, places and dates, to record the most "
+"authentic, rich and accurate narrative as possible"
+
+#: views/wizard/story_details.php:722
+msgid ""
+"להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון "
+"(url) ולהדביקה בתוכן הסיפור"
+msgstr ""
+
+#: views/wizard/story_details.php:776
+msgid "* העלאת תמונה משותפת של המספר והמתעד"
+msgstr ""
+
+#: views/wizard/story_details.php:785 views/wizard/story_details.php:825
+msgid "בחר / החלף תמונה"
+msgstr ""
+
+#: views/wizard/story_details.php:792
+msgid "* תיאור תמונת מספר ומתעד"
+msgstr "* Caption:"
+
+#: views/wizard/story_details.php:795 views/wizard/story_details.php:836
+msgid "עד 40 תווים"
+msgstr ""
+
+#: views/wizard/story_details.php:797 views/wizard/story_details.php:837
+msgid ""
+"להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן "
+"הסיפור"
+msgstr ""
+"Note: Additional pictures, videos, documents and links can be added within "
+"the text of the story. Please include them here, along with captions:"
+
+#: views/wizard/story_details.php:803
+msgid "* העלאת תמונה מעברו של המספר"
+msgstr "* A Picture from the Adult's Past"
+
+#: views/wizard/story_details.php:833
+msgid "* תיאור תמונת מספר"
+msgstr "* Caption"
+
+#: views/wizard/story_details.php:853
+msgid "* מילון"
+msgstr ""
+
+#: views/wizard/story_details.php:856
+msgid ""
+"                 אנחנו רוצים לדעת אם למדתם מילים חדשות במהלך העבודה\n"
+"                            המשותפת שלכם. האם למדתם מלים בשפה אחרת? האם "
+"למדתם מלים חדשות בעברית?\n"
+"                            האם למדתם ביטויים שלא הכרתם?"
+msgstr ""
+"We want to know if you have learned new words or terms during your work "
+"together. \n"
+"Did you learn any words in a foreign language? Slang which was once popular? "
+"Names of organizations, books or objects from the past? Special expressions?"
+
+#: views/wizard/story_details.php:873 views/wizard/story_details.php:893
+msgid "כתבו כאן את המילה:"
+msgstr ""
+
+#: views/wizard/story_details.php:874 views/wizard/story_details.php:894
+msgid "או הביטוי"
+msgstr ""
+
+#: views/wizard/story_details.php:878 views/wizard/story_details.php:898
+msgid "כתבו כאן את פירושה:"
+msgstr ""
+
+#: views/wizard/story_details.php:883 views/wizard/story_details.php:903
+msgid "מחיקת ערך מילון"
+msgstr ""
+
+#: views/wizard/story_details.php:914
+msgid "הוספת ערך מילון"
+msgstr ""
+
+#: views/wizard/story_details.php:925
+msgid "* ציטוטים"
+msgstr "* Quotes"
+
+#: views/wizard/story_details.php:929
+msgid "האם יש ציטוט או משפט מיוחד בעל מסר ומשמעות שלמדת מהמבוגר?"
+msgstr ""
+"Please share a special quote or a meaningful phrase that you learned from "
+"the adult during the program, or a memorable sentence from the story.  (Up "
+"to 15 words)"
+
+#: views/wizard/story_details.php:943
+msgid "כתבו כאן את הציטוט (עד 15 מילים)"
+msgstr ""
+"Please share a special quote or a meaningful phrase that you learned from "
+"the adult during the program, or a memorable sentence from the story.  (Up "
+"to 15 words)"
+
+#: views/wizard/story_details.php:945 views/wizard/story_details.php:963
+msgid "עד 15 מילה"
+msgstr "Up to 15 words"
+
+#: views/wizard/story_details.php:949 views/wizard/story_details.php:967
+msgid "מחיקת ציטוט"
+msgstr "Delete quote"
+
+#: views/wizard/story_details.php:961
+msgid "כתבו כאן את הציטוט"
+msgstr ""
+"Please share a special quote or a meaningful phrase that you learned from "
+"the adult during the program, or a memorable sentence from the story.  (Up "
+"to 15 words)"
+
+#: views/wizard/story_details.php:978
+msgid "הוספת ציטוט"
+msgstr "Add quote"
+
+#: views/wizard/story_details.php:989
+msgid "* נושאים (ניתן לבחור עד 4 נושאים)"
+msgstr "* Central Themes in the Story (Up to 4 themes)"
+
+#: views/wizard/story_details.php:990
+msgid "סמנו מילים המתארות באופן הטוב ביותר את הנושאים המרכזיים בסיפור."
+msgstr ""
+"Highlight 1-4 topics which best describe the central themes in your story."
+
+#: views/wizard/story_details.php:1030
+msgid "שפת כתיבת הסיפור"
+msgstr "Language"
+
+#: views/wizard/story_details.php:1031
+msgid "סמן את שפת כתיבת הסיפור"
+msgstr "Specify what language the story is written in"
+
+#: views/wizard/story_details.php:1071
+msgid "תגיות"
+msgstr "Tags"
+
+#: views/wizard/story_details.php:1072
+msgid ""
+"האם בית ספרכם מפעיל את התכנית במודל מיוחד? בשיתוף פעולה עם ארגון חיצוני? אנא "
+"סמנו."
+msgstr ""
+"When uploading the story, please specify the model of your program (G2G/My "
+"Family Story/Other)."
+
+#: views/wizard/story_details.php:1117
+msgid "מהזוית האישית - מספר ומתעד"
+msgstr "On a Personal Note"
+
+#: views/wizard/story_details.php:1120
+msgid ""
+"ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים "
+"להגיד ולאחל אחד לשני?"
+msgstr ""
+"Share your experiences from working together. What would you like to wish "
+"each other?"
+
+#: views/wizard/story_preview.php:84 views/wizard/story_preview.php:131
+msgid "סיום ושליחת סיפור &#9664;"
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "G2G: Generation to Generation"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Beit Hatfutsot"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.bh.org.il/"
+msgstr ""

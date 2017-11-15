@@ -40,11 +40,27 @@ $wizard_steps_captions = array ();
 $wizard_steps_colors   = array ();
 
 
+// Get the wizards title based the on the language
+
+// Get the current language data
+$lang_code = get_language_locale_filename_by_get_param( true );
+
+// If Hebrew
+if ( $lang_code["get_param_value"] == ISupportedLanguages::HE['get_param_value'] )
+{
+	$acf_wizard_title_field_name = "acf-options-wizard-title";
+}	
+else {
+	$acf_wizard_title_field_name = "acf-options-wizard-title-" . $lang_code["get_param_value"];
+}
+	
+
+
 if( have_rows('acf-options-wizard-steps','options') ):
 
 
     while( have_rows('acf-options-wizard-steps','options') ): the_row();
-        $title = get_sub_field('acf-options-wizard-title','options');
+        $title = get_sub_field($acf_wizard_title_field_name,'options');
         $color = get_sub_field('acf-options-wizard-color','options');
 
         $wizard_steps_captions[] =  $title;

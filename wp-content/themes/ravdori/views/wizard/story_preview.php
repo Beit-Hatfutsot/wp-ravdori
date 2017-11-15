@@ -15,8 +15,16 @@ get_header();
 
 <?php
 global $wizardSessionManager;
+
 $step4Data = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
-$post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
+$post_id   = $step4Data[ IWizardStep4Fields::POST_ID ];
+
+
+// Get the current local
+$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale =  $locale["locale_file"];
+
+
 ?>
 
 <script>
@@ -44,7 +52,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
             <?php if ($feedback): ?>
 
             feedbackText = '<p><h3 class="story-personal-view">';
-            feedbackText += 'הזוית האישית';
+            feedbackText += '<?php BH__e('הזוית האישית' , 'BH', $locale);?>';
             feedbackText += '</h3></p>';
             feedbackText += '<p>';
             feedbackText += <?php echo  $feedback;?>.replace( /\n/g, "<br />" );
@@ -81,7 +89,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 
                     <div class="submit" style="width: 100%;">
                         <div class="publish-story-caption">
-                            <input type="submit" style="float: left;margin-left: 23px;" value="סיום ושליחת סיפור &#9664;"/>
+                            <input type="submit" style="float: left;margin-left: 23px;" value="<?php BH__e('סיום ושליחת סיפור &#9664;' , 'BH', $locale);?>"/>
                         </div>
                     </div>
 
@@ -128,7 +136,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
 					
                     <div class="submit">
                         <div class="publish-story-caption">
-                            <input type="submit" style="float: left;margin-left: 23px;" value="סיום ושליחת סיפור &#9664;"/>
+                            <input type="submit" style="float: left;margin-left: 23px;" value="<?php BH__e('סיום ושליחת סיפור &#9664;' , 'BH', $locale);?>"/>
                         </div>
                     </div>
 
@@ -140,7 +148,7 @@ $post_id = $step4Data[ IWizardStep4Fields::POST_ID ];
                     <input name="progstep" value="4" type="hidden">
 
                     <div class="submit" style="width: 16.6%; height: 91px;">
-                            <input type="submit" value="&#9654; הקודם"/>
+                            <input type="submit" value="<?php BH__e('&#9654; הקודם' , 'BH', $locale);?>"/>
                     </div>
 
                 </form>

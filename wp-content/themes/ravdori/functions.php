@@ -19,6 +19,12 @@ require_once('functions/config.php');
 // Theme support
 require_once('functions/theme.php');
 
+// Security
+require_once('functions/security.php');
+
+// Multilanguage support
+require_once('functions/languages.php');
+
 // ACF plugin functions
 require_once('functions/acf.php');
 
@@ -52,8 +58,6 @@ require_once('functions/pagination.php');
 // Database
 require_once('functions/database/database.php');
 
-// Security
-require_once('functions/security.php');
 
 // Story
 require_once('functions/story.php');

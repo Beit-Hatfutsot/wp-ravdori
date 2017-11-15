@@ -11,6 +11,18 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 get_header();
 ?>
+
+<?php 
+
+global $wizardSessionManager;
+
+// Get the current local
+$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale =  $locale["locale_file"];
+
+?>
+
+
     <script>
 
 
@@ -65,36 +77,36 @@ get_header();
 
                                                                         <?php echo IWizardStep1Fields::EMAIL;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: '<?php BH__e("שדה חובה" , "BH" , $locale);?>',
                                                                              email: "יש להקיש כתובת דואר אלקטרוני תקינה"
                                                                         },
 
                                                                         <?php echo IWizardStep1Fields::SCHOOL_NAME;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: '<?php BH__e("שדה חובה" , "BH" , $locale);?>',
 
                                                                         },
 
                                                                         <?php echo IWizardStep1Fields::SCHOOL_CODE;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: '<?php BH__e("שדה חובה" , "BH" , $locale);?>',
 
                                                                         },
 
                                                                         <?php echo IWizardStep1Fields::SCHOOL_NAME;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: '<?php BH__e("שדה חובה" , "BH" , $locale);?>',
                                                                         },
 
                                                                         <?php echo IWizardStep1Fields::CITY;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: '<?php BH__e("שדה חובה" , "BH" , $locale);?>',
                                                                         },
 
 
                                                                         'agree':
                                                                         {
-                                                                            required: "יש לאשר את תנאי השימוש",
+                                                                            required: '<?php BH__e("יש לאשר את תנאי השימוש" , "BH" , $locale);?>',
                                                                         }
                                                                     }
                                                 });
@@ -108,9 +120,9 @@ jQuery(document).ready(function () {
 
 
         // Make the country, city and school name select boxes to searchable
-        $("#<?php echo IWizardStep1Fields::COUNTRY ?>").chosen( { placeholder_text_single : "בחרו מדינה", no_results_text: "לא נמצאו תוצאות ל - "  } );
-        $("#<?php echo IWizardStep1Fields::CITY ?>").chosen( { placeholder_text_single : "בחרו עיר", no_results_text: "לא נמצאו תוצאות ל - "  } );
-        $("#<?php echo IWizardStep1Fields::SCHOOL_NAME ?>").chosen( { placeholder_text_single : "בחרו בית ספר", no_results_text: "לא נמצאו תוצאות ל - "  } );
+        $("#<?php echo IWizardStep1Fields::COUNTRY ?>").chosen( { placeholder_text_single :  '<?php BH__e("בחרו מדינה" , "BH" , $locale);?>', no_results_text:'<?php BH__e("לא נמצאו תוצאות ל - " , "BH" , $locale);?>'  } );
+        $("#<?php echo IWizardStep1Fields::CITY ?>").chosen( { placeholder_text_single : '<?php BH__e("בחרו עיר" , "BH" , $locale);?>', no_results_text: '<?php BH__e("לא נמצאו תוצאות ל - " , "BH" , $locale);?>'  } );
+        $("#<?php echo IWizardStep1Fields::SCHOOL_NAME ?>").chosen( { placeholder_text_single : '<?php BH__e("בחרו בית ספר" , "BH" , $locale);?>', no_results_text: '<?php BH__e("לא נמצאו תוצאות ל - " , "BH" , $locale);?>'  } );
 
 
         // Chain the above select box to make them behave "AJAX like" offline
@@ -193,11 +205,11 @@ jQuery(document).ready(function () {
 
                     <!-- Mail -->
                     <div class="element-input">
-                        <label for="<?php echo IWizardStep1Fields::EMAIL; ?>" class="title">* כתובת מייל:
+                        <label for="<?php echo IWizardStep1Fields::EMAIL; ?>" class="title"><?php BH__e("* כתובת מייל:" , "BH", $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep1Fields::EMAIL ); ?>
                         </label>
                         <input class="large" type="text" id="<?php echo IWizardStep1Fields::EMAIL; ?>"
-                               placeholder="לא נשלח ספאם"
+                               placeholder="<?php BH__e("לא נשלח ספאם" , "BH" , $locale);?>"
                                lang="en"
                                name="<?php echo IWizardStep1Fields::EMAIL; ?>"
                                 <?php
@@ -212,8 +224,8 @@ jQuery(document).ready(function () {
                     <fieldset>
                         <legend>פרטי בית הספר</legend>
                     <!-- Country -->
-                    <div id="country-field" class="element-select" title="בחר מדינה">
-                        <label for="<?php echo IWizardStep1Fields::COUNTRY ?>" class="title">* מדינה
+                    <div id="country-field" class="element-select" title="<?php BH__e("בחר מדינה" , "BH" , $locale);?>">
+                        <label for="<?php echo IWizardStep1Fields::COUNTRY ?>" class="title"><?php BH__e("* מדינה" , "BH" , $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep1Fields::COUNTRY ); ?>
                         </label>
 
@@ -255,7 +267,7 @@ jQuery(document).ready(function () {
 
                     <!-- City -->
                     <div class="element-select" title="בחר עיר">
-                        <label for="<?php echo IWizardStep1Fields::CITY; ?>" class="title">* עיר:
+                        <label for="<?php echo IWizardStep1Fields::CITY; ?>" class="title"><?php BH__e("* עיר:" , "BH" , $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep1Fields::CITY ); ?>
                         </label>
 
@@ -306,8 +318,8 @@ jQuery(document).ready(function () {
 
 
                     <!-- School -->
-                    <div class="element-select" title="בחר בית ספר">
-                        <label for="<?php echo IWizardStep1Fields::SCHOOL_NAME; ?>" class="title">* בית ספר:
+                    <div class="element-select" title="<?php BH__e("בחר בית ספר" , "BH" , $locale);?>">
+                        <label for="<?php echo IWizardStep1Fields::SCHOOL_NAME; ?>" class="title"><?php BH__e("* בית ספר:" , "BH" , $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep1Fields::SCHOOL_NAME ); ?>
                         </label>
 
@@ -365,8 +377,8 @@ jQuery(document).ready(function () {
                     </div>
 
                     <!-- School Code -->
-                    <div class="element-number" title="קוד בית ספר">
-                        <label for="<?php echo IWizardStep1Fields::SCHOOL_CODE; ?>" class="title">* קוד בית הספר:
+                    <div class="element-number" title="<?php BH__e("קוד בית ספר" , "BH" , $locale);?>">
+                        <label for="<?php echo IWizardStep1Fields::SCHOOL_CODE; ?>" class="title"><?php BH__e("* קוד בית הספר:" , "BH" , $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep1Fields::SCHOOL_CODE ); ?>
                         </label>
 
@@ -384,10 +396,10 @@ jQuery(document).ready(function () {
                     </div>
 
                     <!-- Terms -->
-                    <div class="element-checkbox" title="אישור תנאי שימוש">
+                    <div class="element-checkbox" title="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>">
 
                         <div class="column column1 terms-column">
-                            <input type="checkbox" checked id="agree" name="agree"  value="אישור תנאי שימוש" / ><span class="terms-label">אישור <a href="<?php the_field( 'acf-options-wizard-step1-agreement' , 'options' ); ?>" target="_blank">תנאי שימוש</a></span>
+                            <input type="checkbox" checked id="agree" name="agree"  value="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>" / ><span class="terms-label"><?php BH__e("אישור " , "BH" , $locale);?><a href="<?php the_field( 'acf-options-wizard-step1-agreement' , 'options' ); ?>" target="_blank"><?php BH__e("תנאי שימוש" , "BH" , $locale);?></a></span>
                             <label for="agree" style="    position: absolute; top: 0px; right: 174px;"></label>
                         </div>
 
@@ -397,7 +409,7 @@ jQuery(document).ready(function () {
                     </fieldset>
 
                     <div class="submit" style="width: 100%; text-align: left;">
-                        <input type="submit" style="margin-left: 20px;" value="המשך &#9664;"/>
+                        <input type="submit" style="margin-left: 20px;" value="<?php BH__e("המשך &#9664;" , "BH" , $locale);?>"/>
                     </div>
 
                     <input type="hidden" name="step" value="<?php echo IWizardStep2Fields::ID; ?>"/>

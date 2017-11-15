@@ -40,7 +40,7 @@ global $wizardSessionManager;
     <?php $j++; ?>
     <?php endforeach; ?>
 
- <?php $j =  $wizardSessionManager->getCurrentStep() - 1?>
+ <?php $j =  $wizardSessionManager->getCurrentStep() - 1; ?>
 
 
 
@@ -107,10 +107,99 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons .bu
 .wizard-form input[type="checkbox"]:hover,
 .wizard-form input[type="checkbox"]:checked + span:before,
 .wizard-form input[type="radio"]:checked + span:before { color: <?php echo $wizard_steps_colors[ $j ]; ?>; }
+
+
+/* Language Direction */
+<?php 
+// Get the current local
+$dir = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+
+if ( $dir["dir"] == 'ltr'):?>
+
+/* Global */
+.wizard-form label {
+    text-align: left !important;
+    direction: ltr;
+    display: block;
+}
+
+.wizard-form ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  text-align: left;
+  direction: ltr;
+}
+.wizard-form ::-moz-placeholder { /* Firefox 19+ */
+  text-align: left;
+  direction: ltr;
+}
+.wizard-form :-ms-input-placeholder { /* IE 10+ */
+  text-align: left;
+  direction: ltr;
+}
+.wizard-form :-moz-placeholder { /* Firefox 18- */
+  text-align: left;
+  direction: ltr;
+}
+
+
+/* Step 1 */
+#STEP1_SCHOOL_CODE { float: left; }
+.wizard-form input#agree { left: -26px; right:auto !important; }
+.terms-label { float:left;  padding-left: 16px; }
+
+
+#wizard-form-step1.wizard-form input#agree + span:before { position:absolute !important; }
+
+#wizard-form-step1.wizard-form input[type=checkbox]:checked + span:before {
+    right: auto;
+    left: -30px;
+}
+
+#wizard-form-step1.wizard-form input[type=checkbox] + span:before {
+	position: absolute!important;
+    top: -9px;
+    right: auto;
+    left: -34px;
+}
+
+
+body.page-template-wizard #wizard-form-step1 fieldset legend { left: -100%; }
+
+
+/* Step 3 */
+.wizard-filed-desc { text-align:left;  direction: ltr; }
+
+
+/* Step 4 */
+.wizard-form h2 { text-align: left;  direction: ltr; }
+
+#wizard-form-step4 .checkbox-label {
+    padding-right: 0;
+    padding-left: 28px;
+}
+
+
+#wizard-form-step4 input[type=checkbox] + span:before {
+    right: auto;
+    left: 0;
+}
+
+
+#wizard-form-step4 > div:nth-child(13) > div:nth-child(2),
+#wizard-form-step4 > div:nth-child(12) > div:nth-child(2),
+#wizard-form-step4 > div:nth-child(11) > div:nth-child(2),
+#quotes-repeater > div.col-sm-12,
+#dictionary-repeater > div.col-sm-12 {
+	text-align: left;
+    direction: ltr;
+}
+
+<?php endif;?>
+
+
 </style>
 
 <div class="col-xs-12">
-    <h3 class="progress-bar-title"><?php _e( 'העלאת סיפור בחמישה שלבים פשוטים:' , 'BH' ); ?></h3>
+    <h3 class="progress-bar-title"><?php BH__e( 'העלאת סיפור בחמישה שלבים פשוטים:' , 'BH' , $locale); ?></h3>
 	<ul id="progressbar">
         <?php foreach ( $wizard_steps_captions as $caption ): ?>
             <li class="btnStep<?php echo $i;?><?php echo ( $i == $wizardSessionManager->getCurrentStep() ) ? ' active ' : ''; ?><?php echo ( $wizardSessionManager->isStepAvailable( $i ) ) ? ' available ' : ''; ?>"  >
@@ -139,7 +228,7 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons .bu
 
 <?php if ( is_user_logged_in() ): ?>
     <div class="col-sm-12 disconnect-area">
-        <a class="logout-link" href="<?php echo wp_logout_url( home_url() ); ?>">התנתקות / זה לא המשתמש שלי</a>
+        <a class="logout-link" href="<?php echo wp_logout_url( home_url() ); ?>"><?php BH__e('התנתקות / זה לא המשתמש שלי' , 'BH' ,  $locale ); ?></a>
     </div>
 <?php endif; ?>
 </div>

@@ -159,6 +159,10 @@ class BH_SessionManager extends Session
             // Set the current step to the first
             self::$instance->setField ( IWizardSessionFields::CURRENT_STEP  , IWizardStep1Fields::ID );
             $_SESSION[ IWizardSessionFields::STEP_STATUS ] = array();
+			
+			// Create a field to hold the current langauge, set to Hebrew as default
+			self::$instance->setField( IWizardSessionFields::LANGUAGE_LOCALE , ISupportedLanguages::HE['get_param_value'] );
+			
         }
 
         self::$instance->startSession();
@@ -284,6 +288,7 @@ interface IWizardSessionFields {
     const CURRENT_STEP = 'CURRENT_STEP';
     const STEPS        = 'STEPS';
     const STEP_STATUS  = 'STEPS_STATUS';
+	const LANGUAGE_LOCALE  = 'langauge_local';
 }
 
 interface IWizardSessionFieldsStatus {

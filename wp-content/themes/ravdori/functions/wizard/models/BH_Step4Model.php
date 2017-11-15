@@ -25,10 +25,24 @@ class BH_Step4Model {
 
         $subjectsArray = array();
 
-        // Save all the countries taxonomies names and id in an array
+        // Save all the subjects taxonomies names and id in an array
         if ( $taxonomies ) {
             foreach ($taxonomies as $taxonomy) {
-                $subjectsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);
+				
+				// Get the subject's language
+				$subjectLanguage = get_field('acf-subjects-language' , 'term_' . $taxonomy->term_id ); 
+				
+				if ( $subjectLanguage == null ) 
+					$subjectLanguage = 'he';
+			
+				
+				// Get the wizard current language
+				global $wizardSessionManager;
+				$currentLanguage = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);	
+
+				if ( $currentLanguage["get_param_value"] == $subjectLanguage ) {
+					$subjectsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);
+				}
             }
         }
 
@@ -42,10 +56,24 @@ class BH_Step4Model {
 
         $subtopicsArray = array();
 
-        // Save all the countries taxonomies names and id in an array
+        // Save all the subtopics taxonomies names and id in an array
         if ( $taxonomies ) {
             foreach ($taxonomies as $taxonomy) {
-                $subtopicsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);
+				
+				// Get the subject's language
+				$subjectLanguage = get_field('acf-subjects-language' , 'term_' . $taxonomy->term_id ); 
+				
+				if ( $subjectLanguage == null ) 
+					$subjectLanguage = 'he';
+			
+				
+				// Get the wizard current language
+				global $wizardSessionManager;
+				$currentLanguage = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);	
+
+				if ( $currentLanguage["get_param_value"] == $subjectLanguage ) {
+					$subtopicsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);
+				}
             }
         }
 
@@ -61,7 +89,7 @@ class BH_Step4Model {
 
         $languagesArray = array();
 
-        // Save all the countries taxonomies names and id in an array
+        // Save all the languages taxonomies names and id in an array
         if ( $taxonomies ) {
             foreach ($taxonomies as $taxonomy) {
                 $languagesArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);

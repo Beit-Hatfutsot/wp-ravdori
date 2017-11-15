@@ -13,6 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 get_header();
 ?>
 
+<?php 
+
+global $wizardSessionManager;
+
+// Get the current local
+$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale =  $locale["locale_file"];
+
+?>
+
 <script>
 
 
@@ -52,13 +62,13 @@ $().ready(function () {
 
                                                                         <?php echo IWizardStep3Fields::FIRST_NAME;?>:
                                                                         {
-                                                                          required: "שדה חובה",
-                                                                          minlength: "שם חייב להכיל לפחות 2 אותיות",
+                                                                          required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                                                                          minlength: "<?php BH__e('שם חייב להכיל לפחות 2 אותיות' , 'BH', $locale);?>",
                                                                         },
 
                                                                         <?php echo IWizardStep3Fields::GRADE;?>:
                                                                         {
-                                                                            required: "שדה חובה",
+                                                                            required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
                                                                         },
 
                                                                      }
@@ -135,7 +145,7 @@ $().ready(function () {
 
                     <!-- First name -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep3Fields::FIRST_NAME ;?>" class="title">* שמות התלמידים:</label>
+                        <label for="<?php echo IWizardStep3Fields::FIRST_NAME ;?>" class="title"><?php BH__e('* שמות התלמידים:' , 'BH', $locale);?></label>
 
                         <?php
 
@@ -150,17 +160,17 @@ $().ready(function () {
 
                         <input id="<?php echo IWizardStep3Fields::FIRST_NAME ;?>"
                                class="large" type="text"
-                               placeholder="קודם שם פרטי ואח''כ שם משפחה"
+                               placeholder="<?php BH__e("קודם שם פרטי ואח''כ שם משפחה" , 'BH', $locale);?>"
                                name="<?php echo IWizardStep3Fields::FIRST_NAME;?>"
                                value="<?php echo stripslashes ($firstName);?>"/>
-                        <div class="wizard-filed-desc">לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח</div>
+                        <div class="wizard-filed-desc"><?php BH__e("לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח" , 'BH', $locale);?></div>
                     </div>
 
 
 
                     <!-- Class name -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep3Fields::GRADE;?>" class="title">* כיתה:</label>
+                        <label for="<?php echo IWizardStep3Fields::GRADE;?>" class="title"><?php BH__e('* כיתה:' , 'BH', $locale);?></label>
 
                         <?php
 
@@ -174,13 +184,13 @@ $().ready(function () {
                         ?>
 
                         <input id="<?php echo IWizardStep3Fields::GRADE;?>" class="large" type="text" name="<?php echo IWizardStep3Fields::GRADE;?>" value="<?php echo stripslashes ($grade);?>"/>
-                        <div class="wizard-filed-desc">לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח</div>
+                        <div class="wizard-filed-desc"><?php BH__e("לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח" , 'BH', $locale);?></div>
                     </div>
 
 
                     <!-- Teacher  name -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep3Fields::TEACHER_NAME;?>" class="title">שם המורה מוביל התוכנית</label>
+                        <label for="<?php echo IWizardStep3Fields::TEACHER_NAME;?>" class="title"><?php BH__e('שם המורה מוביל התוכנית' , 'BH', $locale);?></label>
 
                         <?php
 
@@ -195,16 +205,16 @@ $().ready(function () {
 
                         <input id="<?php echo IWizardStep3Fields::TEACHER_NAME;?>"
                                class="large"
-                               placeholder="קודם שם פרטי ואח''כ שם משפחה"
+                               placeholder="<?php BH__e("קודם שם פרטי ואח''כ שם משפחה" , 'BH', $locale);?>"
                                type="text" name="<?php echo IWizardStep3Fields::TEACHER_NAME;?>"
                                value="<?php echo stripslashes ($teacherName);?>"/>
-                        <div class="wizard-filed-desc">לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח</div>
+                        <div class="wizard-filed-desc"><?php BH__e("לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח" , 'BH', $locale);?></div>
                     </div>
 
 
                     <div class="submit">
                         <input type="submit" style="float: left;margin-left: 23px;" value="שמור והמשך &#9664;"/>
-                        <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="שמור"/>
+                        <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 
                     <input type="hidden" name="step" value="<?php echo IWizardStep3Fields::ID; ?>"/>
@@ -216,7 +226,7 @@ $().ready(function () {
                     <input name="progstep" value="2" type="hidden">
 
                     <div class="submit">
-                        <input type="submit" value="&#9654; הקודם"/>
+                        <input type="submit" value="<?php BH__e('&#9654; הקודם' , 'BH', $locale);?>"/>
                     </div>
 
                 </form>

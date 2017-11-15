@@ -9,6 +9,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+
 require_once  WIZARD_DIRECTORY  . 'BH_SessionManager.php';
 
 global $stepsArray;

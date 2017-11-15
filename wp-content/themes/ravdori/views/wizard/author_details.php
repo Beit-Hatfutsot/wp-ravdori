@@ -1,7 +1,6 @@
 <?php
 /**
  *
- *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
  * @version    1.0
@@ -11,6 +10,16 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 get_header();
+?>
+
+<?php 
+
+global $wizardSessionManager;
+
+// Get the current local
+$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale =  $locale["locale_file"];
+
 ?>
 
     <script>
@@ -67,19 +76,19 @@ get_header();
 
             <?php echo IWizardStep2Fields::FIRST_NAME;?>:
             {
-                required: "שדה חובה",
-                minlength: "שם פרטי חייב להכיל לפחות 2 אותיות",
+                required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                minlength: "<?php BH__e('שם פרטי חייב להכיל לפחות 2 אותיות' , 'BH', $locale);?>",
             },
 
             <?php echo IWizardStep2Fields::LAST_NAME;?>:
             {
-                required: "שדה חובה",
-                minlength: "שם משפחה חייב להכיל לפחות 2 אותיות",
+                required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+                minlength: "<?php BH__e('שם משפחה חייב להכיל לפחות 2 אותיות' , 'BH', $locale);?>",
             },
 
             <?php echo IWizardStep2Fields::ADDITIONAL_NAME;?>:
             {
-                minlength: "שם חייב להכיל לפחות 2 אותיות",
+                minlength: "<?php BH__e('שם חייב להכיל לפחות 2 אותיות' , 'BH', $locale);?>",
             },
 
         }
@@ -107,7 +116,7 @@ get_header();
 
                 if ( immegrationYear < birthYear  )
                 {
-                    $("#<?php echo IWizardStep2Fields::IMMIGRATION_DATE ?>").before("<label class='quote_error'><span class='error'>שנת לידה חייבת להיות גדולה משנת עלייה</span></label>");
+                    $("#<?php echo IWizardStep2Fields::IMMIGRATION_DATE ?>").before("<label class='quote_error'><span class='error'><?php BH__e('שנת לידה חייבת להיות גדולה משנת עלייה' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
                 }
 
@@ -116,7 +125,7 @@ get_header();
             // if the user did not choose a birthday
             if ($("#<?php echo IWizardStep2Fields::BIRTHDAY ?> option:selected").val() == -1 )
             {
-                $("#<?php echo IWizardStep2Fields::BIRTHDAY ?>").before("<label class='quote_error'><span class='error'>שדה חובה</span></label>");
+                $("#<?php echo IWizardStep2Fields::BIRTHDAY ?>").before("<label class='quote_error'><span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span></label>");
                 isFormValid = false;
             }
 
@@ -155,10 +164,10 @@ get_header();
 
         // Make the select boxes searchable
 
-        $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>").chosen( { placeholder_text_single : "בחרו ארץ לידה", no_results_text: "לא נמצאו תוצאות ל - "  } );
-        $("#<?php echo IWizardStep2Fields::BIRTHDAY ?>").chosen( { placeholder_text_single : "בחרו שנת לידה", no_results_text: "לא נמצאו תוצאות ל - "  } );
-        $("#<?php echo IWizardStep2Fields::IMMIGRATION_DATE ?>").chosen( { placeholder_text_single : "בחרו שנת עליה", no_results_text: "לא נמצאו תוצאות ל - "  } );
-        $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>").chosen( { placeholder_text_single : "", no_results_text: "לא נמצאו תוצאות ל - "  } );
+        $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>").chosen( { placeholder_text_single : "<?php BH__e("בחרו ארץ לידה" , "BH", $locale);?>", no_results_text: "<?php BH__e("לא נמצאו תוצאות ל - " , "BH", $locale);?>"  } );
+        $("#<?php echo IWizardStep2Fields::BIRTHDAY ?>").chosen( { placeholder_text_single : "<?php BH__e("בחרו שנת לידה" , "BH", $locale);?>", no_results_text: "<?php BH__e("לא נמצאו תוצאות ל - " , "BH", $locale);?>"  } );
+        $("#<?php echo IWizardStep2Fields::IMMIGRATION_DATE ?>").chosen( { placeholder_text_single : "<?php BH__e("בחרו שנת עליה" , "BH", $locale);?>", no_results_text: "<?php BH__e("לא נמצאו תוצאות ל - " , "BH", $locale);?>"  } );
+        $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>").chosen( { placeholder_text_single : "", no_results_text: "<?php BH__e("לא נמצאו תוצאות ל - " , "BH", $locale);?>"  } );
 
 
 
@@ -250,11 +259,11 @@ get_header();
                 </div>
 
                 <?php
-                $nextButtonCaption = "הבא";
+                $nextButtonCaption = BH__("הבא" , "BH" , $locale);
 
                 if (isset( $data['user']['exist'] ) AND $data['user']['exist'] == true AND $wizardSessionManager->isStepAvailable( IWizardStep3Fields::ID ) == false)
                 {
-                    $nextButtonCaption = "יצירת סיפור חדש";
+                    $nextButtonCaption = BH__("יצירת סיפור חדש" , "BH", $locale);
                 }
                 ?>
 
@@ -263,25 +272,25 @@ get_header();
 
                     <!-- First name -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep2Fields::FIRST_NAME;?>" class="title">* שם פרטי:</label>
+                        <label for="<?php echo IWizardStep2Fields::FIRST_NAME;?>" class="title"><?php BH__e('* שם פרטי:' , 'BH', $locale);?></label>
                         <input id="<?php echo IWizardStep2Fields::FIRST_NAME;?>"
                                class="large" type="text"
                                name="<?php echo IWizardStep2Fields::FIRST_NAME;?>"
                                value="<?php echo stripslashes ($firstName); ?>"
-                               placeholder="ושם שני אם יודעים"/>
+                               placeholder="<?php BH__e('ושם שני אם יודעים' , 'BH', $locale);?>"/>
                     </div>
 
                     <?php  $lastName = isset ( $step2Data[IWizardStep2Fields::LAST_NAME] ) ?  $step2Data[IWizardStep2Fields::LAST_NAME] : '';  ?>
 
                     <!-- Last name -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep2Fields::LAST_NAME;?>" class="title">* שם משפחה:</label>
+                        <label for="<?php echo IWizardStep2Fields::LAST_NAME;?>" class="title"><?php BH__e('* שם משפחה:' , 'BH', $locale);?></label>
                         <input id="<?php echo IWizardStep2Fields::LAST_NAME;?>"
                                class="large"
                                type="text"
                                name="<?php echo IWizardStep2Fields::LAST_NAME;?>"
                                value="<?php echo stripslashes ($lastName); ?>"
-                               placeholder="שם המשפחה שלי"/>
+                               placeholder="<?php BH__e('שם המשפחה שלי' , 'BH', $locale);?>"/>
                     </div>
 
 
@@ -289,28 +298,28 @@ get_header();
 
                     <!-- Name before marrige -->
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep2Fields::ADDITIONAL_NAME;?>" class="title">שם משפחה לפני הנישואין או שינוי:</label>
+                        <label for="<?php echo IWizardStep2Fields::ADDITIONAL_NAME;?>" class="title"><?php BH__e('שם משפחה לפני הנישואין או שינוי:' , 'BH', $locale);?></label>
                         <input id="<?php echo IWizardStep2Fields::ADDITIONAL_NAME;?>"
                                class="large"
                                type="text"
                                name="<?php echo IWizardStep2Fields::ADDITIONAL_NAME;?>" value="<?php echo stripslashes ($additionalName); ?>"
-                               placeholder="שם נעורים"/>
+                               placeholder="<?php BH__e('שם נעורים' , 'BH', $locale);?>"/>
                     </div>
 
                     <!-- Birthday -->
-                    <div class="element-select" title="שנת לידה">
+                    <div class="element-select" title="<?php BH__e('שנת לידה' , 'BH', $locale);?>">
 
 
                         <div class="large">
                             <span class="wizard-select-theme">
-                                <label for="<?php echo IWizardStep2Fields::BIRTHDAY; ?>" class="title">* שנת לידה</label>
+                                <label for="<?php echo IWizardStep2Fields::BIRTHDAY; ?>" class="title"><?php BH__e('* שנת לידה' , 'BH', $locale);?></label>
                             <select id="<?php echo IWizardStep2Fields::BIRTHDAY; ?>"  name="<?php echo IWizardStep2Fields::BIRTHDAY; ?>" class="chosen-rtl">
                                     <?php
                                     // use this to set an option as selected (ie you are pulling existing values out of the database)
                                     $already_selected_value = isset( $step2Data[IWizardStep2Fields::BIRTHDAY] ) ? $step2Data[IWizardStep2Fields::BIRTHDAY] :  -1 ;
                                     $earliest_year = 1900;
 
-                                    echo '<option  value="-1" ' . ( ( $already_selected_value == -1)  ? ' selected="true" ' : '' ) . '>' . 'בחרו שנת לידה' . '</option>';
+                                    echo '<option  value="-1" ' . ( ( $already_selected_value == -1)  ? ' selected="true" ' : '' ) . '>' . BH__('בחרו שנת לידה', 'BH', $locale) . '</option>';
 
                                     foreach (range(date('Y'), $earliest_year) as $year)
                                     {
@@ -325,8 +334,8 @@ get_header();
                     </div>
 
                     <!-- Country -->
-                    <div id="country-field" class="element-select" title="ארץ לידה">
-                        <label for="<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>" class="title">* ארץ לידה</label>
+                    <div id="country-field" class="element-select" title="<?php BH__e('ארץ לידה' , 'BH', $locale);?>">
+                        <label for="<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>" class="title"><?php BH__e('* ארץ לידה' , 'BH', $locale);?></label>
 
                         <div class="large">
 			                <span class="wizard-select-theme">
@@ -357,13 +366,13 @@ get_header();
                     <?php  $birthCity = isset ( $step2Data[IWizardStep2Fields::BIRTH_CITY] ) ?  $step2Data[IWizardStep2Fields::BIRTH_CITY] : '';  ?>
 
                     <div class="element-input" >
-                        <label for="<?php echo IWizardStep2Fields::BIRTH_CITY;?>" class="title">עיר לידה</label>
+                        <label for="<?php echo IWizardStep2Fields::BIRTH_CITY;?>" class="title"><?php BH__e('עיר לידה' , 'BH', $locale);?></label>
                         <input id="<?php echo IWizardStep2Fields::BIRTH_CITY;?>" class="large" type="text"  value="<?php echo stripslashes ($birthCity); ?>"  name="<?php echo IWizardStep2Fields::BIRTH_CITY;?>" />
                     </div>
 
                     <!-- Immigration  -->
-                    <div id="immigration-select-container" class="element-select" title="שנת עליה">
-                        <label for="<?php echo IWizardStep2Fields::IMMIGRATION_DATE; ?>" class="title">שנת עלייה</label>
+                    <div id="immigration-select-container" class="element-select" title="<?php BH__e('שנת עליה' , 'BH', $locale);?>">
+                        <label for="<?php echo IWizardStep2Fields::IMMIGRATION_DATE; ?>" class="title"><?php BH__e('שנת עליה' , 'BH', $locale);?></label>
 
                         <div class="large">
                             <span class="wizard-select-theme">
@@ -373,7 +382,7 @@ get_header();
                                 $already_selected_value = isset( $step2Data[ IWizardStep2Fields::IMMIGRATION_DATE] ) ? $step2Data[ IWizardStep2Fields::IMMIGRATION_DATE] :  -1 ;
                                 $earliest_year = 1900;
 
-                                echo '<option value="-1" ' . ( ( $already_selected_value == -1)  ? ' selected="true" ' : '' ) . '>' . 'בחרו שנת עלייה'  . '</option>';
+                                echo '<option value="-1" ' . ( ( $already_selected_value == -1)  ? ' selected="true" ' : '' ) . '>' . BH__('בחרו שנת עלייה' , 'BH', $locale)  . '</option>';
 
                                 foreach (range(date('Y'), $earliest_year) as $year)
                                 {
@@ -388,7 +397,7 @@ get_header();
                     </div>
 
 
-                    <?php $nextButtonCaption = "שמור והמשך &#9664;";?>
+                    <?php $nextButtonCaption = BH__("שמור והמשך &#9664;" , 'BH', $locale);?>
                     <!-- User stories -->
                     <?php  if (  isset( $data['user']['exist'] ) AND $data['user']['exist'] == true  ):  ?>
 
@@ -417,14 +426,14 @@ get_header();
                                            {
                                                if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) )
                                                {
-                                                   echo '<h2 class="pulse red-title">סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי</h2>';
+                                                   echo '<h2 class="pulse red-title">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
 
                                                    echo '<div class="alert alert-info existing-story-alert">';
-                                                   echo '<strong>' . 'שימו לב! '  . '</strong>';
+                                                   echo '<strong>' . BH__('שימו לב! ' , 'BH', $locale)  . '</strong>';
                                                    echo '<br/>';
                                                    echo '<p>';
-                                                   echo 'אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת.<br>אין לתעד שני אנשים שונים על אותה כתובת מייל.' . '<br>';
-												   echo 'להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:';
+                                                   echo BH__('אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת.' , 'BH', $locale) . '<br>' . BH__('אין לתעד שני אנשים שונים על אותה כתובת מייל.','BH', $locale) . '<br>';
+												   echo BH__('להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:' , 'BH', $locale);
                                                    echo '</p>';
                                                    echo '</div>';
                                                }
@@ -454,7 +463,7 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2 class="pulse red-title">סיפורים ממתינים לאישור</h2>';
+                                            echo '<h2 class="pulse red-title">' . BH__('סיפורים ממתינים לאישור') . '</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
                                                     echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
@@ -475,7 +484,7 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2 class="pulse red-title">סיפורים מפורסמים</h2>';
+                                            echo '<h2 class="pulse red-title">' . BH__('סיפורים מפורסמים') . '</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
                                                 echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
@@ -499,7 +508,7 @@ get_header();
 
                     <div class="submit">
                         <input type="submit" class="next" value="<?php echo $nextButtonCaption; ?>"  style="float: left;margin-left: 23px;"/>
-                        <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="שמור"/>
+                        <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 
                     <input type="hidden" name="step" value="<?php echo IWizardStep3Fields::ID; ?>"/>
@@ -514,7 +523,7 @@ get_header();
                     <input name="progstep" value="1" type="hidden">
 
                     <div class="submit">
-                        <input type="submit" class="back" value="&#9654; הקודם"/>
+                        <input type="submit" class="back" value="<?php BH__e('&#9654; הקודם' , 'BH', $locale);?>"/>
                     </div>
 
                 </form>
