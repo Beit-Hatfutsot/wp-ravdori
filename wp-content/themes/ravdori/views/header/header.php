@@ -16,7 +16,8 @@
      $school_search_url    = get_field( 'acf-options-search-school'    , 'options' );
      $topics_search_url    = get_field( 'acf-options-search-subject'   , 'options' );
      $countries_search_url = get_field( 'acf-options-search-countries' , 'options' );
-
+	 
+	 $locale = get_language_locale_filename_by_get_param();
 ?>
 
 <header>
@@ -128,19 +129,16 @@
                     </div>
                     
                      <div id="image-upload-and-social-container" class="col-xs-2">
-                              <div id="upload-image">
-                                  <a href="<?php echo $wizard_page_url; ?>" class="button">
-                                   <?php _e( 'העלאת סיפור'  , 'BH' ); ?>
-                                  </a>
-                              </div>
-
+						<?php  get_template_part('views/languages/header/wizard-languages-switcher/language','switcher'); ?>
                      </div>
+					 
+					 
           	</div>
 
             <?php if ( !is_page_template( 'wizard.php' ) ): ?>
                 <div class="homepage-title-container row">
-                    <h2><?php _e( 'מאגר סיפורי מורשת' , 'BH' ); ?></h2>
-                    <h3><?php _e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH' ); ?></h3>
+                    <h2><?php BH__e( 'מאגר סיפורי מורשת' , 'BH' ,$locale); ?></h2>
+                    <h3><?php BH__e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH' ,$locale); ?></h3>
                 </div>
             <?php endif; ?>
 		

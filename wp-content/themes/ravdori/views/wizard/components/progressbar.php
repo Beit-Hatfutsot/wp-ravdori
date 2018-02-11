@@ -112,9 +112,10 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons .bu
 /* Language Direction */
 <?php 
 // Get the current local
-$dir = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
-
-if ( $dir["dir"] == 'ltr'):?>
+$locale = get_language_locale_filename_by_get_param(true); 
+$text_direction = $locale['dir'];
+$locale = $locale['locale_file'];
+if ( $text_direction == 'ltr'):?>
 
 /* Global */
 .wizard-form label {
@@ -139,6 +140,32 @@ if ( $dir["dir"] == 'ltr'):?>
   text-align: left;
   direction: ltr;
 }
+
+#progressbar li button {
+    padding-right: 30px;
+    font-size: 13px;
+    width: 160px;
+}
+
+
+header .homepage-title-container { padding-right:0; }
+
+header .homepage-title-container h2 {
+     float: left;
+    font-size: 30px;
+    padding-left: 17px;
+    padding-top: 11px;
+}
+
+
+header .homepage-title-container h3 {
+	    margin-right: 0;
+		float: right;
+		font-size: 27px;
+		margin-top: 26px;
+		padding-right: 23px;
+}
+
 
 
 /* Step 1 */

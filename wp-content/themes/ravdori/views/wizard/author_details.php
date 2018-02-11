@@ -12,15 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 get_header();
 ?>
 
-<?php 
-
-global $wizardSessionManager;
-
-// Get the current local
-$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
-$locale =  $locale["locale_file"];
-
-?>
+<?php $locale = get_language_locale_filename_by_get_param(); ?>
 
     <script>
 

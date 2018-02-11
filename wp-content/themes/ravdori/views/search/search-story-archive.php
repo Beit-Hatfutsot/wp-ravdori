@@ -125,7 +125,7 @@ elseif ( $searchBy == 'topics' ):
 
 elseif ( $searchBy ==  'countries'):
 
-    $countryId = isset ( $_GET['country'] ) ? $_GET['country'] : -1;
+    $countryId = ( isset ( $_GET['country'] ) AND ($_GET['country'] != null ) ) ? $_GET['country'] : -1;
 
     /*$args['tax_query'] = array(
         array(

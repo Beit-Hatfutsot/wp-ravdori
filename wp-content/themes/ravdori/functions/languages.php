@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 interface ISupportedLanguages  {
 	
-    const HE = array( 'get_param_value' => 'he', 'locale_file' => 'localc' , 'dir' => 'rtl' );
-	const EN = array( 'get_param_value' => 'en', 'locale_file' => 'en_GB'  , 'dir' => 'ltr' );
-	const RU = array( 'get_param_value' => 'ru', 'locale_file' => 'localc' , 'dir' => 'ltr' );
+    const HE = array( 'get_param_value' => 'he', 'locale_file' => 'he_IL'  , 'dir' => 'rtl' , 'display_name' => 'עברית'   );
+	const EN = array( 'get_param_value' => 'en', 'locale_file' => 'en_GB'  , 'dir' => 'ltr' , 'display_name' => 'English' );
+	const RU = array( 'get_param_value' => 'ru', 'locale_file' => 'localc' , 'dir' => 'ltr' , 'display_name' => 'русский' );
 
 }
 
@@ -44,6 +44,9 @@ add_action('after_setup_theme', 'setup_text_domain');
 function BH__( $string, $textdomain, $locale ) {
   global $l10n;
   
+  if ( $locale == ISupportedLanguages::HE['locale_file'])
+	  return $string;
+  
   if ( in_array( $textdomain , $l10n ) ) {
 	$backup = $l10n[$textdomain];
   }
@@ -68,7 +71,6 @@ function BH__e($string, $textdomain, $locale){
 	/**
 	 * Get a local file name based a language code given in a get param
 	 * 
-	 * Works like __(), but with an locale argument
 	 *
 	 * @param Boolean $returnFullLanguagedata: True to return the full language inforamtion, i.e direction,the get param name etc.
 	 *		  otherwise, only the locale file name is returned	
@@ -86,16 +88,17 @@ function get_language_locale_filename_by_get_param( $returnFullLanguageData = fa
 	$oClass = new ReflectionClass ('ISupportedLanguages');
 	$current_language_by_get = $oClass->getConstant ( strtoupper ( $current_language_by_get ) );
 	unset ($oClass);
+
 	
-	if ( !$returnFullLanguageData )
+	if ( $returnFullLanguageData == false)
 	{
-		// if non valid langauge passed retuen Hebrew as default, else return the choose langauge
-		$locale = ( $current_language_by_get == false ? ISupportedLanguages::HE['locale_file'] : $current_language_by_get['locale_file'] );
+		// if non valid langauge passed return Hebrew as default, else return the choose langauge
+		$locale = ( $current_language_by_get == false ? ISupportedLanguages::HE['get_param_value'] : $current_language_by_get['locale_file'] );
 	}
 	else 
 	{
 		// if non valid langauge passed retuen Hebrew as default, else return the interface
-		$locale = ( $current_language_by_get == false ? ISupportedLanguages::HE['locale_file'] : $current_language_by_get );
+		$locale = ( $current_language_by_get == false ? ISupportedLanguages::HE : $current_language_by_get );
 	}
 	
 

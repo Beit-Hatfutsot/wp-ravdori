@@ -13,19 +13,28 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 get_header();
 ?>
 
-<?php
-global $wizardSessionManager;
+<?php $locale = get_language_locale_filename_by_get_param(); ?>
 
-$step4Data = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
-$post_id   = $step4Data[ IWizardStep4Fields::POST_ID ];
+<?php if ( $locale == ISupportedLanguages::EN['locale_file'] ): ?>
 
-
-// Get the current local
-$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
-$locale =  $locale["locale_file"];
-
-
-?>
+	<style>			
+		.publish-story-caption:after {
+				background: transparent url('/wp-content/themes/ravdori/images/general/story/publish-story-bubble-en.png') 0 0 no-repeat !important;
+				width: 290px;
+				left: 160px;
+		}
+		
+		#story-post .white-shadow-box {
+			    text-align: left;
+				direction: ltr;
+		}
+		
+		#story-post .white-shadow-box article.single-story .subtitle { float: left; }
+		
+		.wp-caption .wp-caption-text { text-align: left; }
+	</style>
+			
+<?php endif;?>
 
 <script>
 
@@ -98,6 +107,8 @@ $locale =  $locale["locale_file"];
 					<!-- Story Data -->
 								<?php 
 									global $post;
+									$post_id =  $step4Data[IWizardStep4Fields::POST_ID];
+									
 									$old_post = $post;
 									$post = get_post( $post_id );
 									setup_postdata( $post );

@@ -13,15 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 get_header();
 ?>
 
-<?php 
-
-global $wizardSessionManager;
-
-// Get the current local
-$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
-$locale =  $locale["locale_file"];
-
-?>
+<?php $locale = get_language_locale_filename_by_get_param(); ?>
 
 <script>
 
@@ -213,7 +205,7 @@ $().ready(function () {
 
 
                     <div class="submit">
-                        <input type="submit" style="float: left;margin-left: 23px;" value="שמור והמשך &#9664;"/>
+                        <input type="submit" style="float: left;margin-left: 23px;" value="<?php BH__e('שמור והמשך &#9664;', 'BH', $locale);?>"/>
                         <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 

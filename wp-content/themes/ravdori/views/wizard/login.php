@@ -17,7 +17,8 @@ get_header();
 global $wizardSessionManager;
 
 // Get the current local
-$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+//$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
+$locale = get_language_locale_filename_by_get_param(true);
 $locale =  $locale["locale_file"];
 
 ?>
@@ -222,7 +223,7 @@ jQuery(document).ready(function () {
                     </div>
 
                     <fieldset>
-                        <legend>פרטי בית הספר</legend>
+                        <legend><?php BH__e("פרטי בית הספר", "BH" , $locale); ?></legend>
                     <!-- Country -->
                     <div id="country-field" class="element-select" title="<?php BH__e("בחר מדינה" , "BH" , $locale);?>">
                         <label for="<?php echo IWizardStep1Fields::COUNTRY ?>" class="title"><?php BH__e("* מדינה" , "BH" , $locale);?>
@@ -398,8 +399,29 @@ jQuery(document).ready(function () {
                     <!-- Terms -->
                     <div class="element-checkbox" title="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>">
 
+					<?php 
+					
+					// Get the terms of agreement url page based the on the language
+
+					// Get the current language data
+					$lang_code = get_language_locale_filename_by_get_param( true );
+
+					// If Hebrew
+					if ( !isset (  $lang_code["get_param_value"]  ) OR $lang_code["get_param_value"] == ISupportedLanguages::HE['get_param_value'] )
+					{
+						$acf_wizard_terms_url_field_name = "acf-options-wizard-step1-agreement";
+					}	
+					else {
+						$acf_wizard_terms_url_field_name = "acf-options-wizard-step1-agreement-" . $lang_code["get_param_value"];
+					}
+						
+					
+					?>
+					
                         <div class="column column1 terms-column">
-                            <input type="checkbox" checked id="agree" name="agree"  value="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>" / ><span class="terms-label"><?php BH__e("אישור " , "BH" , $locale);?><a href="<?php the_field( 'acf-options-wizard-step1-agreement' , 'options' ); ?>" target="_blank"><?php BH__e("תנאי שימוש" , "BH" , $locale);?></a></span>
+                            <input type="checkbox" checked id="agree" name="agree"  value="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>" / ><span class="terms-label">
+							<?php BH__e("אישור " , "BH" , $locale);?><a href="<?php the_field( $acf_wizard_terms_url_field_name , 'options' ); ?>" target="_blank"><?php BH__e("תנאי שימוש" , "BH" , $locale);?></a>
+							</span>
                             <label for="agree" style="    position: absolute; top: 0px; right: 174px;"></label>
                         </div>
 

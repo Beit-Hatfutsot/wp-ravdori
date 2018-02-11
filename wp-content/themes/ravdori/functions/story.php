@@ -207,49 +207,50 @@ function get_story_meta_data( $arrFields = null , $showDistricit = false )
     }
     #endregion
 
-
+	
+	$locale = get_language_locale_filename_by_get_param();
 
     // Unite all the meta data to a 2D array
     $stories_meta = array(
         array (
-                'meta_title' => __('מאת: ', 'BH'),
+                'meta_title' => BH__('מאת: ', 'BH', $locale),
                 'meta_data'  => '<bdi>' . $adult_name . '</bdi>',
                 'class'      => 'story-adult-name' ,
               ),
 
          array (
-                 'meta_title' => __('ארץ לידה: ', 'BH'),
+                 'meta_title' => BH__('ארץ לידה: ', 'BH', $locale),
                  'meta_data' => $country,
                  'class'      => 'story-adult-country' ,
                ),
 
         array (
-                'meta_title' => __('מנחה: ', 'BH'),
+                'meta_title' => BH__('מנחה: ', 'BH', $locale),
                 'meta_data'  => $student_name,
                 'class'      => 'story-student-name' ,
               ),
 
         array (
-            'meta_title' => __('שם המורה: ', 'BH'),
+            'meta_title' => BH__('שם המורה: ', 'BH', $locale),
             'meta_data'  => $teacher_name,
             'class'      => 'story-teacher-name' ,
         ),
 
         array (
-                'meta_title' => __('שם ועיר בית הספר: ', 'BH'),
+                'meta_title' => BH__('שם ועיר בית הספר: ', 'BH', $locale),
                 'meta_data'  => $school_full_location,
                 'class'      => 'story-full-location' ,
               ),
 
 
         array (
-            'meta_title' => __('תאריך פרסום: ', 'BH'),
+            'meta_title' => BH__('תאריך פרסום: ', 'BH', $locale),
             'meta_data'  => get_the_date(),
             'class'      => 'story-date' ,
         ),
 
         array (
-                'meta_title' => __('נושאי הסיפור:  ', 'BH'),
+                'meta_title' => BH__('נושאי הסיפור:  ', 'BH', $locale),
                 'meta_data'  => $story_subjects,
                 'class'      => 'story-subjects' ,
               ),

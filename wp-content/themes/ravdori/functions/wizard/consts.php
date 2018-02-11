@@ -46,7 +46,7 @@ $wizard_steps_colors   = array ();
 $lang_code = get_language_locale_filename_by_get_param( true );
 
 // If Hebrew
-if ( $lang_code["get_param_value"] == ISupportedLanguages::HE['get_param_value'] )
+if ( !isset (  $lang_code["get_param_value"]  ) OR $lang_code["get_param_value"] == ISupportedLanguages::HE['get_param_value'] )
 {
 	$acf_wizard_title_field_name = "acf-options-wizard-title";
 }	

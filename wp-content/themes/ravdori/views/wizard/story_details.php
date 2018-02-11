@@ -14,15 +14,7 @@ get_header();
 ?>
 
 
-<?php 
-
-global $wizardSessionManager;
-
-// Get the current local
-$locale = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);
-$locale =  $locale["locale_file"];
-
-?>
+<?php $locale = get_language_locale_filename_by_get_param(); ?>
 
     <script>
 
@@ -625,6 +617,16 @@ $locale =  $locale["locale_file"];
 
     </script>
 
+
+<?php if ( $locale == ISupportedLanguages::EN['locale_file'] ): ?>
+
+	<style>			
+		body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons:before {
+				background: transparent url('/wp-content/themes/ravdori/images/general/story/insert-media-bubble-en.png') 0 0 no-repeat !important;
+		}
+	</style>
+			
+<?php endif;?>
 
 
 <?php $errors = isset($data['errors']) ? $data['errors'] : null; ?>

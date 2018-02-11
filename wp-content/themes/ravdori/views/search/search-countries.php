@@ -37,13 +37,15 @@ if ( ! empty( $user_query->results ) )
 			$lat = get_field( 'acf-school-latitude'  , SCHOOLS_TAXONOMY . '_' . $birthCountryID);
 			$lng = get_field( 'acf-school-longitude' , SCHOOLS_TAXONOMY . '_' . $birthCountryID);
 			
-            $countriesArray[] = array('id' => $birthCountryID , 'name' => $term->name , 'lat' => $lat , 'lng' => $lng);
+			// If the term exist and valid
+			if ( !is_wp_error( $term ) AND $lat AND $lng ) 
+			{
+				$countriesArray[] = array('id' => $birthCountryID , 'name' => $term->name , 'lat' => $lat , 'lng' => $lng);
+			}
         }
 		
 		$countriesArray = super_unique ( $countriesArray );
 }
-
-
 ?>
 
 <script>

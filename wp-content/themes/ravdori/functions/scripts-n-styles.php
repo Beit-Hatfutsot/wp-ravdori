@@ -106,7 +106,8 @@ function BH_register_scripts() {
 
     //wp_register_script( 'bootstrap'      ,	JS_DIR . '/libs/bootstrap.min.js'             ,	array('jquery')       , VERSION  ,	true );
         wp_register_script( 'jquery'         ,	JS_DIR . '/jquery.js'                         ,	array()               , VERSION  ,	true );
-        wp_register_script( 'JCycle2'        ,	JS_DIR . '/jquery.cycle2.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
+        wp_register_script( 'theme-global'   ,	JS_DIR . '/theme-global.js'              ,	array('jquery') , VERSION  );
+		wp_register_script( 'JCycle2'        ,	JS_DIR . '/jquery.cycle2.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'JRepeater'      ,	JS_DIR . '/jquery.repeater.min.js'            ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'chosen'   ,	JS_DIR . '/chosen/chosen.jquery.js'  ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'toastr'   ,	JS_DIR . '/toastr/toastr.min.js'  ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
@@ -120,7 +121,9 @@ function BH_register_scripts() {
 function BH_load_theme_scripts() {
 
     wp_enqueue_script('jquery');
-
+	
+	wp_enqueue_script('theme-global');
+	
     // JCycle2 script
     wp_enqueue_script('JCycle2');
 
