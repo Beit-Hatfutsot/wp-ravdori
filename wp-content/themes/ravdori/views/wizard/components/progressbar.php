@@ -141,12 +141,79 @@ if ( $text_direction == 'ltr'):?>
   direction: ltr;
 }
 
-#progressbar li button {
-    padding-right: 30px;
-    font-size: 13px;
-    width: 160px;
+.progress-bar-title {
+    font-weight: normal;
+    margin-right: 0;
+    margin-left: 9px;
+    text-align: left;
+    direction: ltr;
 }
 
+
+#progressbar { direction: ltr; }
+
+#progressbar li button {
+    padding-right: 0;
+    padding-left: 35px;
+    font-size: 13px;
+    width: 160px;
+	border-radius: 17px 0px 0px 18px;
+}
+
+
+#progressbar li button:after {
+	left:auto;
+	right: -18px;
+	transform: scaleX(-1);
+}
+
+#progressbar li:last-child button:after {
+	right: -23px;
+	left: auto;
+	
+}
+
+.chosen-rtl {
+    text-align: left;
+}
+
+
+.wizard-form div.submit {
+	direction:ltr;
+}
+
+
+.disconnect-area .logout-link {
+    float: right;
+    padding-right: 34px;
+}
+
+.wizard-select-theme .chosen-rtl .chosen-single {
+    padding: 4px 0 4px 8px;
+}
+
+.chosen-rtl .chosen-single div {
+    right: 13px;
+    left: auto;
+}
+
+
+#wizard-form-step1 > div.submit {text-align:right !important;}
+
+#progressbar li.active button {
+    box-shadow: rgba(0, 0, 0, 0.3) -14px 3px 21px 0px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.3) -14px 3px 21px 0px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.3) -14px 3px 21px 0px;
+}
+
+#progressbar li:last-child button {
+	    padding-left: 58px;
+        padding-right: 0;
+}
+
+#progressbar li.active button span {
+    padding-right: 0px;
+}
 
 header .homepage-title-container { padding-right:0; }
 
