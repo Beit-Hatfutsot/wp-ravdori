@@ -79,21 +79,28 @@
                          </div>
 
                          <div class="col-sm-4">
-
+								
+						     <?php 
+							   $facebook_url = get_field( 'acf-options-header-facebook-url', 'options' );
+							   $youtube_url  = get_field( 'acf-options-header-youtube-url', 'options' );
+							 ?>			
                              <ul class="social-links">
-                                  <li class="social-facebook">
-                                     <a href="http://www.facebook.com/groups/260769624535/?fref=ts" target="_blank">
-                                        <span class="social-icon"></span>
-                                     </a>
-
-                                 </li>
-
-                                 <li class="social-youtube">
-                                     <a href="https://www.youtube.com/results?search_query=%D7%A7%D7%A9%D7%A8+%D7%A8%D7%91+%D7%93%D7%95%D7%A8%D7%99&oq=%D7%A7%D7%A9%D7%A8+%D7%A8%D7%91+%D7%93%D7%95%D7%A8%D7%99&gs_l=youtube.12..0i19.2735.5455.0.7353.11.6.0.5.5.0.134.777.0j6.6.0...0.0...1ac.1.1iHfZVeTxPs" target="_blank">
-                                         <span class="social-icon"></span>
-                                     </a>
-                                 </li>
-
+								 
+								 <?php if ( $facebook_url ): ?>
+									  <li class="social-facebook">
+										 <a href="<?php echo $facebook_url; ?>" target="_blank">
+											<span class="social-icon"></span>
+										 </a>
+									 </li>
+								<?php endif;?>
+								
+								 <?php if ( $youtube_url ): ?>
+									 <li class="social-youtube">
+										 <a href="<?php echo $youtube_url; ?>" target="_blank">
+											 <span class="social-icon"></span>
+										 </a>
+									 </li>
+								<?php endif;?>
                              </ul>
 
                          </div>
