@@ -218,22 +218,23 @@ if ( $text_direction == 'ltr'):?>
 header .homepage-title-container { padding-right:0; }
 
 header .homepage-title-container h2 {
-     float: left;
+    /* float: left;
     font-size: 30px;
     padding-left: 17px;
-    padding-top: 11px;
+    padding-top: 11px;*/
+	display:none;
 }
 
 
 header .homepage-title-container h3 {
-	    margin-right: 0;
-		float: right;
+	    margin: 26px auto !important;
+		float: none !important;
 		font-size: 27px;
-		margin-top: 26px;
-		padding-right: 23px;
+		padding-right: 0;
+		text-align: center;
 }
 
-
+.homepage-title-container.row { text-align:center;}
 
 /* Step 1 */
 #STEP1_SCHOOL_CODE { float: left; }
@@ -287,6 +288,54 @@ body.page-template-wizard #wizard-form-step1 fieldset legend { left: -100%; }
     direction: ltr;
 }
 
+/* quote item label */
+#wizard-form-step4 #quotes-repeater > div:nth-child(4) > div:nth-child(1) > div:nth-child(1) > label:nth-child(1) { display:none; }
+
+#wizard-form-step4 > div.submit > input.next,
+#wizard-form-step3 > div.submit > input.next,
+#wizard-form-step2 > div.submit > input.next { float:right; }
+
+
+#wizard-form-step4 > div.submit:nth-child(5) > input:nth-child(1),
+#wizard-form-step4 > div.submit ,
+#wizard-form-step3 > div.submit:nth-child(5) > input:nth-child(1),
+#wizard-form-step3 > div.submit,
+#wizard-form-step2 > div.submit {
+    text-align: right !important;
+    float: right !important;
+}
+
+#submitSave,
+div.submit:nth-child(15) > input:nth-child(1),
+#wizard-form-step4 #submitSaveBottom,
+#wizard-form-step4 > div.submit .next  ,
+#wizard-form-step3 > div.submit .next,
+#wizard-form-step2 > div.submit .next {
+    float: right !important;
+}
+
+
+div.submit:nth-child(2) input[type="submit"],
+.back {
+	float: left !important;
+	margin-left: 25px !important;
+}  
+
+.upper-save-area input[type="submit"],
+.upper-save-area .cancel { float:right !important; }
+
+
+.final-step div.submit:nth-child(3) { float:right !important; }
+
+
+#wizard-form-step4 div.element-input:nth-child(7) > label:nth-child(1) > div:nth-child(2) {
+	display: contents;
+}
+
+#wizard-form-step4 textarea {
+	text-align: left;
+	direction: ltr;
+}
 <?php endif;?>
 
 

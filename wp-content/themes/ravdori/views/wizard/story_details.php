@@ -329,7 +329,7 @@ get_header();
                 // If empty
                 if ($.trim($(this).val()).length == 0)
                 {
-                    $(this).before("<label class='dictionary_error'><span class='error'>שדה חובה</span></label>");
+                    $(this).before("<label class='dictionary_error'><span class='error'><?php BH__e('שדה חובה' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
 
                     hasError = true;

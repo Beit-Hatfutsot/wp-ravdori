@@ -91,7 +91,7 @@ get_header();
                 <?Php include(WIZARD_VIEWS . '/components/progressbar.php'); //Show the progress bar ?>
                 <div class="col-sm-12">
 
-                <form id="wizard-form-step4" class="wizard-form" method="post">
+                <form id="wizard-form-step4" class="wizard-form final-step" method="post">
                     <div class="title">
                         <h2><?php echo '5 - ' . $wizard_steps_captions[IWizardStep5Fields::ID - 1]; ?></h2>
                     </div>
