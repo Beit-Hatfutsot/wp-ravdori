@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G2G: Generation to Generation\n"
 "POT-Creation-Date: 2017-11-13 12:47+0200\n"
-"PO-Revision-Date: 2018-02-14 17:33+0200\n"
+"PO-Revision-Date: 2018-02-15 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -811,7 +811,7 @@ msgstr "Year of Aliyah (if relevant)"
 #: views/wizard/author_details.php:391 views/wizard/story_details.php:634
 #: views/wizard/story_details.php:1126
 msgid "שמור והמשך &#9664;"
-msgstr "&#9664; Save and Continue"
+msgstr "Save and Continue &#9654;"
 
 #: views/wizard/author_details.php:420
 msgid "סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי"
@@ -849,7 +849,7 @@ msgstr "Save"
 #: views/wizard/author_details.php:517 views/wizard/recorder_details.php:219
 #: views/wizard/story_details.php:1141 views/wizard/story_preview.php:143
 msgid "&#9654; הקודם"
-msgstr "&#9654; Previous"
+msgstr "&#9664; Previous"
 
 #: views/wizard/story_details.php:1141 views/wizard/story_preview.php:80
 #: views/wizard/story_preview.php:129
