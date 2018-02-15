@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 interface ISupportedLanguages  {
 	
-    const HE = array( 'get_param_value' => 'he', 'locale_file' => 'he_IL'  , 'dir' => 'rtl' , 'display_name' => 'עברית'   );
-	const EN = array( 'get_param_value' => 'en', 'locale_file' => 'en_GB'  , 'dir' => 'ltr' , 'display_name' => 'English' );
-	const RU = array( 'get_param_value' => 'ru', 'locale_file' => 'localc' , 'dir' => 'ltr' , 'display_name' => 'русский' );
+    const HE = array( 'get_param_value' => 'he', 'locale_file' => 'he_IL'  , 'dir' => 'rtl' , 'display_name'  => 'עברית'    , 'upload-story-name' => 'העלאת סיפור' );
+	const EN = array( 'get_param_value' => 'en', 'locale_file' => 'en_GB'  , 'dir' => 'ltr' , 'display_name'  => 'English'  , 'upload-story-name' => 'Upload Story' );
+	const RU = array( 'get_param_value' => 'ru', 'locale_file' => 'ru_RU'  , 'dir'  => 'ltr' , 'display_name' => 'русский'  , 'upload-story-name' => 'Загрузите свою Историю' );
 
 }
 

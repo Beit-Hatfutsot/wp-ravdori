@@ -113,6 +113,7 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons .bu
 <?php 
 // Get the current local
 $locale = get_language_locale_filename_by_get_param(true); 
+$lang   = $locale['get_param_value'];
 $text_direction = $locale['dir'];
 $locale = $locale['locale_file'];
 if ( $text_direction == 'ltr'):?>
@@ -338,6 +339,39 @@ div.submit:nth-child(2) input[type="submit"],
 }
 <?php endif;?>
 
+
+<?php if ( $lang == 'ru' ): ?>
+
+#progressbar li button {
+	width: 149px;
+	right: 9px;
+}
+
+#progressbar li:last-child button {
+
+    width: 209px;
+    right: -9px;
+    text-align: left;
+}
+
+
+#progressbar li.btnStep1 {
+	top: 10px;
+}	
+
+.terms-label {
+	text-align: left;
+}
+
+#wizard-form-step4  h2 { font-size: 1.5em !important; }
+
+body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons::before {
+    background: transparent url("/wp-content/themes/ravdori/images/general/story/insert-media-bubble-ru.png") 0 0 no-repeat;
+	left: 271px;
+	top: -49px;
+}
+	
+<?php endif; ?>
 
 </style>
 

@@ -17,7 +17,9 @@ get_header();
 
 <?php if ( $locale == ISupportedLanguages::EN['locale_file'] ): ?>
 
-	<style>			
+	<style>	
+		
+
 		.publish-story-caption:after {
 				background: transparent url('/wp-content/themes/ravdori/images/general/story/publish-story-bubble-en.png') 0 0 no-repeat !important;
 				width: 290px;
@@ -33,7 +35,33 @@ get_header();
 		
 		.wp-caption .wp-caption-text { text-align: left; }
 	</style>
+
+<?php else: ?>
+	
+	<style>		
+
+		.publish-story-caption {
+			position: relative;
+			top: -3px;
+			right: -68px;
+		}
 			
+		.publish-story-caption:after {
+				background: transparent url('/wp-content/themes/ravdori/images/general/story/publish-story-bubble-ru.png') 0 0 no-repeat !important;
+				width: 290px;
+				left: 204px;
+		}
+		
+		#story-post .white-shadow-box {
+			    text-align: left;
+				direction: ltr;
+		}
+		
+		#story-post .white-shadow-box article.single-story .subtitle { float: left; }
+		
+		.wp-caption .wp-caption-text { text-align: left; }
+	</style>
+	
 <?php endif;?>
 
 <script>

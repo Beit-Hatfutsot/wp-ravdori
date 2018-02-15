@@ -1965,7 +1965,7 @@ a.external-link {
 
 .languages-switcher.dropdown-menu li .flag {
 	float: left;
-    padding-left: 39px;
+    padding-left: 0px;
 }  
 
 .languages-switcher.dropdown-menu > li> a {

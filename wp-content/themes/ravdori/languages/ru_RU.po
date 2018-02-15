@@ -1,21 +1,24 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: G2G: Generation to Generation\n"
-"POT-Creation-Date: 2017-11-13 12:47+0200\n"
-"PO-Revision-Date: 2018-02-14 17:33+0200\n"
+"POT-Creation-Date: 2018-02-14 13:56+0200\n"
+"PO-Revision-Date: 2018-02-15 15:38+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: en_GB\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.6\n"
 "X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: style.css\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2;BH__;BH__e\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
@@ -28,7 +31,7 @@ msgstr ""
 #: functions/backend/backend-admin-page.php:24
 #: functions/backend/backend-admin-page.php:149
 #: functions/backend/backend-story-cpt.php:21
-#: views/wizard/story_details.php:528
+#: views/wizard/story_details.php:531
 msgid "ציטוטים"
 msgstr ""
 
@@ -255,7 +258,7 @@ msgid "Date"
 msgstr ""
 
 #: functions/post-types.php:278 functions/taxonomies.php:79
-#: functions/taxonomies.php:80 views/header/header.php:52
+#: functions/taxonomies.php:80 views/header/header.php:53
 msgid "נושאים"
 msgstr ""
 
@@ -286,38 +289,39 @@ msgid "הסיפורים הוצאו בהצלחה"
 msgid_plural "%s סיפורים הוצאו"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: functions/post-types.php:1060
 msgid "מספר הסיפורים שהמבוגר פרסם"
 msgstr ""
 
-#: functions/story.php:215
+#: functions/story.php:216
 msgid "מאת: "
-msgstr "By: "
+msgstr "автор:"
 
-#: functions/story.php:221
+#: functions/story.php:222
 msgid "ארץ לידה: "
-msgstr "Country of birth: "
+msgstr "Страна:"
 
-#: functions/story.php:227
+#: functions/story.php:228
 msgid "מנחה: "
-msgstr "Name of Student: "
+msgstr "инструктор:"
 
-#: functions/story.php:233
+#: functions/story.php:234
 msgid "שם המורה: "
-msgstr "Teacher: "
+msgstr "Имя учителя:"
 
-#: functions/story.php:239
+#: functions/story.php:240
 msgid "שם ועיר בית הספר: "
-msgstr "Name and city of school: "
+msgstr "Название и город школы:"
 
-#: functions/story.php:246
+#: functions/story.php:247
 msgid "תאריך פרסום: "
-msgstr "Date published: "
+msgstr "опубликовать дату:"
 
-#: functions/story.php:252
+#: functions/story.php:253
 msgid "נושאי הסיפור:  "
-msgstr "Topics: "
+msgstr "Темы"
 
 #: functions/taxonomies.php:41
 msgctxt "Taxonomy General Name"
@@ -546,9 +550,9 @@ msgid "תצוגה מקדימה ואישור"
 msgstr ""
 
 #: functions/wizard/controllers/BH_Step5Controller.php:108
-#: views/wizard/story_preview.php:47
+#: views/wizard/story_preview.php:64
 msgid "הזוית האישית"
-msgstr "On a Personal Note"
+msgstr "Личное восприятие"
 
 #: search.php:19
 #, php-format
@@ -577,35 +581,36 @@ msgstr ""
 
 #: views/footer/footer.php:27
 msgid "בית התפוצות - מוזיאון העם היהודי"
-msgstr "Beit Hatfutsot – The Museum of the Jewish People"
+msgstr ""
 
 #: views/footer/footer.php:28
 msgid "ת.ד 39359, תל-אביב 61392"
 msgstr ""
 
-#: views/header/header.php:38
+#: views/header/header.php:39
 msgid "חפש לפי: "
 msgstr ""
 
-#: views/header/header.php:43
+#: views/header/header.php:44
 msgid "ביה\"ס/  ישוב"
 msgstr ""
 
-#: views/header/header.php:60
+#: views/header/header.php:61
 msgid "ארץ מוצא"
 msgstr ""
 
-#: views/header/header.php:133
-msgid "העלאת סיפור"
-msgstr "Upload story"
-
-#: views/header/header.php:142
+#: views/header/header.php:147
 msgid "מאגר סיפורי מורשת"
-msgstr "The online story collection at Beit Hatfutsot"
+msgstr ""
 
-#: views/header/header.php:143
+#: views/header/header.php:148
 msgid "אוצר אנושי מתכנית הקשר הרב דורי"
-msgstr "Linking Jewish Stories Across the World"
+msgstr "Соединение еврейских историй со всего мира"
+
+#: views/languages/header/wizard-languages-switcher/language-content.php:17
+#: views/languages/header/wizard-languages-switcher/language-content.php:46
+msgid "העלאת סיפור"
+msgstr "Загрузите свою Историю"
 
 #: views/main/layout-banner.php:61
 msgid "לקריאת הסיפור"
@@ -696,519 +701,553 @@ msgstr ""
 msgid "מייל:"
 msgstr ""
 
-#: views/wizard/author_details.php:70 views/wizard/author_details.php:76
-#: views/wizard/author_details.php:119 views/wizard/login.php:68
-#: views/wizard/login.php:74 views/wizard/login.php:80
-#: views/wizard/login.php:86 views/wizard/login.php:91
-#: views/wizard/recorder_details.php:55 views/wizard/recorder_details.php:61
-#: views/wizard/story_details.php:169 views/wizard/story_details.php:173
-#: views/wizard/story_details.php:179 views/wizard/story_details.php:184
-#: views/wizard/story_details.php:190 views/wizard/story_details.php:196
-#: views/wizard/story_details.php:295 views/wizard/story_details.php:299
-#: views/wizard/story_details.php:333 views/wizard/story_details.php:354
-#: views/wizard/story_details.php:358 views/wizard/story_details.php:373
-#: views/wizard/story_details.php:377 views/wizard/story_details.php:386
-#: views/wizard/story_details.php:390 views/wizard/story_details.php:399
-#: views/wizard/story_details.php:403
+#: views/wizard/author_details.php:71 views/wizard/author_details.php:77
+#: views/wizard/author_details.php:120 views/wizard/login.php:81
+#: views/wizard/login.php:87 views/wizard/login.php:93
+#: views/wizard/login.php:99 views/wizard/login.php:104
+#: views/wizard/recorder_details.php:57 views/wizard/recorder_details.php:63
+#: views/wizard/story_details.php:172 views/wizard/story_details.php:176
+#: views/wizard/story_details.php:182 views/wizard/story_details.php:187
+#: views/wizard/story_details.php:193 views/wizard/story_details.php:199
+#: views/wizard/story_details.php:298 views/wizard/story_details.php:302
+#: views/wizard/story_details.php:336 views/wizard/story_details.php:357
+#: views/wizard/story_details.php:361 views/wizard/story_details.php:376
+#: views/wizard/story_details.php:380 views/wizard/story_details.php:389
+#: views/wizard/story_details.php:393 views/wizard/story_details.php:402
+#: views/wizard/story_details.php:406
 msgid "שדה חובה"
-msgstr "Required field"
+msgstr "обязательное поле"
 
-#: views/wizard/author_details.php:71
+#: views/wizard/author_details.php:72
 msgid "שם פרטי חייב להכיל לפחות 2 אותיות"
-msgstr "First name must include at least 2 letters."
+msgstr "Имя должно содержать не менее двух букв"
 
-#: views/wizard/author_details.php:77
+#: views/wizard/author_details.php:78
 msgid "שם משפחה חייב להכיל לפחות 2 אותיות"
-msgstr "Last name must include at least 2 letters"
+msgstr "Фамилия должна содержать не менее 2 букв"
 
-#: views/wizard/author_details.php:82 views/wizard/recorder_details.php:56
+#: views/wizard/author_details.php:83 views/wizard/recorder_details.php:58
 msgid "שם חייב להכיל לפחות 2 אותיות"
-msgstr "Name must include at least 2 letters"
+msgstr "Имя должно содержать не менее 2 букв"
 
-#: views/wizard/author_details.php:110
+#: views/wizard/author_details.php:111
 msgid "שנת לידה חייבת להיות גדולה משנת עלייה"
-msgstr "The year of birth must be greater than the year of Aliyah"
+msgstr "Год рождения должен быть больше, чем год иммиграции"
 
-#: views/wizard/author_details.php:158
+#: views/wizard/author_details.php:159
 msgid "בחרו ארץ לידה"
-msgstr "Choose country of birth"
+msgstr "Страна - обязательное поле"
 
-#: views/wizard/author_details.php:158 views/wizard/author_details.php:159
-#: views/wizard/author_details.php:160 views/wizard/author_details.php:161
-#: views/wizard/login.php:111 views/wizard/login.php:112
-#: views/wizard/login.php:113
+#: views/wizard/author_details.php:159 views/wizard/author_details.php:160
+#: views/wizard/author_details.php:161 views/wizard/author_details.php:162
+#: views/wizard/login.php:124 views/wizard/login.php:125
+#: views/wizard/login.php:126
 msgid "לא נמצאו תוצאות ל - "
-msgstr "No results found for - "
+msgstr "Результаты не найдены для - "
 
-#: views/wizard/author_details.php:159 views/wizard/author_details.php:313
+#: views/wizard/author_details.php:160 views/wizard/author_details.php:314
 msgid "בחרו שנת לידה"
-msgstr "Please choose a year of birth"
+msgstr "Год рождения - обязательное поле"
 
-#: views/wizard/author_details.php:160
+#: views/wizard/author_details.php:161
 msgid "בחרו שנת עליה"
-msgstr "Year of Aliyah (if relevant)"
+msgstr "Год репатриации - обязательное поле"
 
-#: views/wizard/author_details.php:253
+#: views/wizard/author_details.php:254
 msgid "הבא"
-msgstr "Continue"
+msgstr "Далее"
 
-#: views/wizard/author_details.php:257
+#: views/wizard/author_details.php:258
 msgid "יצירת סיפור חדש"
-msgstr "Create new story"
+msgstr "Создать новую историю"
 
-#: views/wizard/author_details.php:266
+#: views/wizard/author_details.php:267
 msgid "* שם פרטי:"
-msgstr "* First name:"
+msgstr "* Имя:"
 
-#: views/wizard/author_details.php:271
+#: views/wizard/author_details.php:272
 msgid "ושם שני אם יודעים"
-msgstr "and middle name, if known"
+msgstr "фамилия"
 
-#: views/wizard/author_details.php:278
+#: views/wizard/author_details.php:279
 msgid "* שם משפחה:"
-msgstr "* Last name:"
+msgstr "* Фамилия:"
 
-#: views/wizard/author_details.php:284
+#: views/wizard/author_details.php:285
 msgid "שם המשפחה שלי"
-msgstr "My last name"
+msgstr "Фамилия"
 
-#: views/wizard/author_details.php:292
+#: views/wizard/author_details.php:293
 msgid "שם משפחה לפני הנישואין או שינוי:"
-msgstr "Maiden name or previous last name:"
+msgstr "Фамилия девичья или измененная:"
 
-#: views/wizard/author_details.php:297
+#: views/wizard/author_details.php:298
 msgid "שם נעורים"
-msgstr "Maiden name"
+msgstr "Девичья фамилия"
 
-#: views/wizard/author_details.php:301
+#: views/wizard/author_details.php:302
 msgid "שנת לידה"
-msgstr "Year of birth"
+msgstr "Год рождения"
 
-#: views/wizard/author_details.php:306
+#: views/wizard/author_details.php:307
 msgid "* שנת לידה"
-msgstr "* Year of birth"
-
-#: views/wizard/author_details.php:328
-msgid "ארץ לידה"
-msgstr "Country of birth"
+msgstr "* Год рождения"
 
 #: views/wizard/author_details.php:329
+msgid "ארץ לידה"
+msgstr "Страна"
+
+#: views/wizard/author_details.php:330
 msgid "* ארץ לידה"
-msgstr "* Country of birth"
+msgstr "* Страна"
 
-#: views/wizard/author_details.php:360
+#: views/wizard/author_details.php:361
 msgid "עיר לידה"
-msgstr "City and state of birth"
+msgstr "Город"
 
-#: views/wizard/author_details.php:365 views/wizard/author_details.php:366
+#: views/wizard/author_details.php:366 views/wizard/author_details.php:367
 msgid "שנת עליה"
-msgstr "Year of Aliyah (if relevant)"
+msgstr "Год репатриации"
 
-#: views/wizard/author_details.php:376
+#: views/wizard/author_details.php:377
 msgid "בחרו שנת עלייה"
-msgstr "Year of Aliyah (if relevant)"
+msgstr "Год репатриации"
 
-#: views/wizard/author_details.php:391 views/wizard/story_details.php:634
-#: views/wizard/story_details.php:1126
+#: views/wizard/author_details.php:392 views/wizard/recorder_details.php:208
+#: views/wizard/story_details.php:655 views/wizard/story_details.php:1147
 msgid "שמור והמשך &#9664;"
-msgstr "&#9664; Save and Continue"
+msgstr "Cохранить и продолжить &#9654;"
 
-#: views/wizard/author_details.php:420
+#: views/wizard/author_details.php:421
 msgid "סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי"
-msgstr "Stories in Progress"
+msgstr "Рассказы в процессе написания - повторный вход в мою историю"
 
-#: views/wizard/author_details.php:423
+#: views/wizard/author_details.php:424
 msgid "שימו לב! "
-msgstr "Attention! "
-
-#: views/wizard/author_details.php:426
-msgid "אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת."
-msgstr "If the following stories belong to a different participant, please login to the database using a different e-mail address."
-
-#: views/wizard/author_details.php:426
-msgid "אין לתעד שני אנשים שונים על אותה כתובת מייל."
-msgstr " Each participant should login with a separate e-mail address."
+msgstr "Обратите внимание! "
 
 #: views/wizard/author_details.php:427
+msgid ""
+"אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל "
+"אחרת."
+msgstr ""
+"Если следующие истории принадлежат другому участнику, пожалуйста, заново "
+"войдите в другой адрес электронной почты."
+
+#: views/wizard/author_details.php:427
+msgid "אין לתעד שני אנשים שונים על אותה כתובת מייל."
+msgstr ""
+"Не записывайте двух разных людей на один и тот же адрес электронной почты."
+
+#: views/wizard/author_details.php:428
 msgid "להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:"
-msgstr "To continue to your story, please click on the link below:"
+msgstr "Чтобы продолжить рассказ, нажмите ссылку на историю (ы):"
 
-#: views/wizard/author_details.php:457
+#: views/wizard/author_details.php:458
 msgid "סיפורים ממתינים לאישור"
-msgstr "Stories pending for approval"
+msgstr "Истории, ожидающие утверждения"
 
-#: views/wizard/author_details.php:478
+#: views/wizard/author_details.php:479
 msgid "סיפורים מפורסמים"
-msgstr "Published stories"
+msgstr "опубликованные истории"
 
-#: views/wizard/author_details.php:502 views/wizard/recorder_details.php:207
-#: views/wizard/story_details.php:635 views/wizard/story_details.php:1127
+#: views/wizard/author_details.php:503 views/wizard/recorder_details.php:209
+#: views/wizard/story_details.php:656 views/wizard/story_details.php:1148
 msgid "שמור"
-msgstr "Save"
+msgstr "Сохранить"
 
-#: views/wizard/author_details.php:517 views/wizard/recorder_details.php:219
-#: views/wizard/story_details.php:1141 views/wizard/story_preview.php:143
+#: views/wizard/author_details.php:518 views/wizard/recorder_details.php:221
+#: views/wizard/story_details.php:1162 views/wizard/story_preview.php:162
 msgid "&#9654; הקודם"
-msgstr "&#9654; Previous"
+msgstr "&#9664; Предварительный просмотр"
 
-#: views/wizard/story_details.php:1141 views/wizard/story_preview.php:80
-#: views/wizard/story_preview.php:129
-msgid "סיום ושליחת סיפור &#9664;"
-msgstr "Send story &#9664;"
-
-#: views/wizard/components/progressbar.php:113
+#: views/wizard/components/progressbar.php:296
 msgid "העלאת סיפור בחמישה שלבים פשוטים:"
-msgstr "Uploading your story in five simple steps:"
+msgstr "загрузите историю в пять простых шагов:"
 
-#: views/wizard/components/progressbar.php:232
+#: views/wizard/components/progressbar.php:325
 msgid "התנתקות / זה לא המשתמש שלי"
-msgstr "Logout / This is not my user"
+msgstr "Выход / Это не мой пользователь"
 
-#: views/wizard/login.php:97
+#: views/wizard/login.php:110
 msgid "יש לאשר את תנאי השימוש"
-msgstr "By clicking continue, you agree to our terms of use"
+msgstr ""
+"Нажав на кнопку, расположенную ниже, вы соглашаетесь с Условиями "
+"использования"
 
-#: views/wizard/login.php:111
+#: views/wizard/login.php:124
 msgid "בחרו מדינה"
-msgstr "Choose your country"
+msgstr "выберите страну"
 
-#: views/wizard/login.php:112
+#: views/wizard/login.php:125
 msgid "בחרו עיר"
-msgstr "Choose your city"
+msgstr "выберите город"
 
-#: views/wizard/login.php:113
+#: views/wizard/login.php:126
 msgid "בחרו בית ספר"
-msgstr "Choose your school"
+msgstr "выберите свою школу"
 
-#: views/wizard/login.php:196
+#: views/wizard/login.php:209
 msgid "* כתובת מייל:"
-msgstr "E-mail address (of the adult whose story is being told. Each story needs a different e-mail address):"
+msgstr "* Адрес электронной почты:"
 
-#: views/wizard/login.php:237
-msgid "פרטי בית הספר"
-msgstr "School Details"
-
-#: views/wizard/login.php:200
+#: views/wizard/login.php:213
 msgid "לא נשלח ספאם"
-msgstr "We won't send spam"
+msgstr "Никогда не отправлять в спам"
 
-#: views/wizard/login.php:215
+#: views/wizard/login.php:226
+msgid "פרטי בית הספר"
+msgstr "Данные школы"
+
+#: views/wizard/login.php:228
 msgid "בחר מדינה"
-msgstr "Choose your country"
+msgstr "Выберите страну"
 
-#: views/wizard/login.php:216
+#: views/wizard/login.php:229
 msgid "* מדינה"
-msgstr "* Country"
+msgstr "* Страна:"
 
-#: views/wizard/login.php:258
+#: views/wizard/login.php:271
 msgid "* עיר:"
-msgstr "* City and state:"
+msgstr "* Город:"
 
-#: views/wizard/login.php:309
+#: views/wizard/login.php:322
 msgid "בחר בית ספר"
-msgstr "Choose your school"
+msgstr "выберите свою школу"
 
-#: views/wizard/login.php:310
+#: views/wizard/login.php:323
 msgid "* בית ספר:"
-msgstr "* Name of school:"
+msgstr "* Школа:"
 
-#: views/wizard/login.php:368
+#: views/wizard/login.php:381
 msgid "קוד בית ספר"
-msgstr "School code"
+msgstr "школьный код"
 
-#: views/wizard/login.php:369
+#: views/wizard/login.php:382
 msgid "* קוד בית הספר:"
-msgstr "* School code:"
+msgstr "* школьный код"
 
-#: views/wizard/login.php:387 views/wizard/login.php:390
+#: views/wizard/login.php:400 views/wizard/login.php:422
 msgid "אישור תנאי שימוש"
-msgstr "By clicking continue, you agree to our terms of use"
+msgstr ""
+"Нажав на кнопку, расположенную ниже, вы соглашаетесь с Условиями "
+"использования"
 
-#: views/wizard/login.php:390
+#: views/wizard/login.php:423
 msgid "אישור "
-msgstr "By clicking continue, you agree to our "
+msgstr "Нажав на кнопку, расположенную ниже, вы соглашаетесь с "
 
-#: views/wizard/login.php:390
+#: views/wizard/login.php:423
 msgid "תנאי שימוש"
-msgstr "terms of use"
+msgstr "Условиями использования"
 
-#: views/wizard/login.php:400
+#: views/wizard/login.php:434
 msgid "המשך &#9664;"
-msgstr "Continue &#9654;"
+msgstr "Продолжить &#9654;"
 
-#: views/wizard/recorder_details.php:138
+#: views/wizard/recorder_details.php:140
 msgid "* שמות התלמידים:"
-msgstr "* Name of Student:"
+msgstr "* Имена учеников:"
 
-#: views/wizard/recorder_details.php:153 views/wizard/recorder_details.php:198
+#: views/wizard/recorder_details.php:155 views/wizard/recorder_details.php:200
 msgid "קודם שם פרטי ואח''כ שם משפחה"
-msgstr "First name and then last name"
+msgstr "Имя и фамилия"
 
-#: views/wizard/recorder_details.php:156 views/wizard/recorder_details.php:177
-#: views/wizard/recorder_details.php:201
+#: views/wizard/recorder_details.php:158 views/wizard/recorder_details.php:179
+#: views/wizard/recorder_details.php:203
 msgid "לא ניתן להשתמש בסימן ה '+'. ניתן להשתמש בפסיקים או ברווח"
-msgstr "The \"+\" sign is unsupported. Please use commas or spacing."
+msgstr ""
+"Знак «+» не может быть использован. Вы можете использовать запятые или "
+"пробелы"
 
-#: views/wizard/recorder_details.php:163
+#: views/wizard/recorder_details.php:165
 msgid "* כיתה:"
-msgstr "* Grade:"
+msgstr "* Класс:"
 
-#: views/wizard/recorder_details.php:183
+#: views/wizard/recorder_details.php:185
 msgid "שם המורה מוביל התוכנית"
-msgstr "Teacher:"
+msgstr ""
+"Имя и фамилия учителя ,работающего с классом по проекту «Диалог поколений»"
 
-#: views/wizard/story_details.php:55 views/wizard/story_details.php:89
+#: views/wizard/story_details.php:58 views/wizard/story_details.php:92
 msgid "קובץ שגוי"
-msgstr "Wrong File"
+msgstr "Неверный файл"
 
-#: views/wizard/story_details.php:570
-msgid "הוספת מדיה"
-msgstr "Add Media"
-
-#: views/wizard/story_details.php:571
-msgid "הוספת מסמך"
-msgstr "Add Document"
-
-#: views/wizard/story_details.php:174
+#: views/wizard/story_details.php:177
 msgid "ניתן לכתוב עד 150 תווים"
-msgstr "Up to 150 characters"
+msgstr "Вы можете написать до 150 символов"
 
-#: views/wizard/story_details.php:185 views/wizard/story_details.php:191
+#: views/wizard/story_details.php:188 views/wizard/story_details.php:194
 msgid "ניתן לכתוב עד 40 תווים"
-msgstr "Up to 40 characters"
+msgstr "Вы можете написать до 40 символов"
 
-#: views/wizard/story_details.php:197
+#: views/wizard/story_details.php:200
 msgid "ניתן לבחור עד 4 נושאים"
-msgstr "Please choose up to 4 topics"
+msgstr "Вы можете выбрать до 4 тем"
 
-#: views/wizard/story_details.php:236
+#: views/wizard/story_details.php:239
 msgid "למחוק ערך מילון?"
-msgstr "Delete from dictionary?"
+msgstr "Удалить значение словаря?"
 
-#: views/wizard/story_details.php:264
+#: views/wizard/story_details.php:267
 msgid "למחוק ציטוט?"
-msgstr "Delete quote?"
+msgstr "Удалить цитату?"
 
-#: views/wizard/story_details.php:289
+#: views/wizard/story_details.php:292
 msgid "ציטוטים:"
-msgstr "Quotes:"
+msgstr "Котировки:"
 
-#: views/wizard/story_details.php:305 views/wizard/story_details.php:309
+#: views/wizard/story_details.php:308 views/wizard/story_details.php:312
 msgid "ניתן לרשום עד 15 מילים"
-msgstr "Up to 15 words"
+msgstr "Вы можете зарегистрировать до 15 слов"
 
-#: views/wizard/story_details.php:323
+#: views/wizard/story_details.php:326
 msgid "ערך מילון:"
-msgstr "Word/expression:"
+msgstr "Значение слова:"
 
-#: views/wizard/story_details.php:348
+#: views/wizard/story_details.php:351
 msgid "פירוש מילון:"
-msgstr "Meaning:"
+msgstr "Толкование словаря:"
 
-#: views/wizard/story_details.php:376
+#: views/wizard/story_details.php:379
 msgid "נושאי סיפור:"
-msgstr "Central Themes in the Story"
+msgstr "История темы:"
 
-#: views/wizard/story_details.php:389
+#: views/wizard/story_details.php:392
 msgid "העלאת תמונה מעברו של המספר:"
-msgstr "A Picture from the Adult's Past\""
+msgstr "Фотография рассказчика прошлых лет:"
 
-#: views/wizard/story_details.php:402
+#: views/wizard/story_details.php:405
 msgid "העלאת תמונה משותפת של המספר והמתעד:"
-msgstr "A Joint Picture:"
+msgstr "Cовместная фотография рассказчика и школьника:"
 
-#: views/wizard/story_details.php:446
+#: views/wizard/story_details.php:449
 msgid "שם הסיפור:"
-msgstr "Headline (pick a catchy title):"
+msgstr "Рассказ Название:"
 
-#: views/wizard/story_details.php:450
+#: views/wizard/story_details.php:453
 msgid "כותרת משנה:"
-msgstr "Secondary Headline (giving the reader a taste of the story):"
+msgstr "Подзаголовок:"
 
-#: views/wizard/story_details.php:454
+#: views/wizard/story_details.php:457
 msgid "תוכן הסיפור:"
-msgstr "The Story: Write the story. Try to mention as many details as possible, including significant family names, places and dates, to record the most authentic, rich and accurate narrative as possible."
+msgstr "Содержание рассказа:"
 
-#: views/wizard/story_details.php:458
+#: views/wizard/story_details.php:461
 msgid "תיאור תמונת מספר:"
-msgstr "Caption:"
+msgstr "Описание фотографии:"
 
-#: views/wizard/story_details.php:462
+#: views/wizard/story_details.php:465
 msgid "תיאור תמונת מספר ומתעד:"
-msgstr "Caption:"
+msgstr "Описание фотографии:"
 
-#: views/wizard/story_details.php:466
+#: views/wizard/story_details.php:469
 msgid "נושאי הסיפור:"
-msgstr "Central Themes in the Story"
+msgstr "История темы:"
 
-#: views/wizard/story_details.php:470
+#: views/wizard/story_details.php:473
 msgid "שפת הסיפור:"
-msgstr "Language:"
+msgstr "Язык истории:"
 
-#: views/wizard/story_details.php:480
+#: views/wizard/story_details.php:483
 msgid "קיימות"
-msgstr "There are"
+msgstr ""
 
-#: views/wizard/story_details.php:482
+#: views/wizard/story_details.php:485
 msgid "שגיאות:"
-msgstr "Errors:"
+msgstr "Ошибки:"
 
-#: views/wizard/story_details.php:526 views/wizard/story_details.php:529
+#: views/wizard/story_details.php:529 views/wizard/story_details.php:532
 msgid "ניתן לכתוב עד 15 מילים"
-msgstr "Up to 15 words"
+msgstr "Вы можете написать до 15 слов"
 
-#: views/wizard/story_details.php:594
+#: views/wizard/story_details.php:550
+msgid "הוספת מדיה"
+msgstr "Добавить медиафайл"
+
+#: views/wizard/story_details.php:551
+msgid "הוספת מסמך"
+msgstr "Добавить документ"
+
+#: views/wizard/story_details.php:605
 msgid "הסיפור נשמר אוטומטית"
-msgstr "Your story was automatically saved"
+msgstr "История автоматически сохраняется"
 
-#: views/wizard/story_details.php:645
+#: views/wizard/story_details.php:666
 msgid "הסיפור נשמר בהצלחה"
-msgstr "Your story was successfully saved"
+msgstr "История сохранена успешно"
 
-#: views/wizard/story_details.php:661
+#: views/wizard/story_details.php:682
 msgid "* שם הסיפור"
-msgstr "* Headline"
+msgstr "* Рассказ Название"
 
-#: views/wizard/story_details.php:681
+#: views/wizard/story_details.php:702
 msgid "איך תקראו לסיפור"
-msgstr "Pick a title for your story"
+msgstr "Как вы назовете эту историю"
 
-#: views/wizard/story_details.php:688
+#: views/wizard/story_details.php:709
 msgid "* כותרת משנה"
-msgstr "* Secondary Headline"
+msgstr "* Подзаголовок (вызывающий любопытство)"
 
-#: views/wizard/story_details.php:708
+#: views/wizard/story_details.php:729
 msgid "תיאור קצר של עיקר הסיפור"
-msgstr "Write a short introduction"
+msgstr "Краткое описание основной истории"
 
-#: views/wizard/story_details.php:719
+#: views/wizard/story_details.php:740
 msgid "* תוכן הסיפור"
-msgstr "The Story: Write the story. Try to mention as many details as possible, including significant family names, places and dates, to record the most authentic, rich and accurate narrative as possible"
+msgstr "* Текст рассказа"
 
-#: views/wizard/story_details.php:722
-msgid "להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון (url) ולהדביקה בתוכן הסיפור"
-msgstr "To embed an external video link (i.e. youtube), copy the video address (url) and paste it within the text"
+#: views/wizard/story_details.php:743
+msgid ""
+"להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון "
+"(url) ולהדביקה בתוכן הסיפור"
+msgstr ""
+"Чтобы вставлять видео из внешнего источника (например, YouTube), URL-адрес "
+"видео должен быть скопирован и вставлен в содержимое истории"
 
-#: views/wizard/story_details.php:776
+#: views/wizard/story_details.php:797
 msgid "* העלאת תמונה משותפת של המספר והמתעד"
-msgstr "* A Joint Picture"
+msgstr "* Cовместная фотография рассказчика и школьника"
 
-#: views/wizard/story_details.php:785 views/wizard/story_details.php:825
+#: views/wizard/story_details.php:806 views/wizard/story_details.php:846
 msgid "בחר / החלף תמונה"
-msgstr "Choose or edit a picture"
+msgstr "Выбрать / изменить изображение"
 
-#: views/wizard/story_details.php:792
+#: views/wizard/story_details.php:813
 msgid "* תיאור תמונת מספר ומתעד"
-msgstr "* Caption:"
+msgstr "* фотографии"
 
-#: views/wizard/story_details.php:795 views/wizard/story_details.php:836
+#: views/wizard/story_details.php:816 views/wizard/story_details.php:857
 msgid "עד 40 תווים"
-msgstr "Up to 40 characters"
+msgstr "не превышающее 40 знаков"
 
-#: views/wizard/story_details.php:797 views/wizard/story_details.php:837
-msgid "להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן הסיפור"
-msgstr "Note: Additional pictures, videos, documents and links can be added within the text of the story. Please include them here, along with captions:"
+#: views/wizard/story_details.php:818 views/wizard/story_details.php:858
+msgid ""
+"להעלאת תמונות נוספות בגוף הסיפור , בחר באופציה של הוספת מדיה שנמצאת בתוכן "
+"הסיפור"
+msgstr ""
+"Чтобы загрузить дополнительные изображения в теле истории, выберите вариант "
+"добавления медиа в контент сюжета"
 
-#: views/wizard/story_details.php:803
+#: views/wizard/story_details.php:824
 msgid "* העלאת תמונה מעברו של המספר"
-msgstr "* A Picture from the Adult's Past"
+msgstr "* Фотография рассказчика прошлых лет"
 
-#: views/wizard/story_details.php:833
+#: views/wizard/story_details.php:854
 msgid "* תיאור תמונת מספר"
-msgstr "* Caption"
+msgstr "* фотографии"
 
-#: views/wizard/story_details.php:853
+#: views/wizard/story_details.php:874
 msgid "* מילון"
-msgstr "* Dictionary"
+msgstr "* словарь"
 
-#: views/wizard/story_details.php:856
+#: views/wizard/story_details.php:877
 msgid ""
 "                 אנחנו רוצים לדעת אם למדתם מילים חדשות במהלך העבודה\n"
-"                            המשותפת שלכם. האם למדתם מלים בשפה אחרת? האם למדתם מלים חדשות בעברית?\n"
+"                            המשותפת שלכם. האם למדתם מלים בשפה אחרת? האם "
+"למדתם מלים חדשות בעברית?\n"
 "                            האם למדתם ביטויים שלא הכרתם?"
 msgstr ""
-"We want to know if you have learned new words or terms during your work together. \n"
-"Did you learn any words in a foreign language? Slang which was once popular? Names of organizations, books or objects from the past? Special expressions?"
+"Мы хотим узнать, выучили ли вы новые слова или термины за время нашей "
+"совместной работы. Выучили ли вы какие-нибудь слова на другом языке? Слэнг, "
+"который когда-то был популярен?\n"
+"Названия организаций, книг или каких-либо объектов из прошлого? \n"
+"Специальные выражения, фразеологизмы?"
 
-#: views/wizard/story_details.php:873 views/wizard/story_details.php:893
+#: views/wizard/story_details.php:894 views/wizard/story_details.php:914
 msgid "כתבו כאן את המילה:"
-msgstr "Type the word here:"
+msgstr "Напишите здесь слово:"
 
-#: views/wizard/story_details.php:874 views/wizard/story_details.php:894
+#: views/wizard/story_details.php:895 views/wizard/story_details.php:915
 msgid "או הביטוי"
-msgstr "or the expression"
+msgstr "Или выражение"
 
-#: views/wizard/story_details.php:878 views/wizard/story_details.php:898
+#: views/wizard/story_details.php:899 views/wizard/story_details.php:919
 msgid "כתבו כאן את פירושה:"
-msgstr "Write the word meaning here:"
+msgstr "Напишите здесь значение:"
 
-#: views/wizard/story_details.php:883 views/wizard/story_details.php:903
+#: views/wizard/story_details.php:904 views/wizard/story_details.php:924
 msgid "מחיקת ערך מילון"
-msgstr "Delete a dictionary value"
+msgstr "Удалить запись в словаре"
 
-#: views/wizard/story_details.php:914
+#: views/wizard/story_details.php:935
 msgid "הוספת ערך מילון"
-msgstr "value Add a dictionary"
+msgstr "Добавить словарь"
 
-#: views/wizard/story_details.php:925
+#: views/wizard/story_details.php:946
 msgid "* ציטוטים"
-msgstr "* Quotes"
+msgstr "* Цитаты"
 
-#: views/wizard/story_details.php:929
+#: views/wizard/story_details.php:950
 msgid "האם יש ציטוט או משפט מיוחד בעל מסר ומשמעות שלמדת מהמבוגר?"
-msgstr "Please share a special quote or a meaningful phrase that you learned from the adult during the program, or a memorable sentence from the story.  (Up to 15 words)"
+msgstr ""
+"Запишите фразу, крылатое выражение, поговорку, которые ученик услышал от "
+"взрослого в процессе обучения. Вы можете взять фразу из самой истории"
 
-#: views/wizard/story_details.php:943
+#: views/wizard/story_details.php:964
 msgid "כתבו כאן את הציטוט (עד 15 מילים)"
-msgstr "Please share a special quote or a meaningful phrase that you learned from the adult during the program, or a memorable sentence from the story.  (Up to 15 words)"
+msgstr "Напишите здесь цитату (до 15 слов)"
 
-#: views/wizard/story_details.php:945 views/wizard/story_details.php:963
+#: views/wizard/story_details.php:966 views/wizard/story_details.php:984
 msgid "עד 15 מילה"
-msgstr "Up to 15 words"
+msgstr "До 15 слов"
 
-#: views/wizard/story_details.php:949 views/wizard/story_details.php:967
+#: views/wizard/story_details.php:970 views/wizard/story_details.php:988
 msgid "מחיקת ציטוט"
-msgstr "Delete quote"
+msgstr "Удалить цитату"
 
-#: views/wizard/story_details.php:961
+#: views/wizard/story_details.php:982
 msgid "כתבו כאן את הציטוט"
-msgstr "Please share a special quote or a meaningful phrase that you learned from the adult during the program, or a memorable sentence from the story.  (Up to 15 words)"
+msgstr "Напишите цитату здесь"
 
-#: views/wizard/story_details.php:978
+#: views/wizard/story_details.php:999
 msgid "הוספת ציטוט"
-msgstr "Add quote"
+msgstr "Добавление цитаты"
 
-#: views/wizard/story_details.php:989
+#: views/wizard/story_details.php:1010
 msgid "* נושאים (ניתן לבחור עד 4 נושאים)"
-msgstr "* Central Themes in the Story (Up to 4 themes)"
+msgstr "* Темы (вы можете выбрать до 4 тем)"
 
-#: views/wizard/story_details.php:990
+#: views/wizard/story_details.php:1011
 msgid "סמנו מילים המתארות באופן הטוב ביותר את הנושאים המרכזיים בסיפור."
-msgstr "Highlight 1-4 topics which best describe the central themes in your story."
+msgstr "Отметьте слова, которые лучше всего описывают основные темы истории."
 
-#: views/wizard/story_details.php:1030
+#: views/wizard/story_details.php:1051
 msgid "שפת כתיבת הסיפור"
-msgstr "Language"
+msgstr "Пожалуйста отметьте язык, на котором написан рассказ"
 
-#: views/wizard/story_details.php:1031
+#: views/wizard/story_details.php:1052
 msgid "סמן את שפת כתיבת הסיפור"
-msgstr "Specify what language the story is written in"
+msgstr "Пожалуйста отметьте язык, на котором написан рассказ"
 
-#: views/wizard/story_details.php:1071
+#: views/wizard/story_details.php:1092
 msgid "תגיות"
-msgstr "Tags"
+msgstr "Метки"
 
-#: views/wizard/story_details.php:1072
-msgid "האם בית ספרכם מפעיל את התכנית במודל מיוחד? בשיתוף פעולה עם ארגון חיצוני? אנא סמנו."
-msgstr "When uploading the story, please specify the model of your program (G2G/My Family Story/Other)."
+#: views/wizard/story_details.php:1093
+msgid ""
+"האם בית ספרכם מפעיל את התכנית במודל מיוחד? בשיתוף פעולה עם ארגון חיצוני? אנא "
+"סמנו."
+msgstr ""
+"Использует ли ваша школа программу в специальной модели? В сотрудничестве с "
+"внешней организацией? Пожалуйста, проверьте."
 
-#: views/wizard/story_details.php:1117
+#: views/wizard/story_details.php:1138
 msgid "מהזוית האישית - מספר ומתעד"
-msgstr "On a Personal Note"
+msgstr "Личное восприятие"
 
-#: views/wizard/story_details.php:1120
-msgid "ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים להגיד ולאחל אחד לשני?"
-msgstr "Share your experiences from working together. What would you like to wish each other?"
+#: views/wizard/story_details.php:1141
+msgid ""
+"ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים "
+"להגיד ולאחל אחד לשני?"
+msgstr ""
+"Напишите о ваших впечатлениях от программы «Диалог поколений» и о совместной "
+"работе\n"
+"Что бы вы хотели сказать и пожелать друг другу?"
+
+#: views/wizard/story_preview.php:101 views/wizard/story_preview.php:150
+msgid "סיום ושליחת סיפור &#9664;"
+msgstr "Отправить историю"
 
 #. Theme Name of the plugin/theme
 msgid "G2G: Generation to Generation"
@@ -1220,4 +1259,40 @@ msgstr ""
 
 #. Author URI of the plugin/theme
 msgid "http://www.bh.org.il/"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Dictionary"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Main"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Press"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Quotes"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Search stories by countries"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Search stories by location"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Search stories by subjects"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Team"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Wizard"
 msgstr ""

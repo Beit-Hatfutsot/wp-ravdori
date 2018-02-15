@@ -11,10 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 ?>
 
-<?php $locale = get_language_locale_filename_by_get_param(); ?>
+<?php $locale = get_language_locale_filename_by_get_param(true); ?>
 
 <div class="dropdown">
-  <button class="btn btn-primary dropdown-toggle btn-story-upload" type="button" data-toggle="dropdown" data-hover="dropdown"><?php BH__e('העלאת סיפור','BH',$locale)?>
+  <button class="btn btn-primary dropdown-toggle btn-story-upload" type="button" data-toggle="dropdown" data-hover="dropdown" <?php echo ( $locale[ 'get_param_value' ] == 'ru' ? ' style="font-size: 14px;"' : ''); ?>>
+<?php $locale = get_language_locale_filename_by_get_param(); ?> 
+ <?php BH__e('העלאת סיפור','BH',$locale)?>
   	<?php
 		/**
 		 * Display the current language flag as the switcher button
@@ -36,14 +38,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	$wizard_page_url = get_field( 'acf-options-wizard-page-url' , 'options' );
 	
 	foreach ( $all_languages as $language ): ?>
-	<?php  if ( $language[ 'get_param_value' ] == 'ru') continue; ?>
-		<li <?php //echo $l[ 'active' ] ? 'class="active"' : ''; ?>>
-			<a href="<?php echo $wizard_page_url .'?lang=' . $language[ 'get_param_value' ];  ?>" >
+		<li>
+			<a href="<?php echo $wizard_page_url .'?lang=' . $language[ 'get_param_value' ];  ?>" 
+			<?php echo ( $language[ 'get_param_value' ] == 'ru' ? ' style="font-size: 15px; padding: 16px 19px;"' : ''); ?>
+			>
 				<div class="flag">
 					<img src="<?php echo IMAGES_DIR . '/general/header/flag-' . $language[ 'get_param_value' ] . '.png'?>">
 				</div>
 
-				<div class="language-name"><?php BH__e('העלאת סיפור','BH',$language["locale_file"])?></div>
+				<div class="language-name"><?php echo $language["upload-story-name"]; ?></div>
 			</a>
 		</li>
 
