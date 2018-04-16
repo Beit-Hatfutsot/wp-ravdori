@@ -383,7 +383,7 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons::be
                 <form name="step<?php echo $i; ?>" method="post">
                     <?php
 
-                            if ( $wizardSessionManager->isStepAvailable( $i ) AND $i != $wizardSessionManager->getCurrentStep() )
+                            if ( $wizardSessionManager->isStepAvailable( $i ) AND $i != $wizardSessionManager->getCurrentStep() AND $i != IWizardStep5Fields::ID )
                             {
                                echo ' <input type="hidden" name="progstep" value="' . $i .'" style="background:#fff;"/>';
                                echo '<button>';
