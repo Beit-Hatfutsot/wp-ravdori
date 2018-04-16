@@ -36,7 +36,7 @@ get_header();
 		.wp-caption .wp-caption-text { text-align: left; }
 	</style>
 
-<?php else: ?>
+<?php elseif ( $locale == ISupportedLanguages::RU['locale_file'] ): ?>
 	
 	<style>		
 
