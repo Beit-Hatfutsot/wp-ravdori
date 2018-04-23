@@ -23,6 +23,9 @@ require_once('backend-admin-page.php');
 // Adjust the story CPT's SCHOOLS taxonomy backend (adding filterable parent selectbox etc.) 
 require_once('backend-story-cpt-category.php');
 
+// User permissions by district
+require_once('backend-user-editor.php');
+
 /**
  * Outputs a repeater in the backend with CRUD capabilities
  *

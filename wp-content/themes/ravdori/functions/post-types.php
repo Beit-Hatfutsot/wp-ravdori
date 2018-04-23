@@ -118,8 +118,16 @@ function BH_register_post_type_team_member() {
                     "has_archive"  => false,
                     "show_in_menu" => true,
                     "exclude_from_search" => false,
-                    "capability_type"     => "post",
-                    "map_meta_cap"        => true,
+                    'capabilities'        => array(
+													'publish_posts'       => 'update_core',
+													'edit_others_posts'   => 'update_core',
+													'delete_posts'        => 'update_core',
+													'delete_others_posts' => 'update_core',
+													'read_private_posts'  => 'update_core',
+													'edit_post'           => 'update_core',
+													'delete_post'         => 'update_core',
+													'read_post'           => 'update_core',
+													),
                     "hierarchical"        => false,
                     "rewrite"             => array(
                                                     "slug"       => "team-member" ,
@@ -461,7 +469,7 @@ function backend_create_filters() {
     global $typenow;
 
 
-    if( $typenow == STORY_POST_TYPE )
+    if( $typenow == STORY_POST_TYPE AND current_user_can('administrator') )
     {
         $filters = get_object_taxonomies( $typenow );
 

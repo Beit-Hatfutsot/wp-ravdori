@@ -67,7 +67,7 @@ function user_restrict_media_library( $query ) {
 
    $user = wp_get_current_user();
 
-    if( empty( $user ) || !in_array( "administrator", (array) $user->roles ) )
+    if( empty( $user ) OR !in_array( "administrator", (array) $user->roles ) )
     {
         $query['author'] = $user->ID;
     }
@@ -129,10 +129,12 @@ function allow_admin_area_to_admins_only() {
     }
 
     $user = wp_get_current_user();
-
-    if( empty( $user ) || !in_array( "administrator", (array) $user->roles ) )
+	
+	$allowed_roles = array('editor', 'administrator');
+	
+    if( empty( $user ) OR  count( array_intersect($allowed_roles, $user->roles ) ) == 0 )
     {
-        //Redirect to main page if no user or if the user has no "administrator" role assigned
+        //Redirect to main page if no user or if the user has no "administrator" or "editor" role assigned
         wp_redirect( get_site_url( ) );
         exit();
     }

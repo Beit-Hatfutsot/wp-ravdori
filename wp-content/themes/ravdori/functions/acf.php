@@ -14,8 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // @see: https://www.advancedcustomfields.com/resources/upgrading-v4-v5/
 add_filter( 'acf/compatibility/field_wrapper_class', '__return_true' , -1 );
 
-// Since we are using ACF v5 we need to show the opstion pages thro code
+// Since we are using ACF v5 we need to show the options pages thro code
 if(function_exists('acf_add_options_page')) 
 { 
-	acf_add_options_page();
+	acf_add_options_page(	array(
+								"page_title"    => "Options",
+								"menu_title"    => "Options",
+								"capability"    => "create_users",
+								"menu_slug"     => "acf-options"
+								)
+		);
 }
