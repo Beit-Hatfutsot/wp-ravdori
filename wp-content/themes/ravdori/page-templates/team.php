@@ -11,23 +11,25 @@ get_header();
 require_once(FUNCTIONS_DIR . '/' . 'rest-api.php');
 
 
-//$story  =  get_post_field('post_content', '40271');
-$story  =  get_post_field('post_content', '40136');
+$story  =  get_post_field('post_content', '57311');
+//$story  =  get_post_field('post_content', '40136');
 
-echo '<h1>Story: </h1><br/><br/>';
-var_dump($story);
+//echo '<h1>Story: </h1><br/><br/>';
+//var_dump($story);
 
 
 $bhRestApi 	= new BH_BeitHatfutsotRestApi();
-$bhRestApi->linkifyRoute = new BH_BeitHatfutsotRestApiRouteLinkifyRoute('http://devapi.dbs.bh.org.il/v1/linkify' , $story);
+$bhRestApi->linkifyRoute = new BH_BeitHatfutsotRestApiRouteLinkifyRoute('https://api.dbs.bh.org.il/v1/linkify' , $story);
 
 $linkifyRoute = $bhRestApi->linkifyRoute;
-
+$ls = 'no';
 if ( $linkifyRoute->doRestApiCall() )
 {
-	$linkifyRoute->linkifyStory( $story );
+	$ls = $linkifyRoute->linkifyStory( $story );
 }
 
+//echo '<hr><br/><br/><hr>';
+var_dump($ls);
 exit;*/
 
 ?>
