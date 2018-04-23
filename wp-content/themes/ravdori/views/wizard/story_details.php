@@ -685,11 +685,11 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
                         <?php
 
-                        $stepData = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
+                        $stepData = $wizardSessionManager->getStepData( IWizardStep4Fields::ID ); 
                         $storyTitle = '';
                         if ( isset( $stepData[ IWizardStep4Fields::STORY_TITLE ] ) )
                         {
-                            $storyTitle = stripslashesFull( $stepData[ IWizardStep4Fields::STORY_TITLE ] );
+                            $storyTitle = esc_html( stripslashesFull( $stepData[ IWizardStep4Fields::STORY_TITLE ] ) );
                         }
 
                         ?>

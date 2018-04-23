@@ -99,7 +99,7 @@ class BH_Step4Controller extends BH_Controller{
 
         #region Story title validation
 
-        $storyTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) ?  namesSanitization( $_POST[IWizardStep4Fields::STORY_TITLE ] ) : null  ;
+        $storyTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) ?  sanitize_title ( $_POST[IWizardStep4Fields::STORY_TITLE ] ) : null  ;
 
         if ( !isset( $storyTitleFromUser ) )
         {
@@ -111,7 +111,7 @@ class BH_Step4Controller extends BH_Controller{
 
         #region Story subtitle validation
 
-        $storySubTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] ) ?  namesSanitization( $_POST[IWizardStep4Fields::STORY_SUBTITLE ] ) : null  ;
+        $storySubTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] ) ?  sanitize_title( $_POST[IWizardStep4Fields::STORY_SUBTITLE ] ) : null  ;
 
         if ( !isset( $storySubTitleFromUser ) )
         {
@@ -247,7 +247,7 @@ class BH_Step4Controller extends BH_Controller{
         // If we are in this step all fields are valid, so we will build an array holding them
         $step4Fields = array();
 
-        $step4Fields[ IWizardStep4Fields::STORY_TITLE ]         =  namesSanitization ( $_POST[ IWizardStep4Fields::STORY_TITLE ] );
+        $step4Fields[ IWizardStep4Fields::STORY_TITLE ]         =  $_POST[ IWizardStep4Fields::STORY_TITLE ];  //namesSanitization ( $_POST[ IWizardStep4Fields::STORY_TITLE ] );
         $step4Fields[ IWizardStep4Fields::STORY_SUBTITLE ]      =   ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] );
         $step4Fields[ IWizardStep4Fields::STORY_CONTENT ]       =   ( $_POST[ IWizardStep4Fields::STORY_CONTENT ] );
         $step4Fields[ IWizardStep4Fields::IMAGE_ADULT ]         =   ( $_POST[ IWizardStep4Fields::IMAGE_ADULT ] );
@@ -432,7 +432,7 @@ class BH_Step4Controller extends BH_Controller{
         // If we are in this step all fields are valid, so we will build an array holding them
         $step4Fields = array();
 
-        $step4Fields[ IWizardStep4Fields::STORY_TITLE ]              =   isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ]    )            ? namesSanitization ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) : null;
+        $step4Fields[ IWizardStep4Fields::STORY_TITLE ]              =   isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ]    )            ? sanitize_title ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) : null;
         $step4Fields[ IWizardStep4Fields::STORY_SUBTITLE ]           =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] )            ? $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] : null;
         $step4Fields[ IWizardStep4Fields::STORY_CONTENT ]            =   isset ( $_POST[ IWizardStep4Fields::STORY_CONTENT ]  )            ? $_POST[ IWizardStep4Fields::STORY_CONTENT ]  : null;
         $step4Fields[ IWizardStep4Fields::IMAGE_ADULT ]              =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT ]    )            ? $_POST[ IWizardStep4Fields::IMAGE_ADULT ] : null;
