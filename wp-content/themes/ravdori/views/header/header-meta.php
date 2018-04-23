@@ -19,3 +19,18 @@
 		printf ("<link href='%s' rel='stylesheet'>", $val);
 	endforeach; endif;
 ?>
+
+<?php $ga_code = get_field( 'acf-options-google-analytics-tracking-ID', 'options' );  ?>
+
+<?php if ( $ga_code ): ?>
+
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', <?php echo $ga_code; ?>, 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+
+<?php endif; ?>
