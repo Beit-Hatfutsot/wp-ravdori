@@ -251,7 +251,7 @@ class BH_SessionManager extends Session
 
 
 
-    public function checkTimeout()
+    public function checkTimeout( $updateTime = true )
     {
         // Check if the timeout field exists.
         if( isset( $_SESSION['timeout'] ) )
@@ -274,11 +274,38 @@ class BH_SessionManager extends Session
 
             }
         }
-
-        // Update the timout field with the current time.
-        $_SESSION['timeout'] = time();
+		
+		if ( $updateTime ) {
+			// Update the timout field with the current time.
+			$_SESSION['timeout'] = time();
+		}	
     }
+	
+	
+	
+	
+    public function isSessionTimeout()
+    {
+		$sessionTimeout = false;
+		
+        // Check if the timeout field exists.
+        if( isset( $_SESSION['timeout'] ) )
+        {
+            // See if the number of seconds since the last
+            // visit is larger than the timeout period.
+            $duration = time() - (int)$_SESSION['timeout'];
 
+            if( ( $duration > SESSION_TIMEOUT ) AND ( basename(get_page_template()) == 'wizard.php' ) )
+            {
+               $sessionTimeout = true;
+
+            }
+        }
+		
+		return ( $sessionTimeout );
+		
+    }
+	
 
 }// EOC
 

@@ -99,7 +99,7 @@ class BH_Step4Controller extends BH_Controller{
 
         #region Story title validation
 
-        $storyTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) ?  sanitize_title ( $_POST[IWizardStep4Fields::STORY_TITLE ] ) : null  ;
+        $storyTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) ?  sanitize_text_field ( $_POST[IWizardStep4Fields::STORY_TITLE ] ) : null  ;
 
         if ( !isset( $storyTitleFromUser ) )
         {
@@ -111,7 +111,7 @@ class BH_Step4Controller extends BH_Controller{
 
         #region Story subtitle validation
 
-        $storySubTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] ) ?  sanitize_title( $_POST[IWizardStep4Fields::STORY_SUBTITLE ] ) : null  ;
+        $storySubTitleFromUser = isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] ) ?  sanitize_text_field( $_POST[IWizardStep4Fields::STORY_SUBTITLE ] ) : null  ;
 
         if ( !isset( $storySubTitleFromUser ) )
         {
@@ -319,6 +319,11 @@ class BH_Step4Controller extends BH_Controller{
     private function createNewStoryPost()
     {
         global $wizardSessionManager;
+		
+		// Check if the session is not expired,
+		// If expired, logout
+		$wizardSessionManager->checkTimeout();
+		
         $step1Data = $wizardSessionManager->getStepData( IWizardStep1Fields::ID );
         $step2Data = $wizardSessionManager->getStepData( IWizardStep2Fields::ID );
         $step3Data = $wizardSessionManager->getStepData( IWizardStep3Fields::ID );
@@ -422,47 +427,48 @@ class BH_Step4Controller extends BH_Controller{
     function autoSaveStory_ajax()
     {
         global $wizardSessionManager;
+		
+		if ( $wizardSessionManager->isSessionTimeout() == false ):
+		
+				$formData = null;
 
-        $formData = null;
-
-        // Deserialize the story details post
-        parse_str($_POST['data'], $_POST);
-
-
-        // If we are in this step all fields are valid, so we will build an array holding them
-        $step4Fields = array();
-
-        $step4Fields[ IWizardStep4Fields::STORY_TITLE ]              =   isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ]    )            ? sanitize_title ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) : null;
-        $step4Fields[ IWizardStep4Fields::STORY_SUBTITLE ]           =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] )            ? $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] : null;
-        $step4Fields[ IWizardStep4Fields::STORY_CONTENT ]            =   isset ( $_POST[ IWizardStep4Fields::STORY_CONTENT ]  )            ? $_POST[ IWizardStep4Fields::STORY_CONTENT ]  : null;
-        $step4Fields[ IWizardStep4Fields::IMAGE_ADULT ]              =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT ]    )            ? $_POST[ IWizardStep4Fields::IMAGE_ADULT ] : null;
-        $step4Fields[ IWizardStep4Fields::IMAGE_ADULT_DESC ]         =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_DESC ] )          ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_DESC ] : null;
-        $step4Fields[ IWizardStep4Fields::IMAGE_ADULT_STUDENT]       =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT ] )       ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT ] : null;
-        $step4Fields[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC]  =   isset  ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ] ) ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ] : null;
-        $step4Fields[ IWizardStep4Fields::DICTIONARY]                =   isset ( $_POST[ IWizardStep4Fields::DICTIONARY ] )                ? $_POST[ IWizardStep4Fields::DICTIONARY ] : null;
-        $step4Fields[ IWizardStep4Fields::QUOTES]                    =   isset ( $_POST[ IWizardStep4Fields::QUOTES ] )                    ? $_POST[ IWizardStep4Fields::QUOTES ] : null;
-        $step4Fields[ IWizardStep4Fields::STORY_SUBJECTS]            =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBJECTS ] )            ? $_POST[ IWizardStep4Fields::STORY_SUBJECTS ] : null;
-        $step4Fields[ IWizardStep4Fields::STORY_SUBTOPICS]           =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBTOPICS ] )           ? $_POST[ IWizardStep4Fields::STORY_SUBTOPICS ]  : null;
-        $step4Fields[ IWizardStep4Fields::STORY_LANGUAGE]           =   isset ( $_POST[ IWizardStep4Fields::STORY_LANGUAGE ] )           ? $_POST[ IWizardStep4Fields::STORY_LANGUAGE ]  : null;
-        $step4Fields[ IWizardStep4Fields::RAVDORI_FEEDBACK]          =   isset( $_POST[ IWizardStep4Fields::RAVDORI_FEEDBACK ] )           ? namesSanitization ( $_POST[ IWizardStep4Fields::RAVDORI_FEEDBACK ] ) : null;
+				// Deserialize the story details post
+				parse_str($_POST['data'], $_POST);
 
 
-        // Save the post id if one exist
-        $step4Data = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
-        if ( isset( $step4Data[IWizardStep4Fields::POST_ID] ) )
-        {
-            $step4Fields[IWizardStep4Fields::POST_ID] =  $step4Data[IWizardStep4Fields::POST_ID];
-        }
+				$step4Fields = array();
+
+				$step4Fields[ IWizardStep4Fields::STORY_TITLE ]              =   isset ( $_POST[ IWizardStep4Fields::STORY_TITLE ]    )            ? sanitize_text_field ( $_POST[ IWizardStep4Fields::STORY_TITLE ] ) : null;
+				$step4Fields[ IWizardStep4Fields::STORY_SUBTITLE ]           =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] )            ? $_POST[ IWizardStep4Fields::STORY_SUBTITLE ] : null;
+				$step4Fields[ IWizardStep4Fields::STORY_CONTENT ]            =   isset ( $_POST[ IWizardStep4Fields::STORY_CONTENT ]  )            ? $_POST[ IWizardStep4Fields::STORY_CONTENT ]  : null;
+				$step4Fields[ IWizardStep4Fields::IMAGE_ADULT ]              =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT ]    )            ? $_POST[ IWizardStep4Fields::IMAGE_ADULT ] : null;
+				$step4Fields[ IWizardStep4Fields::IMAGE_ADULT_DESC ]         =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_DESC ] )          ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_DESC ] : null;
+				$step4Fields[ IWizardStep4Fields::IMAGE_ADULT_STUDENT]       =   isset ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT ] )       ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT ] : null;
+				$step4Fields[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC]  =   isset  ( $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ] ) ? $_POST[ IWizardStep4Fields::IMAGE_ADULT_STUDENT_DESC ] : null;
+				$step4Fields[ IWizardStep4Fields::DICTIONARY]                =   isset ( $_POST[ IWizardStep4Fields::DICTIONARY ] )                ? $_POST[ IWizardStep4Fields::DICTIONARY ] : null;
+				$step4Fields[ IWizardStep4Fields::QUOTES]                    =   isset ( $_POST[ IWizardStep4Fields::QUOTES ] )                    ? $_POST[ IWizardStep4Fields::QUOTES ] : null;
+				$step4Fields[ IWizardStep4Fields::STORY_SUBJECTS]            =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBJECTS ] )            ? $_POST[ IWizardStep4Fields::STORY_SUBJECTS ] : null;
+				$step4Fields[ IWizardStep4Fields::STORY_SUBTOPICS]           =   isset ( $_POST[ IWizardStep4Fields::STORY_SUBTOPICS ] )           ? $_POST[ IWizardStep4Fields::STORY_SUBTOPICS ]  : null;
+				$step4Fields[ IWizardStep4Fields::STORY_LANGUAGE]            =   isset ( $_POST[ IWizardStep4Fields::STORY_LANGUAGE ] )            ? $_POST[ IWizardStep4Fields::STORY_LANGUAGE ]  : null;
+				$step4Fields[ IWizardStep4Fields::RAVDORI_FEEDBACK]          =   isset( $_POST[ IWizardStep4Fields::RAVDORI_FEEDBACK ] )           ? namesSanitization ( $_POST[ IWizardStep4Fields::RAVDORI_FEEDBACK ] ) : null;
 
 
-        // Save the fields in the session
-        $wizardSessionManager->setStepData(IWizardStep4Fields::ID, $step4Fields);
+				
+				$step4Data = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
+				
+				// Save the post if it exist in the system
+				if ( isset( $step4Data[IWizardStep4Fields::POST_ID] ) AND (get_permalink( $step4Data[IWizardStep4Fields::POST_ID] ) != false) )
+				{
+					$step4Fields[IWizardStep4Fields::POST_ID] =  $step4Data[IWizardStep4Fields::POST_ID];
+								
+					// Save the fields in the session
+					$wizardSessionManager->setStepData(IWizardStep4Fields::ID, $step4Fields);
 
-        // Reset the session timer, because the user is still working in the site
-        $wizardSessionManager->checkTimeout();
-
-        // Create new story or update the current one
-        $this->createNewStoryPost();
+					// Create new story or update the current one
+					$this->createNewStoryPost();
+				}
+				
+		endif;
 
         die();
     }
