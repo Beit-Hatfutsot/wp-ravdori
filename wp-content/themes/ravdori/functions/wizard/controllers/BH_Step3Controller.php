@@ -187,8 +187,18 @@ class BH_Step3Controller extends BH_Controller{
 
         // Save the fields in the session
         $wizardSessionManager->setStepData( IWizardStep3Fields::ID , $step3Fields );
+		
+		
+		
+		// If we did not registerd the session time, do it
+		if ( empty($wizardSessionManager->getField( IWizardSessionFields::SESSION_LOGIN_TIME)) ) 
+		{
+			// Save the session timeout
+			$wizardSessionManager->setField( IWizardSessionFields::SESSION_LOGIN_TIME, time() );
+		}
+		
 
-
+		
         $isSaveState = false;
 
         // Check if we are saving

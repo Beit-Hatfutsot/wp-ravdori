@@ -1,6 +1,6 @@
 <?php
-global $wizardSessionManager;
-$wizardSessionManager->checkTimeout();
+//global $wizardSessionManager;
+//$wizardSessionManager->checkTimeout();
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>

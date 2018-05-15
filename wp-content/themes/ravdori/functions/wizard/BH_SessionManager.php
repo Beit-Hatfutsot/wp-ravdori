@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( "SESSION_TIMEOUT"  , 45 * MINUTE_IN_SECONDS ); // Set Session timeout to 45 Minutes:  45 * 60 sec for the time() method
+define( "SESSION_TIMEOUT"  , 47 * MINUTE_IN_SECONDS ); // Set Session timeout to 47 Minutes:  45 * 60 sec for the time() method
 
 /* Singleton */
 class Session
@@ -59,8 +59,9 @@ class Session
     {
         if ( $this->sessionState == self::SESSION_NOT_STARTED )
         {
-            if( !session_id() )
+            if( !session_id() ) {
                 $this->sessionState = session_start();
+			}
 
         }
 
@@ -161,7 +162,7 @@ class BH_SessionManager extends Session
             $_SESSION[ IWizardSessionFields::STEP_STATUS ] = array();
 			
 			// Create a field to hold the current langauge, set to Hebrew as default
-			self::$instance->setField( IWizardSessionFields::LANGUAGE_LOCALE , ISupportedLanguages::HE['get_param_value'] );
+			self::$instance->setField( IWizardSessionFields::LANGUAGE_LOCALE , ISupportedLanguages::HE['get_param_value'] );		
 			
         }
 
@@ -260,7 +261,8 @@ class BH_SessionManager extends Session
             // visit is larger than the timeout period.
             $duration = time() - (int)$_SESSION['timeout'];
 
-            if( ( $duration > SESSION_TIMEOUT ) AND ( basename(get_page_template()) == 'wizard.php' ) )
+			
+            if( ( $duration > SESSION_TIMEOUT )  )
             {
                 // Destroy the session
                 $this->destroy();
@@ -270,10 +272,15 @@ class BH_SessionManager extends Session
                     wp_logout();
                 }
 
-                header( "Location: " . HOME );
+                //header( "Location: " . HOME );
+				wp_redirect( home_url() ); exit;
 
             }
         }
+		else {
+			error_log("Session not set");
+			error_log( print_r( $_SESSION['timeout'],true) );
+		}
 		
 		if ( $updateTime ) {
 			// Update the timout field with the current time.
@@ -288,23 +295,39 @@ class BH_SessionManager extends Session
     {
 		$sessionTimeout = false;
 		
-        // Check if the timeout field exists.
-        if( isset( $_SESSION['timeout'] ) )
-        {
-            // See if the number of seconds since the last
+		$session_login_time = $this->getField( IWizardSessionFields::SESSION_LOGIN_TIME );
+		
+		// If we registerd the session login time
+		if ( !empty($session_login_time) ) 
+		{	
+	
+		    // See if the number of seconds since the last
             // visit is larger than the timeout period.
-            $duration = time() - (int)$_SESSION['timeout'];
-
-            if( ( $duration > SESSION_TIMEOUT ) AND ( basename(get_page_template()) == 'wizard.php' ) )
+            $duration = time() - (int)$session_login_time;
+			
+			if( ( $duration > SESSION_TIMEOUT ) /*AND ( basename(get_page_template()) == 'wizard.php' )*/ )
             {
                $sessionTimeout = true;
-
             }
-        }
+
+		}
+
 		
 		return ( $sessionTimeout );
 		
     }
+	
+	
+	public function closeAndLogout()
+	{
+		 // Destroy the session
+         $this->destroy();
+
+         // Log off the user if such connected
+        if ( is_user_logged_in() ) {
+             wp_logout();
+       }
+	}
 	
 
 }// EOC
@@ -315,7 +338,10 @@ interface IWizardSessionFields {
     const CURRENT_STEP = 'CURRENT_STEP';
     const STEPS        = 'STEPS';
     const STEP_STATUS  = 'STEPS_STATUS';
-	const LANGUAGE_LOCALE  = 'langauge_local';
+	const LANGUAGE_LOCALE = 'langauge_local';
+	const AJAX_SESSION_EXPIRED = 'SESSION_EXP'; // Used in ajax call to identify that the session is over
+	const SESSION_LOGIN_TIME   = 'SESSION_LOGIN_TIME';
+	
 }
 
 interface IWizardSessionFieldsStatus {

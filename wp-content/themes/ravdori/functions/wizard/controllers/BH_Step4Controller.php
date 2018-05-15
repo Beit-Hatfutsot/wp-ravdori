@@ -322,7 +322,11 @@ class BH_Step4Controller extends BH_Controller{
 		
 		// Check if the session is not expired,
 		// If expired, logout
-		$wizardSessionManager->checkTimeout();
+		//$wizardSessionManager->checkTimeout( false );
+		/*if( $wizardSessionManager->isSessionTimeout() ) {
+			$wizardSessionManager->closeAndLogout();
+			return;
+		}*/
 		
         $step1Data = $wizardSessionManager->getStepData( IWizardStep1Fields::ID );
         $step2Data = $wizardSessionManager->getStepData( IWizardStep2Fields::ID );
@@ -428,10 +432,8 @@ class BH_Step4Controller extends BH_Controller{
     {
         global $wizardSessionManager;
 		
-		if ( $wizardSessionManager->isSessionTimeout() == false ):
-		
 				$formData = null;
-
+				
 				// Deserialize the story details post
 				parse_str($_POST['data'], $_POST);
 
@@ -467,9 +469,29 @@ class BH_Step4Controller extends BH_Controller{
 					// Create new story or update the current one
 					$this->createNewStoryPost();
 				}
-				
-		endif;
+				else  // Create if not exists
+				{ 
+					
+					// Save the fields in the session
+					$wizardSessionManager->setStepData(IWizardStep4Fields::ID, $step4Fields);
 
+					if( !$wizardSessionManager->isSessionTimeout() ) {
+						// Create new story or update the current one
+						$this->createNewStoryPost();
+					}
+				}
+				
+				/*$str = 'St out ' . $_SESSION['timeout'] . 'Time: ' .  time(). ' Dur: ' .  time() - (int)$_SESSION['timeout']; 
+				  $str = 'Time: ' .  time() .' '; 
+				  $str .= 'Ses: ' .  $_SESSION['timeout'] .' *'; 
+				  echo $str;
+				  */
+				
+				if( $wizardSessionManager->isSessionTimeout() ) 
+				{
+					echo IWizardSessionFields::AJAX_SESSION_EXPIRED;
+				} 
+				
         die();
     }
 

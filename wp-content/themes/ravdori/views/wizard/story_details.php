@@ -582,7 +582,21 @@ get_header();
 
                 req.done(function(e)
                 {
-                    //console.log("Request successful! " + e);
+                    
+					/*console.log("Request successful! ");
+                    console.log("e: ");
+					console.log(e);*/
+					
+					
+					  if ( e.toLowerCase().indexOf("text/html") >= 0 ) {
+							// assume that our login has expired - reload our current page
+							window.location.reload();
+					  }
+
+					
+					if ( e == '<?php echo IWizardSessionFields::AJAX_SESSION_EXPIRED; ?>') {
+						<?php echo 'window.location.href ="' . esc_url( home_url() ) . '"'; ?>
+					}
 
                     toastr.options = {
                         "closeButton": true,
@@ -605,6 +619,9 @@ get_header();
                     toastr.info('<?php BH__e('הסיפור נשמר אוטומטית' , 'BH', $locale);?>');
                     // This makes it able to send new request on the next interval
                     response = true;
+					
+	
+					
                 });
             }
 

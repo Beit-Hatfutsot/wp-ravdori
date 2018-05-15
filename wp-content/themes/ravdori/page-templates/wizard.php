@@ -16,6 +16,10 @@ global $stepsArray;
 global $wizardSessionManager;
 
 
+if( $wizardSessionManager->isSessionTimeout() ) {
+$wizardSessionManager->closeAndLogout();
+}
+
 $currentStep = $wizardSessionManager->getCurrentStep();
 
 if ( !isset( $currentStep ) ) {
