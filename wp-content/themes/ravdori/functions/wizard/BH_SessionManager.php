@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( "SESSION_TIMEOUT"  , 47 * MINUTE_IN_SECONDS ); // Set Session timeout to 47 Minutes:  45 * 60 sec for the time() method
+define( "SESSION_TIMEOUT"  , 97 * MINUTE_IN_SECONDS ); // Set Session timeout to 97 Minutes:  97 * 60 sec for the time() method
 
 /* Singleton */
 class Session
