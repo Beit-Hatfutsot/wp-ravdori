@@ -192,6 +192,7 @@ get_header();
             sortSelectByTermName();
             $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY ?>").trigger("chosen:updated");
             $("#<?php echo IWizardStep2Fields::BIRTHDAY?>").trigger("chosen:updated");
+			$("#<?php echo IWizardStep2Fields::IMMIGRATION_DATE?>").trigger("chosen:updated");
         }
 
 
