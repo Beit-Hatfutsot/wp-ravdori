@@ -297,6 +297,7 @@ function remove_admin_menu_pages()
  
 	global $user_ID;
  
+ 
 	if ( current_user_can( 'editor' ) ) 
 	{
 		// Remove team members menu from admin
@@ -304,6 +305,23 @@ function remove_admin_menu_pages()
 		
 		// Remove team members press from admin
 		remove_menu_page( 'edit.php?post_type=press' );
+		
+		// Remove schools taxonomy from admin ( Note that the submenu slug is html encoded so the ampersand is now &amp; )
+		remove_submenu_page( 'edit.php?post_type=story', 'edit-tags.php?taxonomy=schools&amp;post_type=story' );
+				
+		// Remove subjects taxonomy from admin
+		remove_submenu_page( 'edit.php?post_type=story', 'edit-tags.php?taxonomy=subjects&amp;post_type=story' );
+		
+		// Remove subtopics taxonomy from admin
+		remove_submenu_page( 'edit.php?post_type=story', 'edit-tags.php?taxonomy=subtopics_taxonomy&amp;post_type=story' );
+		
+		// Remove languages taxonomy from admin
+		remove_submenu_page( 'edit.php?post_type=story', 'edit-tags.php?taxonomy=languages_taxonomy&amp;post_type=story' );
+		
+		// Remove category taxonomy from admin
+		remove_submenu_page( 'edit.php?post_type=story', 'edit-tags.php?taxonomy=category&amp;post_type=story' );
+		
+		
 		
 		// Remove CF7 from admin
 		remove_menu_page( 'wpcf7' );
@@ -320,3 +338,30 @@ function remove_admin_menu_pages()
 	}
 }
 add_action( 'admin_init', 'remove_admin_menu_pages' );
+
+
+
+/*
+ * Restrict access to admin areas for editor
+ */
+function restrict_access() {
+	
+    
+	$user = wp_get_current_user();
+    
+	if(isset($user->roles[0]))
+        $user_role = $user->roles[0];
+    else
+        $user_role = 'no_role';
+    
+	if( 'administrator' != $user_role ) 
+	{
+		$current_screen = get_current_screen();
+		$place = $current_screen->id;
+		
+		if( $place == 'edit-schools' || $place == 'edit-subjects' || $place == 'edit-subtopics_taxonomy' || $place == 'edit-languages_taxonomy' || $place == 'edit-category' ) 
+			wp_die('אין לך גישה לאזור זה');
+    }
+}
+add_action( 'current_screen', 'restrict_access' );
+
