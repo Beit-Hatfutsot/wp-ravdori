@@ -76,3 +76,48 @@ function BH_img_caption_shortcode_filter($val, $attr, $content = null)
     return  '<figure id="' . $id . '" aria-describedby="figcaption_' . $id . '" class="wp-caption ' . esc_attr($align) . '" itemscope itemtype="http://schema.org/ImageObject" style="width: ' . (0 + (int) $width) . 'px">' . do_shortcode( $content ) . '<figcaption id="figcaption_'. $id . '" class="wp-caption-text" itemprop="description">' . $caption . '</figcaption></figure>';
 }
 add_filter( 'img_caption_shortcode', 'BH_img_caption_shortcode_filter', 10, 3 );
+
+
+// Add logging capabilities
+if (!function_exists('write_log')) {
+
+    function write_log($log) {
+        if (true === WP_DEBUG) {
+            if (is_array($log) || is_object($log)) {
+                error_log(print_r($log, true));
+            } else {
+                error_log($log);
+            }
+        }
+    }
+
+}
+
+
+// Add to log on image deletion
+function check_relations( $post_id ){
+	
+	$logString = PHP_EOL . "Image File Id being deleted:" . $post_id . PHP_EOL . "The File Title: " . get_the_title( $post_id ) . PHP_EOL;  
+	
+	$parent = get_post_ancestors( $post_id );
+	
+	$logString .= "Story ID associated with Image: " . $parent[0]  . PHP_EOL;  
+	$logString .= "Story title associated with Image: " . get_the_title($parent[0])  . PHP_EOL;  
+	
+	
+	// Get current user Info
+	$current_user = wp_get_current_user();
+	$logString .= sprintf( __( 'Username: %s', 'textdomain' ), esc_html( $current_user->user_login ) ) . PHP_EOL;
+	$logString .= sprintf( __( 'User ID: %s', 'textdomain' ), esc_html( $current_user->ID ) ) . PHP_EOL;
+	$logString .= sprintf( __( 'User Email: %s', 'textdomain' ), esc_html( $current_user->user_email ) ) . PHP_EOL;
+	$logString .= sprintf( __( 'User Display Name: %s', 'textdomain' ), esc_html( $current_user->display_name ) ) . PHP_EOL;
+	$logString .= sprintf( __( 'User First Name: %s', 'textdomain' ), esc_html( $current_user->user_firstname ) ) . PHP_EOL;
+	$logString .= sprintf( __( 'User Last Name: %s', 'textdomain' ), esc_html( $current_user->user_lastname ) ) . PHP_EOL;
+	
+	
+	// Write it all to the log file
+	write_log( $logString );
+
+
+}
+add_action( 'delete_attachment', 'check_relations' );
