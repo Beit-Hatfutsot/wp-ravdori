@@ -1975,4 +1975,13 @@ a.external-link {
     font-size: 19px;
 }
 
+.topic-title {
+    font-size: 14px;
+    font-weight: 800;
+    border-bottom: 2px solid #B0292F;
+    max-width: 96%;
+    margin: 30px 0;
+    clear: both;
+}
+
 /*# sourceMappingURL=general.css.map */

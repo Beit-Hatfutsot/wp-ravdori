@@ -24,30 +24,100 @@
             }
 
             set_query_var( 'subjectsArray' , $selectedSubjects );
+			
+			
+			$arrSubjectsStrings = array();
+			
+			
+			
+			
 
             if ( isset( $selectedSubjects ) )
             {
                 foreach ($subjects as $subject)
                 {
-                    echo '<div class="col-xs-3">';
-                    echo '<label>';
-                        echo '<input type="checkbox"' . (( in_array( $subject['id'] , $selectedSubjects )) ? ' checked ' : '') . 'id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
-                        echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
-                    echo '</label>';
-                    echo '</div>';
-                }
+
+					  ob_start(); 		
+								echo '<div class="col-xs-3">';
+								echo '<label>';
+									echo '<input type="checkbox"' . (( in_array( $subject['id'] , $selectedSubjects )) ? ' checked ' : '') . 'id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
+									echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
+								echo '</label>';
+								echo '</div>';
+					  $checkboxHtml = ob_get_contents(); 
+					  ob_end_clean(); 	
+					  
+					  $subjectLanguage = get_field( 'acf-subjects-language' , SUBJECTS_TAXONOMY . '_' . $subject['id'] );
+					  if ( !$subjectLanguage ) $subjectLanguage = 'he';
+					  
+					  switch ( $subjectLanguage ) {
+						  case 'he':
+							$arrSubjectsStrings['he'] .= $checkboxHtml;
+						  break;
+						  
+						  case 'en':
+							$arrSubjectsStrings['en'] .= $checkboxHtml;
+						  break;
+						  
+						  case 'ru':
+							$arrSubjectsStrings['ru'] .= $checkboxHtml;
+						  break;
+					  }
+					  
+                } //foreach
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','עברית');
+				printf("%s",$arrSubjectsStrings['he']);
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','English');
+				printf("%s",$arrSubjectsStrings['en']);
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','русский');
+				printf("%s",$arrSubjectsStrings['ru']);
+				
             }
             else
             {
                 foreach ($subjects as $subject)
                 {
-                    echo '<div class="col-xs-3">';
-                        echo '<label>';
-                            echo '<input type="checkbox"' . ' id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
-                            echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
-                        echo '</label>';
-                    echo '</div>';
-                }
+							ob_start(); 	
+									echo '<div class="col-xs-3">';
+										echo '<label>';
+											echo '<input type="checkbox"' . ' id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
+											echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
+										echo '</label>';
+									echo '</div>';
+							$checkboxHtml = ob_get_contents(); 
+							ob_end_clean(); 
+							
+							$subjectLanguage = get_field( 'acf-subjects-language' , SUBJECTS_TAXONOMY . '_' . $subject['id'] );
+							if ( !$subjectLanguage ) $subjectLanguage = 'he';
+						  
+						    switch ( $subjectLanguage ) {
+								  case 'he':
+									$arrSubjectsStrings['he'] .= $checkboxHtml;
+								  break;
+								  
+								  case 'en':
+									$arrSubjectsStrings['en'] .= $checkboxHtml;
+								  break;
+								  
+								  case 'ru':
+									$arrSubjectsStrings['ru'] .= $checkboxHtml;
+								  break;
+						    }							
+                } // foreach
+				
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','עברית');
+				printf("%s",$arrSubjectsStrings['he']);
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','English');
+				printf("%s",$arrSubjectsStrings['en']);
+				
+				printf('<div class="topic-title col-xs-12">%s</div>','русский');
+				printf("%s",$arrSubjectsStrings['ru']);
+				
             }
 
             ?>
