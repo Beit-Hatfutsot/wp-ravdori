@@ -13,16 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
 function my_enqueue($hook) {
-	
-	if ( !isset( $_GET['taxonomy'] ) ){
+
+	$screen = get_current_screen();
+		
+	if ( !isset( $_GET['taxonomy'] ) AND (!is_object( $screen ) AND $screen->post_type != STORY_POST_TYPE )  ){
 		return;
 	}
 		
-	
-    if ( !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )) {
+
+    if ( !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )  AND ( !is_object( $screen ) AND $screen->post_type != is_object( $screen ) && $cpt == $screen->post_type   )) {
         return;
     }
 
+	
 	//wp_enqueue_style('chosen');
 	wp_enqueue_style( 'chosen_admin_css'    ,	JS_DIR  . '/chosen/chosen.css');
     wp_enqueue_script('chosen_admin_js'     ,	JS_DIR  . '/chosen/chosen.jquery.js');

@@ -2,7 +2,7 @@
 jQuery( document ).ready(function() {
 	
 	// sort list
-	var my_options = jQuery("#parent option");
+	var my_options = jQuery("#parent option , #schools option");
 	my_options.sort(function(a,b) {
 		if (a.text > b.text) return 1;
 		else if (a.text < b.text) return -1;
@@ -12,5 +12,11 @@ jQuery( document ).ready(function() {
 
 	
     jQuery("#parent").addClass('chosen-rtl').chosen( { placeholder_text_single : "בחירת מדינות, ערים, מחוזות ובתי ספר", no_results_text: "לא נמצאו תוצאות ל - " , search_contains: true } );
+    
+    // Admin post type edit page (all stories list)
+    jQuery("#schools").addClass('chosen-rtl').chosen( { placeholder_text_single : "בחירת מדינות, ערים, מחוזות ובתי ספר", no_results_text: "לא נמצאו תוצאות ל - " , search_contains: true } );
+    jQuery('.tablenav .actions').css( 'overflow' , 'visible');
+
+
 	jQuery(".chosen-container").css('border' , '3px solid');
 });
