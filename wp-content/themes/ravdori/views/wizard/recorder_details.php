@@ -103,7 +103,7 @@ $().ready(function () {
                                                             allow              : '()[]/\\,\'- "',
                                                             disallow           : '!@#$%^&*+=[]\\;/{}|":<>?~`._',
                                                             allowSpace         : false,
-                                                            allowNumeric       : false,
+                                                            allowNumeric       : true,
                                                             allowUpper         : true,
                                                             allowLower         : true,
                                                             allowCaseless      : true,
