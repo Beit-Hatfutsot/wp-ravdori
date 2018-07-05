@@ -419,7 +419,7 @@ get_header();
                                            {
                                                if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) )
                                                {
-                                                   echo '<h2 class="pulse red-title">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
+                                                   echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
 
                                                    echo '<div class="alert alert-info existing-story-alert">';
                                                    echo '<strong>' . BH__('שימו לב! ' , 'BH', $locale)  . '</strong>';
@@ -456,7 +456,7 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2 class="pulse red-title">' . BH__('סיפורים ממתינים לאישור') . '</h2>';
+                                            echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים ממתינים לאישור','BH', $locale) . '</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
                                                     echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
@@ -477,7 +477,7 @@ get_header();
 
                                         if( $query->have_posts() )
                                         {
-                                            echo '<h2 class="pulse red-title">' . BH__('סיפורים מפורסמים') . '</h2>';
+                                            echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים מפורסמים','BH', $locale) . '</h2>';
                                             echo '<ul>';
                                             while($query->have_posts()) : $query->the_post();
                                                 echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
