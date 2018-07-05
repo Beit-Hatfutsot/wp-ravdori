@@ -116,6 +116,7 @@ $locale = get_language_locale_filename_by_get_param(true);
 $lang   = $locale['get_param_value'];
 $text_direction = $locale['dir'];
 $locale = $locale['locale_file'];
+
 if ( $text_direction == 'ltr'):?>
 
 /* Global */

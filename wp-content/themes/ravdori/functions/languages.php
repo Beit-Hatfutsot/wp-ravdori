@@ -29,7 +29,6 @@ function setup_text_domain(){
 add_action('after_setup_theme', 'setup_text_domain');
 
 
-
 	/**
 	 * Get a translated string by langauge.
 	 * 
@@ -105,3 +104,88 @@ function get_language_locale_filename_by_get_param( $returnFullLanguageData = fa
 	return ( $locale );
 	
 }
+
+
+
+
+
+
+
+
+/**
+ * 
+ *
+ * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/gettext
+ */
+function theme_change_comment_field_names( $translated_text, $text, $domain ) {
+
+	require_once  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/ravdori/functions/wizard/BH_SessionManager.php';
+
+	$locale = get_language_locale_filename_by_get_param(true);
+	$locale =  $locale["locale_file"];
+		
+    if ( $translated_text == "להכניס לתוכן" ) 
+    { 
+	    $translated_text = BH__("להכניס לתוכן" , "BH" , $locale);
+	}
+		   
+    if ( isset( $_SESSION[ 'CURRENT_STEP' ] ) AND $_SESSION[ 'CURRENT_STEP' ] == 4 ) 
+	{
+		
+		$locale = get_language_locale_filename_by_get_param(true);
+		$locale =  $locale["locale_file"];
+		
+		   if ( $translated_text == "להכניס לתוכן" ) 
+		   { 
+				$translated_text = BH__("להכניס לתוכן" , "BH" , $locale);
+		   }
+		
+		   switch ( $translated_text ) {
+
+            case 'בחירת קבצים' : $translated_text = BH__('בחירת קבצים' , "BH" , $locale);
+            break;
+			
+	  	    case 'הוספת מדיה' : $translated_text = BH__('הוספת מדיה' , "BH" , $locale);
+            break;
+			
+			case "יש לשחרר את הקבצים במקום כלשהו בכדי להעלות": $translated_text = BH__("יש לשחרר את הקבצים במקום כלשהו בכדי להעלות" , "BH" , $locale);
+            break;
+			
+			case "גודל קובץ מקסימלי: %s." : $translated_text = BH__("גודל קובץ מקסימלי: %s." , "BH" , $locale);
+            break;
+			
+			case "חיפוש בפריטי מדיה..." : $translated_text = BH__("חיפוש בפריטי מדיה..." , "BH" , $locale);
+            break;
+			
+			case "לא נמצאו קבצי מדיה." : $translated_text = BH__("לא נמצאו קבצי מדיה." , "BH" , $locale);
+            break;
+			
+			case "יש לגרור את קבצי המדיה כדי לשנות מיקום." : $translated_text = BH__("יש לגרור את קבצי המדיה כדי לשנות מיקום." , "BH" , $locale);
+            break;
+		
+			case  "העלאת קבצים" : $translated_text = BH__( "העלאת קבצים" , "BH" , $locale);
+            break;
+			
+			case "להכניס גלריה": $translated_text = BH__("להכניס גלריה" , "BH" , $locale);
+            break;
+			
+			case "ספריית מדיה" : $translated_text = BH__("ספריית מדיה" , "BH" , $locale);
+            break;
+			
+			case "להכניס לתוכן" : $translated_text = BH__("להכניס לתוכן" , "BH" , $locale);
+            break;
+			
+			case "להוסיף לתוכן" : $translated_text = BH__("להוסיף לתוכן" , "BH" , $locale);
+            break;			
+					
+			case "למחוק לצמיתות" : $translated_text = BH__("למחוק לצמיתות" , "BH" , $locale);
+            break;
+
+
+        };
+				
+    }
+
+    return $translated_text;
+}
+add_filter( 'gettext', 'theme_change_comment_field_names', 20, 3 );
