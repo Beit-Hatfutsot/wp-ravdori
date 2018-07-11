@@ -434,7 +434,7 @@ function cleanStoryImages( $post_id )
         delete_post_media( $post_id );
     }
 }
-add_action('before_delete_post', 'cleanStoryImages');
+//add_action('before_delete_post', 'cleanStoryImages');
 
 
 
