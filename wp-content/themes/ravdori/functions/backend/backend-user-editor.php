@@ -365,3 +365,83 @@ function restrict_access() {
 }
 add_action( 'current_screen', 'restrict_access' );
 
+
+#region prevent editor from deleting, editing, or creating an administrator
+
+
+  // Remove 'Administrator' from the list of roles if the current user is not an admin
+  function editable_roles( $roles ){
+    if( isset( $roles['administrator'] ) && !current_user_can('administrator') ){
+      unset( $roles['administrator']);
+    }
+    return $roles;
+  }
+  add_filter( 'editable_roles', 'editable_roles' );
+
+
+  // If someone is trying to edit or delete an
+  // admin and that user isn't an admin, don't allow it
+  function prevent_editor_from_edit_admin( $caps, $cap, $user_id, $args ){
+    switch( $cap ){
+        case 'edit_user':
+        case 'remove_user':
+        case 'promote_user':
+            if( isset($args[0]) && $args[0] == $user_id )
+                break;
+            elseif( !isset($args[0]) )
+                $caps[] = 'do_not_allow';
+            $other = new WP_User( absint($args[0]) );
+            if( $other->has_cap( 'administrator' ) OR $other->has_cap( 'editor' ) )
+			{
+                if(!current_user_can('administrator')){
+                    $caps[] = 'do_not_allow';
+                }
+            }
+            break;
+        case 'delete_user':
+        case 'delete_users':
+            if( !isset($args[0]) )
+                break;
+            $other = new WP_User( absint($args[0]) );
+            if( $other->has_cap( 'administrator' ) OR $other->has_cap( 'editor' ) )
+			{
+                if(!current_user_can('administrator')){
+                    $caps[] = 'do_not_allow';
+                }
+            }
+            break;
+        default:
+            break;
+    }
+    return $caps;
+  }
+  add_filter( 'map_meta_cap','prevent_editor_from_edit_admin',10,4);
+
+  
+  // Hide all administrators from user list.
+  function BH_pre_user_query($user_search)
+  {
+	 
+			  $user = wp_get_current_user();
+					 
+			  if ( ! current_user_can( 'manage_options' ) ) 
+			  {
+				   
+				global $wpdb;
+			 
+				$user_search->query_where = 
+					str_replace('WHERE 1=1', 
+					"WHERE 1=1 AND {$wpdb->users}.ID IN (
+						 SELECT {$wpdb->usermeta}.user_id FROM $wpdb->usermeta 
+							WHERE {$wpdb->usermeta}.meta_key = '{$wpdb->prefix}capabilities'
+							AND {$wpdb->usermeta}.meta_value NOT LIKE '%administrator%')", 
+					$user_search->query_where
+				);
+			  }
+	}
+	add_action('pre_user_query','BH_pre_user_query');
+
+
+
+
+#endregion
