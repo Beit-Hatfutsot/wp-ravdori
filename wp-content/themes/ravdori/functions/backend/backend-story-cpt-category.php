@@ -21,7 +21,7 @@ function my_enqueue($hook) {
 	}
 		
 
-    if ( !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )  AND ( !is_object( $screen ) AND $screen->post_type != is_object( $screen ) && $cpt == $screen->post_type   )) {
+    if ( !isset( $_GET['taxonomy'] ) OR !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )  AND ( !is_object( $screen ) AND $screen->post_type != is_object( $screen ) && $cpt == $screen->post_type   )) {
         return;
     }
 
