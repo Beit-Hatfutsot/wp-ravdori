@@ -132,6 +132,7 @@ function allow_admin_area_to_admins_only() {
 	
 	$allowed_roles = array('editor', 'administrator');
 	
+	
     if( empty( $user ) OR  count( array_intersect($allowed_roles, $user->roles ) ) == 0 )
     {
         //Redirect to main page if no user or if the user has no "administrator" or "editor" role assigned

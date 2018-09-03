@@ -50,6 +50,8 @@ function BH__( $string, $textdomain, $locale ) {
 	$backup = $l10n[$textdomain];
   }
   
+
+	
   load_textdomain($textdomain, get_template_directory() . '/languages/'. $locale . '.mo');
   $translation = __($string,$textdomain);
   
@@ -124,21 +126,18 @@ function theme_change_comment_field_names( $translated_text, $text, $domain ) {
 	$locale = get_language_locale_filename_by_get_param(true);
 	$locale =  $locale["locale_file"];
 		
-    if ( $translated_text == "להכניס לתוכן" ) 
-    { 
-	    $translated_text = BH__("להכניס לתוכן" , "BH" , $locale);
-	}
 		   
     if ( isset( $_SESSION[ 'CURRENT_STEP' ] ) AND $_SESSION[ 'CURRENT_STEP' ] == 4 ) 
 	{
 		
 		$locale = get_language_locale_filename_by_get_param(true);
 		$locale =  $locale["locale_file"];
-		
+	
 		   if ( $translated_text == "להכניס לתוכן" ) 
 		   { 
 				$translated_text = BH__("להכניס לתוכן" , "BH" , $locale);
 		   }
+		   
 		
 		   switch ( $translated_text ) {
 
@@ -185,7 +184,7 @@ function theme_change_comment_field_names( $translated_text, $text, $domain ) {
         };
 				
     }
-
+		
     return $translated_text;
 }
 add_filter( 'gettext', 'theme_change_comment_field_names', 20, 3 );
