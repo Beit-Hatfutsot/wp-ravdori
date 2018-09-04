@@ -405,7 +405,8 @@ get_header();
 
                         <div style="text-align: center;">
                             <?php
-
+									$existingStoryInput = '';
+									
                                     // Get all the drafts
                                     if (  isset( $data['user']['draft']  )   ):
 
@@ -419,14 +420,13 @@ get_header();
                                            {
                                                if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) )
                                                {
-                                                   echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
+                                                   //echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
 
                                                    echo '<div class="alert alert-info existing-story-alert">';
                                                    echo '<strong>' . BH__('שימו לב! ' , 'BH', $locale)  . '</strong>';
                                                    echo '<br/>';
                                                    echo '<p>';
-                                                   echo BH__('אם הסיפורים שלהלן שייכים למשתתף אחר, יש להכנס למערכת מחדש תחת כתובת מייל אחרת.' , 'BH', $locale) . '<br>' . BH__('אין לתעד שני אנשים שונים על אותה כתובת מייל.','BH', $locale) . '<br>';
-												   echo BH__('להמשך סיפורך נא ללחוץ על הקישור לסיפור/ים:' , 'BH', $locale);
+                                                   echo BH__('להמשך טיפול בסיפורך הנמצא במצב טיוטא נא לחץ על שמור והמשך' , 'BH', $locale) . '<br>' . BH__('לא ניתן להתחיל בכתיבת סיפור חדש לפני שנשלח סיפור זה לפרסום','BH', $locale) . '<br>';
                                                    echo '</p>';
                                                    echo '</div>';
                                                }
@@ -436,7 +436,9 @@ get_header();
 
                                                        if ( empty($currentPostId) OR ( $currentPostId != get_the_ID() ) ) {
 
-                                                           echo '<li class="author-page-stories-list"><a id="draft_story" data-id="' . get_the_ID() . '" style="cursor: pointer;">' . get_the_title() . '</a></li>';
+                                                           //echo '<li class="author-page-stories-list"><a id="draft_story" data-id="' . get_the_ID() . '" style="cursor: pointer;">' . get_the_title() . '</a></li>';
+														   $existingStoryInput = '<input type="hidden" name="' . IWizardStep2Fields::STORY_LOADED . '" value="'  . get_the_ID() . '">';
+														   break; // only one story allowed
 
                                                        }
                                                    endwhile;
@@ -447,7 +449,7 @@ get_header();
 
                             <?php
 
-                                    // Get all the drafts
+                                    // Get all the pending stories
                                     if (  isset( $data['user']['pending']  )   ):
 
                                         $query = $data['user']['pending'];
@@ -470,7 +472,7 @@ get_header();
 
                             <?php
 
-                                    // Get all the drafts
+                                    // Get all the published stories
                                     if (  isset( $data['user']['publish']  )   ):
 
                                         $query = $data['user']['publish'];
@@ -501,6 +503,7 @@ get_header();
 
                     <div class="submit">
                         <input type="submit" class="next" value="<?php echo $nextButtonCaption; ?>"  style="float: left;margin-left: 23px;"/>
+						<?php echo (isset($existingStoryInput) ? $existingStoryInput : ''); ?>
                         <input id="submitSave" type="submit" class="cancel" style="float: left;margin-left: 23px;background-color: #999999;" value="<?php BH__e('שמור' , 'BH', $locale);?>"/>
                     </div>
 
