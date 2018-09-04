@@ -794,7 +794,14 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <div class="row">
-
+							
+						 <div class="col-lg-12 text-center" style="border: 4px solid #C00000;padding:15px; margin: 40px 0;font-size: 21px;">	
+						   <strong>
+							<u><?php BH__e('יש לשמור על זכויות יוצרים' , 'BH', $locale);?></u> -
+							   <?php BH__e('במקרה של שימוש במידע/תמונה מהרשת יש להשתמש בתמונות ממאגרים חופשיים ו/או לציין מקורם.' , 'BH', $locale);?>
+						   </strong>   
+						 </div>
+							
 
                         <?php
 
