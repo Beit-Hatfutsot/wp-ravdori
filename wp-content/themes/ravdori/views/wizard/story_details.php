@@ -411,6 +411,17 @@ get_header();
                 if( $(this).find(".save-clicked").attr("id") === "submitSaveUpper" || $(this).find(".save-clicked").attr("id") === "submitSaveBottom")
                 {
 				
+					if ( $.trim( $("#<?php echo IWizardStep4Fields::STORY_TITLE;?>").val() ).length == 0 )
+					{
+						<?php
+							 global $wizardSessionManager;
+							 $step2Data = $wizardSessionManager->getStepData( IWizardStep2Fields::ID );
+							 $name      = $step2Data[IWizardStep2Fields::FIRST_NAME ] . ' ' . $step2Data[IWizardStep2Fields::LAST_NAME ];
+						 ?>
+
+						$("#<?php echo IWizardStep4Fields::STORY_TITLE;?>").val("<?php echo $name; ?>");
+					}
+				
                     $('<input />').attr('type', 'hidden')
                         .attr('name', 'do-saving')
                         .attr('value', 'save')
@@ -562,6 +573,17 @@ get_header();
 
         function autoSavePost()
         {
+			if ( $.trim( $("#<?php echo IWizardStep4Fields::STORY_TITLE;?>").val() ).length == 0 )
+			{
+				<?php
+					 global $wizardSessionManager;
+					 $step2Data = $wizardSessionManager->getStepData( IWizardStep2Fields::ID );
+					 $name      = $step2Data[IWizardStep2Fields::FIRST_NAME ] . ' ' . $step2Data[IWizardStep2Fields::LAST_NAME ];
+				?>
+
+				$("#<?php echo IWizardStep4Fields::STORY_TITLE;?>").val("<?php echo $name; ?>");
+			}
+			
             if(response == true)
             {
 
