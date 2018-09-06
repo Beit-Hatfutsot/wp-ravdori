@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G2G: Generation to Generation\n"
 "POT-Creation-Date: 2017-11-13 12:47+0200\n"
-"PO-Revision-Date: 2018-07-05 18:24+0300\n"
+"PO-Revision-Date: 2018-09-06 14:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -1256,3 +1256,15 @@ msgstr "Insert"
 
 msgid "למחוק לצמיתות"
 msgstr "Delete Permanently"
+
+msgid "להמשך טיפול בסיפורך הנמצא במצב טיוטא נא לחץ על שמור והמשך"
+msgstr "Your story is currently in draft mode. In order to continue creating, please press 'Save and Continue'"
+
+msgid "לא ניתן להתחיל בכתיבת סיפור חדש לפני שנשלח סיפור זה לפרסום"
+msgstr "You cannot create a new story before sending your current story for publishing"
+
+msgid "יש לשמור על זכויות יוצרים"
+msgstr "Avoid copyright infrigement"
+
+msgid "במקרה של שימוש במידע/תמונה מהרשת יש להשתמש בתמונות ממאגרים חופשיים ו/או לציין מקורם."
+msgstr "When using information/images from the web, please use free sources and include the appropriate credit"

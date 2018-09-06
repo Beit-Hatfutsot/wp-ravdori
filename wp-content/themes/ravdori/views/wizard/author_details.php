@@ -422,7 +422,10 @@ get_header();
                                                {
                                                    //echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים בתהליך כתיבה - כניסה חוזרת לסיפור שלי' , 'BH', $locale) . '</h2>';
 
-                                                   echo '<div class="alert alert-info existing-story-alert">';
+												   $alert_style_tag_rtl = (get_language_locale_filename_by_get_param(true));
+												   $alert_style_tag_rtl = ($alert_style_tag_rtl["dir"] == 'ltr') ? 'style="direction: ltr; font-size: 21px !important; line-height: 1.5em !important;."' : '';
+												   
+                                                   echo '<div class="alert alert-info existing-story-alert"' . ' ' . $alert_style_tag_rtl.  '>';
                                                    echo '<strong>' . BH__('שימו לב! ' , 'BH', $locale)  . '</strong>';
                                                    echo '<br/>';
                                                    echo '<p>';

@@ -410,6 +410,7 @@ get_header();
 
                 if( $(this).find(".save-clicked").attr("id") === "submitSaveUpper" || $(this).find(".save-clicked").attr("id") === "submitSaveBottom")
                 {
+				
                     $('<input />').attr('type', 'hidden')
                         .attr('name', 'do-saving')
                         .attr('value', 'save')
