@@ -16,15 +16,15 @@ function my_enqueue($hook) {
 
 	$screen = get_current_screen();
 		
-	if ( !isset( $_GET['taxonomy'] ) AND (!is_object( $screen ) AND $screen->post_type != STORY_POST_TYPE )  ){
+	if ( (!is_object( $screen ) AND $screen->post_type != STORY_POST_TYPE )  ){
 		return;
 	}
 		
-
-    if ( !isset( $_GET['taxonomy'] ) OR !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )  AND ( !is_object( $screen ) AND $screen->post_type != is_object( $screen ) && $cpt == $screen->post_type   )) {
+/*
+    if ( !isset( $_GET['taxonomy'] ) OR !('edit-tags.php' == $hook OR 'term.php' == $hook OR $_GET['taxonomy'] == 'schools' )  AND ( !is_object( $screen ) AND $screen->post_type != is_object( $screen ) && STORY_POST_TYPE == $screen->post_type   )) {
         return;
     }
-
+*/
 	
 	//wp_enqueue_style('chosen');
 	wp_enqueue_style( 'chosen_admin_css'    ,	JS_DIR  . '/chosen/chosen.css');

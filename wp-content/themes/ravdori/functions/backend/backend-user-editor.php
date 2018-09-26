@@ -234,11 +234,13 @@ if( ( 'edit_post' != $args[0] && 'delete_post' != $args[0] )
 		$postId = $_GET['p'];
 	}
 	
+	
 	if(  has_term( $user_districts, SCHOOLS_TAXONOMY, $postId ) == false ) {
 		wp_die( __('איו לך הרשאה לעריכת סיפור ממחוז זה' , 'BH') );
 	}
 	
-	// Get if the current user can edit a post or jsut view it
+	
+	// Get if the current user can edit a post or just view it
     $user 			= wp_get_current_user();
     $user_can_edit  = get_field( 'acf-user-editor-can-edit' , 'user_' . $user->ID );
 
