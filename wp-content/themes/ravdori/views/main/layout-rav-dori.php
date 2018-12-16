@@ -26,11 +26,19 @@ $text = get_field('acf-main-ravdori-the-program-text');
 </div>
 
 
+<section class="row homepage-mobile-wizard-notice hidden-lg hidden-md">
+	<div class="homepage-mobile-wizard-notice-text text-center col-sm-12">
+			<div>
+				<strong class="title">משתתפי התוכנית</strong>
+				<div class="text">הוספת הסיפור שלכם מתאפשרת רק דרך מחשב</div>
+			</div>
+	</div>
+</section>
 
-<section id="homepage_ravdori" class="row">
+<section id="homepage_ravdori" class="row bh-display-flex">
 
     <?php if ( $text ): ?>
-        <div class="col-sm-6">
+        <div class="col-sm-5 col-homepage-about-the-program">
             <div class="homepage-about-the-program">
                 <?php echo $text; ?>
             </div>
