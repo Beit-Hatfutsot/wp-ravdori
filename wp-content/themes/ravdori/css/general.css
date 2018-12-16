@@ -2658,4 +2658,9 @@ a.external-link {
     padding-right: 0;
 }
  
+.running-numbers__cube__title {
+    line-height: 1.2em;
+    padding-top: 15px;
+} 
+ 
 /*# sourceMappingURL=general.css.map */
