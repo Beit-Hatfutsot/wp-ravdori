@@ -467,9 +467,10 @@ add_action( 'manage_' . STORY_POST_TYPE .'_posts_custom_column', 'add_story_back
 
 function backend_create_filters() {
     global $typenow;
+	global $pagenow;
 
 
-    if( $typenow == STORY_POST_TYPE AND current_user_can('administrator') )
+    if( $typenow == STORY_POST_TYPE AND current_user_can('edit_others_pages') )
     {
         $filters = get_object_taxonomies( $typenow );
 
@@ -479,8 +480,11 @@ function backend_create_filters() {
                 continue;
 
             $tax_obj = get_taxonomy( $tax_slug );
+			
 
-            wp_dropdown_categories( array(
+
+			
+			$args  = array(
                                                 'show_option_all' => __('הצג את כל ה'.$tax_obj->label ) ,
                                                 'taxonomy'        => $tax_slug      ,
                                                 'name'            => $tax_obj->name ,
@@ -489,8 +493,19 @@ function backend_create_filters() {
                                                 'hierarchical'    => $tax_obj->hierarchical     ,
                                                 'show_count'      => true ,
                                                 'hide_empty'      => false ,
-                                          )
-                                   );
+                                          );
+			
+			if ( $tax_obj->name == schools )	{
+				
+				$user_districts = get_field( 'acf-user-editor-districts' , 'user_' . get_current_user_id() );
+				
+				if ( $user_districts )
+					$args['parent'] = $user_districts[0];
+				
+				
+			}						  
+										  
+            wp_dropdown_categories( $args );
         }
 
 
