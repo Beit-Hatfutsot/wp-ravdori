@@ -495,7 +495,7 @@ function backend_create_filters() {
                                                 'hide_empty'      => false ,
                                           );
 			
-			if ( $tax_obj->name == schools )	{
+			if ( $tax_obj->name == 'schools' )	{
 				
 				$user_districts = get_field( 'acf-user-editor-districts' , 'user_' . get_current_user_id() );
 				
@@ -1145,3 +1145,68 @@ SQL;
     }
     return $counts;
 }
+
+
+
+////////////////
+
+
+add_action( 'current_screen', function ( $current_screen ) 
+{  
+        if ($current_screen->id === 'edit-story')
+            add_filter( "views_{$current_screen->id}", 'list_table_views_filter' );
+
+		
+}, 20);
+
+function list_table_views_filter( array $view ) {
+   // error_log(print_r($view, true));
+   
+   
+   
+   $user_districts = get_field( 'acf-user-editor-districts' , 'user_' . get_current_user_id() );
+
+// All the published storyies in the district
+$args_query = array(
+	'post_type' => STORY_POST_TYPE,
+	'post_status' => array('publish'),
+	'posts_per_page' => -1,
+	'tax_query' => array(
+							array(
+								'taxonomy' => SCHOOLS_TAXONOMY,
+								'field'    => 'term_id',
+								'terms'    => $user_districts,
+							)
+						)
+);
+
+// Get all published
+$query = new WP_Query( $args_query );
+$total_published = $query->found_posts;
+wp_reset_postdata();
+
+
+// Get all draft
+$args_query['post_status'] = array('draft');
+$query = new WP_Query( $args_query );
+
+$total_drafts    = $query->found_posts;
+
+
+
+// Get all pending
+$args_query['post_status'] = array('pending');
+$query = new WP_Query( $args_query );
+
+$total_pending    = $query->found_posts;
+
+ 
+
+$view['publish'] = preg_replace( '/\(.+\)/U', '('.$total_published.')', $view['publish'] ); 
+$view['draft']   = preg_replace( '/\(.+\)/U', '('.$total_drafts.')', $view['draft'] ); 
+$view['pending'] = preg_replace( '/\(.+\)/U', '('.$total_pending.')', $view['pending'] ); 
+
+   
+    return $view;
+}
+
