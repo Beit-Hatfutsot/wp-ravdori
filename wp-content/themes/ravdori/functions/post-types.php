@@ -1153,7 +1153,7 @@ SQL;
 
 add_action( 'current_screen', function ( $current_screen ) 
 {  
-        if ($current_screen->id === 'edit-story')
+        if ($current_screen->id === 'edit-story' AND  !current_user_can( 'manage_options' ) )
             add_filter( "views_{$current_screen->id}", 'list_table_views_filter' );
 
 		
