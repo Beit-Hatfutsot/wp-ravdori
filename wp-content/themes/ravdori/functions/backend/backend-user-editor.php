@@ -218,7 +218,7 @@ if( ( 'edit_post' != $args[0] && 'delete_post' != $args[0] )
     return $allcaps;
 
 	
-	if ( current_user_can('adult') ) {
+	if ( current_user_can('adult') /*AND !current_user_can('editor')*/ ) {
 		return $allcaps;
 	}
 		
@@ -235,7 +235,7 @@ if( ( 'edit_post' != $args[0] && 'delete_post' != $args[0] )
 	}
 	
 	
-	if(  has_term( $user_districts, SCHOOLS_TAXONOMY, $postId ) == false ) {
+	if( $postId != false AND (has_term( $user_districts, SCHOOLS_TAXONOMY, $postId ) == false) ) {
 		wp_die( __('איו לך הרשאה לעריכת סיפור ממחוז זה' , 'BH') );
 	}
 	
