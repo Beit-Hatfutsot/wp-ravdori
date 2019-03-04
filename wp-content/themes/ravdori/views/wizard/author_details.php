@@ -229,6 +229,22 @@ get_header();
 
     </script>
 
+<?php
+
+	$pending_stories_count = 0;
+	$query = null;
+	
+	
+	// Get all the pending stories
+	if (  isset( $data['user']['pending']  )   ):
+
+		$query = $data['user']['pending'];
+		$pending_stories_count = $query->post_count;
+		
+	endif;
+
+	
+?>
 
 <?php $errors = isset($data['errors']) ? $data['errors'] : null; ?>
     <section class="page-content">
@@ -246,7 +262,22 @@ get_header();
                 ?>
                 <div class="col-xs-12">
 
-                <form id="wizard-form-step2" class="wizard-form" method="post" action="">
+				
+				<?php 
+					// If we don't have pending stories,
+					// show the form as usual;
+					if ( $pending_stories_count == 0 ): 
+				
+				?>
+					<form id="wizard-form-step2" class="wizard-form" method="post" action="">
+				<?php 
+					// Show just a div instead
+					else: ?>	
+						<div id="wizard-form-step2" class="wizard-form">
+				<?php endif; ?>		
+				
+				
+				
                 <div class="title">
                     <h2><?php echo '2 - ' . $wizard_steps_captions[IWizardStep2Fields::ID - 1]; ?></h2>
                 </div>
@@ -404,7 +435,27 @@ get_header();
 
 
                         <div style="text-align: center;">
+
                             <?php
+
+                                    // Get all the published stories, and show them
+                                    if (  isset( $data['user']['publish']  )   ):
+
+                                        $query = $data['user']['publish'];
+
+                                        if( $query->have_posts() )
+                                        {
+                                            echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים מפורסמים','BH', $locale) . '</h2>';
+                                            echo '<ul>';
+                                            while($query->have_posts()) : $query->the_post();
+                                                echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
+                                                // Load into session
+                                            endwhile;
+                                            echo '</ul>';
+                                        }
+                                    endif;
+
+					   
 									$existingStoryInput = '';
 									
                                     // Get all the drafts
@@ -450,50 +501,7 @@ get_header();
                                   endif;
                             ?>
 
-                            <?php
-
-                                    // Get all the pending stories
-                                    if (  isset( $data['user']['pending']  )   ):
-
-                                        $query = $data['user']['pending'];
-
-
-
-                                        if( $query->have_posts() )
-                                        {
-                                            echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים ממתינים לאישור','BH', $locale) . '</h2>';
-                                            echo '<ul>';
-                                            while($query->have_posts()) : $query->the_post();
-                                                    echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
-                                            endwhile;
-                                            echo '</ul>';
-                                        }
-                                    endif;
-                            ?>
-
-
-
-                            <?php
-
-                                    // Get all the published stories
-                                    if (  isset( $data['user']['publish']  )   ):
-
-                                        $query = $data['user']['publish'];
-
-                                        if( $query->have_posts() )
-                                        {
-                                            echo '<h2 class="pulse red-title" style="text-align:center;">' . BH__('סיפורים מפורסמים','BH', $locale) . '</h2>';
-                                            echo '<ul>';
-                                            while($query->have_posts()) : $query->the_post();
-                                                echo '<li class="author-page-stories-list"><a href="' . esc_url( get_permalink() ) . '" target="_blank" style="cursor: pointer;" >' . get_the_title() . '</a></li>';
-                                                // Load into session
-                                            endwhile;
-                                            echo '</ul>';
-                                        }
-                                    endif;
-
-                            ?>
-
+                   
                         </div>
 
                     <?php endif; ?>
@@ -501,7 +509,12 @@ get_header();
 
 
 
-
+					<?php 
+					
+						// If we don't have pending stories,
+						// show the form as usual
+						if ( $pending_stories_count == 0 ): 
+					?>
 
 
                     <div class="submit">
@@ -514,14 +527,25 @@ get_header();
                     <?php wp_nonce_field( 'nonce_author_details_form_action' , 'nonce_author_details' ); ?>
 
 
-
                 </form>
-
+				
+				<?php 
+					// Else, close the openinig div, and hide the "next" button
+					else:
+				?>
+				
+				</div>
+				
+				<div class="author-page-stories-list alert alert-info existing-story-alert text-center voffset5">
+					<?php BH__e('לא ניתן להעלות סיפור חדש כל עוד סיפורך הקודם טרם פורסם!', 'BH', $locale);  ?>
+				</div>
+				
+				<?php endif; ?>
 
                 <form name="step1"  class="wizard-form" method="post">
                     <input name="progstep" value="1" type="hidden">
 
-                    <div class="submit">
+                    <div class="submit" <?php echo ($pending_stories_count > 0) ? 'style="width:100%;"' : ''; ?> >
                         <input type="submit" class="back" value="<?php BH__e('&#9654; הקודם' , 'BH', $locale);?>"/>
                     </div>
 
