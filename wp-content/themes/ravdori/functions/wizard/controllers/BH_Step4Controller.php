@@ -431,7 +431,14 @@ class BH_Step4Controller extends BH_Controller{
     function autoSaveStory_ajax()
     {
         global $wizardSessionManager;
-		
+				
+				
+				if( $wizardSessionManager->isSessionTimeout() OR (!isset($_COOKIE["PHPSESSID"])) ) 
+				{	
+					echo IWizardSessionFields::AJAX_SESSION_EXPIRED;
+					die();
+				} 
+				
 				$formData = null;
 				
 				// Deserialize the story details post
@@ -459,7 +466,7 @@ class BH_Step4Controller extends BH_Controller{
 				$step4Data = $wizardSessionManager->getStepData( IWizardStep4Fields::ID );
 				
 				// Save the post if it exist in the system
-				if ( isset( $step4Data[IWizardStep4Fields::POST_ID] ) AND (get_permalink( $step4Data[IWizardStep4Fields::POST_ID] ) != false) )
+				if ( isset( $step4Data[IWizardStep4Fields::POST_ID] ) AND (get_permalink( $step4Data[IWizardStep4Fields::POST_ID] ) != false) AND (!$wizardSessionManager->isSessionTimeout()) AND is_user_logged_in() )
 				{
 					$step4Fields[IWizardStep4Fields::POST_ID] =  $step4Data[IWizardStep4Fields::POST_ID];
 								
@@ -487,11 +494,7 @@ class BH_Step4Controller extends BH_Controller{
 				  echo $str;
 				  */
 				
-				if( $wizardSessionManager->isSessionTimeout() ) 
-				{
-					echo IWizardSessionFields::AJAX_SESSION_EXPIRED;
-				} 
-				
+	
         die();
     }
 
