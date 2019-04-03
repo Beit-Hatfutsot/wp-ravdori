@@ -54,7 +54,7 @@ function remove_admin_bar() {
 	
 	//if ( !current_user_can('editor') &&  $user_can_edit == false  ) 
 
-	/*	
+		
 	if( current_user_can( 'editor' ) == false )
 	{	
         show_admin_bar(false);
@@ -62,7 +62,7 @@ function remove_admin_bar() {
 	else 
 	{
 		show_admin_bar(true);
-	}*/
+	}
 	
 	
 	/*Show admin bar for admins and editors*/

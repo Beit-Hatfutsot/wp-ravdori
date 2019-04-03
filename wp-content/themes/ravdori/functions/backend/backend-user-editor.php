@@ -235,7 +235,7 @@ if( ( 'edit_post' != $args[0] && 'delete_post' != $args[0] )
 	}
 	
 	
-	if( $postId != false AND (has_term( $user_districts, SCHOOLS_TAXONOMY, $postId ) == false) ) {
+	if( $postId != false AND (has_term( $user_districts, SCHOOLS_TAXONOMY, $postId ) == false) AND is_admin() ) {
 		wp_die( __('איו לך הרשאה לעריכת סיפור ממחוז זה' , 'BH') );
 	}
 	
