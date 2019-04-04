@@ -650,8 +650,29 @@ get_header();
 
 
         }
+		
+		
+		
+		function killCurrentSession() {
+			
+			
+				jQuery.ajax({
+					url  : ajaxurl,
+					type : 'post',
+					data : {
+							 'session_signal':'kill',
+							 'action' : 'autoSaveStory_ajax'
+						   },
+						   
+					success : function( response ) {
+							<?php echo 'window.location.href ="' . esc_url( home_url() ) . '"'; ?>
+					}
+				});
 
+		} // killCurrentSession
 
+		
+		setTimeout( killCurrentSession, 1000 * 60 * 97 ); // close after 1h
 
 
 

@@ -435,9 +435,39 @@ class BH_Step4Controller extends BH_Controller{
 				
 				if( $wizardSessionManager->isSessionTimeout() OR (!isset($_COOKIE["PHPSESSID"])) ) 
 				{	
+		
+					//remove PHPSESSID from browser
+					if ( isset( $_COOKIE[session_name()] ) )
+					setcookie( session_name(), “”, time()-3600, “/” );
+					//clear session from globals
+					$_SESSION = array();
+					//clear session from disk
+					session_destroy();
+						
+					wp_logout();
 					echo IWizardSessionFields::AJAX_SESSION_EXPIRED;
 					die();
 				} 
+				
+				if ( isset($_POST['session_signal']) ) {
+					
+					if ( $_POST['session_signal'] == 'kill') 
+					{
+						wp_logout();
+						
+						//remove PHPSESSID from browser
+						if ( isset( $_COOKIE[session_name()] ) )
+						setcookie( session_name(), “”, time()-3600, “/” );
+						//clear session from globals
+						$_SESSION = array();
+						//clear session from disk
+						session_destroy();
+						
+						echo IWizardSessionFields::AJAX_SESSION_EXPIRED;
+						die();
+					}
+				
+				}
 				
 				$formData = null;
 				
@@ -482,7 +512,7 @@ class BH_Step4Controller extends BH_Controller{
 					// Save the fields in the session
 					$wizardSessionManager->setStepData(IWizardStep4Fields::ID, $step4Fields);
 
-					if( !$wizardSessionManager->isSessionTimeout() ) {
+					if( !$wizardSessionManager->isSessionTimeout() AND is_user_logged_in() ) {
 						// Create new story or update the current one
 						$this->createNewStoryPost();
 					}
