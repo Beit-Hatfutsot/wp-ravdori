@@ -54,24 +54,17 @@ function remove_admin_bar() {
 	
 	//if ( !current_user_can('editor') &&  $user_can_edit == false  ) 
 
-		
-	if( current_user_can( 'editor' ) == false )
-	{	
-        show_admin_bar(false);
-    }
-	else 
-	{
-		show_admin_bar(true);
-	}
 	
 	
 	/*Show admin bar for admins and editors*/
-	if (  (current_user_can('administrator') && is_admin())   OR (current_user_can('editor') &&  $user_can_edit == true)  ) {
+	if (  (current_user_can('manage_options')) OR (current_user_can('editor') AND $user_can_edit == true)  ) 
+	{
 		show_admin_bar( true );
 	}
-	else
-	  show_admin_bar( false );
-	
+	else 
+	{
+	    show_admin_bar( false );
+	}	
 	
 	
 	
