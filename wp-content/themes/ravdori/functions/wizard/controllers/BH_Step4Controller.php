@@ -327,6 +327,8 @@ class BH_Step4Controller extends BH_Controller{
 			$wizardSessionManager->closeAndLogout();
 			return;
 		}*/
+	
+		
 		
         $step1Data = $wizardSessionManager->getStepData( IWizardStep1Fields::ID );
         $step2Data = $wizardSessionManager->getStepData( IWizardStep2Fields::ID );
@@ -424,7 +426,17 @@ class BH_Step4Controller extends BH_Controller{
 				BH_add_quotes( $terms , $post_id  );
 			}
         }
-
+		
+		
+		
+		error_log("Creating a New Story....");
+		error_log("Session Data: ");
+		error_log( print_r( $step4Data, true ) );
+		error_log("User Data: ");
+		error_log( print_r( wp_get_current_user(), true ) );
+		error_log("Post_id: ");
+		error_log( print_r( $post_id, true ) );
+		
     }
 
 
@@ -438,7 +450,7 @@ class BH_Step4Controller extends BH_Controller{
 		
 					//remove PHPSESSID from browser
 					if ( isset( $_COOKIE[session_name()] ) )
-					setcookie( session_name(), “”, time()-3600, “/” );
+					setcookie( session_name(), '', time()-3600, '/' );
 					//clear session from globals
 					$_SESSION = array();
 					//clear session from disk
@@ -457,7 +469,7 @@ class BH_Step4Controller extends BH_Controller{
 						
 						//remove PHPSESSID from browser
 						if ( isset( $_COOKIE[session_name()] ) )
-						setcookie( session_name(), “”, time()-3600, “/” );
+						setcookie( session_name(), '', time()-3600, '/' );
 						//clear session from globals
 						$_SESSION = array();
 						//clear session from disk
