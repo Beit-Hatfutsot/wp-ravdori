@@ -26,7 +26,11 @@
             set_query_var( 'subjectsArray' , $selectedSubjects );
 			
 			
-			$arrSubjectsStrings = array();
+			$arrSubjectsStrings = array( 
+										'he' => '',
+										'en' => '',
+										'ru' => '',
+									   );
 			
 			
 			
@@ -38,7 +42,7 @@
                 {
 
 					  ob_start(); 		
-								echo '<div class="col-xs-3">';
+								echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
 								echo '<label>';
 									echo '<input type="checkbox"' . (( in_array( $subject['id'] , $selectedSubjects )) ? ' checked ' : '') . 'id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
 									echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
@@ -49,7 +53,7 @@
 					  
 					  $subjectLanguage = get_field( 'acf-subjects-language' , SUBJECTS_TAXONOMY . '_' . $subject['id'] );
 					  if ( !$subjectLanguage ) $subjectLanguage = 'he';
-					  
+			
 					  switch ( $subjectLanguage ) {
 						  case 'he':
 							$arrSubjectsStrings['he'] .= $checkboxHtml;
@@ -81,7 +85,7 @@
                 foreach ($subjects as $subject)
                 {
 							ob_start(); 	
-									echo '<div class="col-xs-3">';
+									echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
 										echo '<label>';
 											echo '<input type="checkbox"' . ' id="' . $subject['id'] . '" name="subjects[]"  value="' . $subject['id'] . '"/ > <span> </span>';
 											echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
@@ -150,7 +154,7 @@
             {
                 foreach ($subtopics as $subject)
                 {
-                    echo '<div class="col-xs-3">';
+                    echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
                         echo '<label>';
                             echo '<input type="checkbox"' . (( in_array( $subject['id'] , $selectedSubjects )) ? ' checked ' : '') . 'id="' . $subject['id'] . '" name="subtopics[]"  value="' . $subject['id'] . '"/ > <span> </span>';
                             echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
@@ -162,7 +166,7 @@
             {
                 foreach ($subtopics as $subject)
                 {
-                    echo '<div class="col-xs-3">';
+                    echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
                         echo '<label>';
                         echo  '<input type="checkbox"' . ' id="' . $subject['id'] . '" name="subtopics[]"  value="' . $subject['id'] . '"/ > <span> </span>';
                         echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
@@ -203,7 +207,7 @@
             {
                 foreach ($languages as $subject)
                 {
-                    echo '<div class="col-xs-3">';
+                    echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
                         echo '<label>';
                             echo '<input type="checkbox"' . (( in_array( $subject['id'] , $selectedSubjects )) ? ' checked ' : '') . 'id="' . $subject['id'] . '" name="languages[]"  value="' . $subject['id'] . '"/ > <span> </span>';
                             echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;
@@ -215,7 +219,7 @@
             {
                 foreach ($languages as $subject)
                 {
-                    echo '<div class="col-xs-3">';
+                    echo '<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">';
                         echo '<label>';
                         echo  '<input type="checkbox"' . ' id="' . $subject['id'] . '" name="languages[]"  value="' . $subject['id'] . '"/ > <span> </span>';
                         echo  '<div class="checkbox-label">' . $subject['name'] .  '</div>' ;

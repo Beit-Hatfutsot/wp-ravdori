@@ -15,13 +15,13 @@ get_header(); ?>
 
 		<div class="container">
 
-			<div class="row">
+			<div class="row change-cols-order">
 
-				<div class="col-xs-4 sidebar-col">
+				<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 sidebar-col order-2">
 					<?php get_template_part('views/sidebar/sidebar'); ?>
 				</div>
 
-				<div class="col-xs-8">
+				<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 order-1">
 					<h2 class="title"><?php the_title(); ?></h2>
 
 					<?php while ( have_posts() ) : the_post(); ?>

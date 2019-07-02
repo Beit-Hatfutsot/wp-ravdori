@@ -22,13 +22,27 @@
         // cache the image container
         var $wrapper = $('.portrait-wrapper');
 
-        fitImages( $wrapper.children().get(0), $wrapper.children().get(1), 20 , caption1  , caption2 );
+        fitImages( $wrapper.children().get(0), $wrapper.children().get(1), 20 , caption1  , caption2, true );
 
         $('.mejs-container').each(function() {
             $(this).css( 'width' , 'auto').css('max-height' , '600px'); //.css( 'min-height' , '400px')
         });
-
-
+		
+		
+		$( window ).resize(function() {
+	
+	    // cache the image container
+        var $wrapper = $('.portrait-wrapper');
+		
+		$('.portrait-wrapper #fig1').remove();
+		$('.portrait-wrapper #fig2').remove();
+        fitImages( $wrapper.children().get(0), $wrapper.children().get(1), 20 , caption1  , caption2, false );
+		
+		$('.mejs-container').each(function() {
+            $(this).css( 'width' , 'auto').css('max-height' , '600px'); //.css( 'min-height' , '400px')
+        });
+		
+		}); // resize event
 
     });
 
@@ -114,7 +128,7 @@
 
 
 
-<div class="portrait-wrapper text-center voffset4 container">
+<div class="portrait-wrapper text-center hidden-xs voffset4 container">
 
     <?php $imgChild =  wp_get_attachment_image( get_field('acf-story-images-adult-past') , 'full', false , array( 'class' => 'portrait' ) ); /* hide-img*/ ?>
     <?php echo $imgChild;?>
@@ -124,6 +138,30 @@
 
 </div>
 
+
+<div class="mobile-images-container visible-xs">
+
+<div class="mobile-images-container__adult-child">
+
+ <?php echo $imgAdult;?>
+ 
+ <figure class="mobile-images-container__adult-child__desc">
+	<?php  the_field('acf-story-images-adult-child-description'); ?>
+ </figure>
+
+</div>
+
+<div class="mobile-images-container__adult-past">
+    <?php echo $imgChild;?>
+	
+	
+  <figure class="mobile-images-container__adult-child__desc">
+	<?php  the_field('acf-story-images-adult-past-description'); ?>
+ </figure>
+	
+</div>
+
+</div>
 
 
 <?php $secondary_text = get_field('acf-story-secondary-text'); ?>

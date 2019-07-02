@@ -11,15 +11,15 @@
 
     <div class="container">
 
-        <div class="row">
+        <div class="row story-main-container">
 
-            <div class="col-xs-4">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 story-main-container__sidebar">
                 <?php
                 get_template_part('views/sidebar/sidebar');
                 ?>
             </div>
 
-            <div class="col-xs-8 white-shadow-box">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 white-shadow-box story-main-container__content">
                 <article class="post single-story print-only" id="post-<?php the_ID(); ?>">
                     <?php
                     // content

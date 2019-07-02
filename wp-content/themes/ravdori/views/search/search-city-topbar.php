@@ -216,7 +216,7 @@ if ( isset ( $_GET['city-select'] ) )
 <form  class="wizard-form" method="get">
 	  
 	  <!-- Country -->	
-	  <div class="col-xs-5">
+	  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 search-country-text-container">
         <div id="city-field"  title="בחר יישוב">
             <div>
                             לחיפוש שם מדינה יש להקליד
@@ -236,7 +236,7 @@ if ( isset ( $_GET['city-select'] ) )
 	
 	
 	<!-- City -->
-    <div class="col-xs-5">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 search-city-text-container">
         <div id="city-field"  title="בחר יישוב">
             <div>
                             לחיפוש שם בי"ס יש להקליד
@@ -261,7 +261,7 @@ if ( isset ( $_GET['city-select'] ) )
         </div>
     </div>
 
-    <div id="school-field" class="col-xs-5">
+    <div id="school-field" class="col-xs-12 col-sm-12 col-md-12 col-lg-5">
 
     </div>
 

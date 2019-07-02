@@ -17,7 +17,6 @@
      $topics_search_url    = get_field( 'acf-options-search-subject'   , 'options' );
      $countries_search_url = get_field( 'acf-options-search-countries' , 'options' );
 	 
-	 $locale = get_language_locale_filename_by_get_param();
 ?>
 
 <header>
@@ -25,17 +24,17 @@
 	<div class="container">
 							
                <div id="header-top" class="row">
-                 <div class="col-sm-6">
+                 <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
 
                      <div class="row">
-                         <div class="col-sm-6">
+                         <div class="col-sm-10 col-md-4 col-lg-6 header-logo-container">
                              <a href="<?php echo HOME?>">
-                                <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" />
+                                <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" style="margin-top: 6px;"/>
                              </a>
                          </div>
 
-                         <div class="col-sm-6 voffset3">
-                             <div class="push-left">
+                         <div class="visible-lg visible-md col-sm-8 col-lg-6 voffset3">
+                             <div class="push-left visible-lg visible-md">
                                 <span style="color:#666766;font-size: 16px;"><?php _e('חפש לפי: ' , 'BH'); ?></span>
 
                                  <a href="<?php echo $school_search_url;?>" class="no-underline">
@@ -72,13 +71,17 @@
 
                  </div>
 
-                 <div class="col-sm-6">
+                 <div class="col-xs-6 col-sm-6">
                      <div class="row">
-                         <div class="col-sm-8">
+                         <div class="hidden-xs col-sm-12 col-md-7  col-lg-8 header-search-container">
                             <?php  get_template_part('views/components/search', 'form'); ?>
                          </div>
+						 
+						 <div class="col-xs-push-2 col-xs-12 visible-xs header-mobile-search-button-container">
+							<button class="btn btn-mobile-search"><i class="glyphicon glyphicon-search"></i></button>
+						 </div>
 
-                         <div class="col-sm-4">
+                         <div class="col-sm-5 col-lg-4 visible-lg visible-md">
 								
 						     <?php 
 							   $facebook_url = get_field( 'acf-options-header-facebook-url', 'options' );
@@ -97,7 +100,7 @@
 								 <?php if ( $youtube_url ): ?>
 									 <li class="social-youtube">
 										 <a href="<?php echo $youtube_url; ?>" target="_blank">
-											 <span class="social-icon"></span>
+											<span class="social-icon"></span>
 										 </a>
 									 </li>
 								<?php endif;?>
@@ -107,22 +110,29 @@
 
                      </div>
                  </div>
-
+				
+				
+				 <div class="col-sm-3 col-xs-3 visible-sm visible-xs">
+					<a href="#" class="menu-btn">
+						<div class="hamburger-menu-button"></div>
+					</a>
+				 </div>
+				
 
                </div>
 
              
               <div id="header-bottom" class="row">
               
-                    <div id="navbar-container" class="col-xs-10">
-               			<div class="navbar navbar-default" role="navigation">
+                    <div id="navbar-container" class="col-sm-12 col-lg-10">
+               			<div class="navbar navbar-default nav-scroller" role="navigation">
                				<?php
                
                					// main menu
                					if ($main_menu) :
                					
-               						echo '<nav class="main-menu">';
-               							echo '<ul class="nav navbar-nav">';
+               						echo '<nav class="main-menu nav-scroller-nav">';
+               							echo '<ul class="nav navbar-nav nav-scroller-content">';
                							
                								echo $main_menu;
                								
@@ -132,6 +142,20 @@
                					endif;
                					
                				?>
+							<button class="nav-scroller-btn nav-scroller-btn--left">
+								<span class="nav-scroller-btn__text"><?php _e('עוד...','BH'); ?></span>
+								<span class="nav-scroller-btn__arrow">
+									<div class="nav-scroller-arrow"></div>
+								</span>
+							</button>
+							
+							<button class="nav-scroller-btn nav-scroller-btn--right">
+							
+							<span class="nav-scroller-btn__arrow">
+									<div class="nav-scroller-arrow"></div>
+							</span>
+								
+							</button>
                			</div>
                     </div>
                     
@@ -144,11 +168,18 @@
 
             <?php if ( !is_page_template( 'wizard.php' ) ): ?>
                 <div class="homepage-title-container row">
-                    <h2><?php BH__e( 'מאגר סיפורי מורשת' , 'BH' ,$locale); ?></h2>
-                    <h3><?php BH__e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH' ,$locale); ?></h3>
+                    <h2><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></h2>
+                    <h3><?php _e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH'); ?></h3>
                 </div>
             <?php endif; ?>
 		
 	</div> <!-- container -->
 
+	
+	
+<?php  
+	/* Mobile fullscreen search*/
+	get_template_part('views/components/full', 'screen-search'); 
+?>	
+	
 </header>

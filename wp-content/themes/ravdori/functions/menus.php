@@ -87,7 +87,7 @@ function BH_get_top_menu_item($id, $menu_name) {
  * @param	array	$args	an object containing wp_nav_menu() arguments
  * @return	array			subset of $items according to parent item ID (defined as $args->children_of)
  */
-add_filter('wp_nav_menu_objects', 'BH_submenu_limit', 10, 2);
+//add_filter('wp_nav_menu_objects', 'BH_submenu_limit', 10, 2);
 function BH_submenu_limit($items, $args) {
 	if ( empty($args->children_of) )
 		return $items;
@@ -167,7 +167,7 @@ function BH_get_event_categories_menu($current_object_id, $show_events) {
  * @param	array	$args	an object containing wp_nav_menu() arguments
  * @return	array			extended $items with additional items list containing event categories
  */
-add_filter('wp_nav_menu_objects', 'BH_add_event_categories_submenu', 10, 2);
+//add_filter('wp_nav_menu_objects', 'BH_add_event_categories_submenu', 10, 2);
 function BH_add_event_categories_submenu($items, $args) {
 	if ( empty($args->add_events_list_under) )
 		return $items;
@@ -259,7 +259,7 @@ function BH_add_event_categories_submenu($items, $args) {
  * @param	array	$args	an object containing wp_nav_menu() arguments
  * @return	array			extended $items with additional items list containing blog categories
  */
-add_filter('wp_nav_menu_objects', 'BH_add_blog_categories_submenu', 10, 2);
+//add_filter('wp_nav_menu_objects', 'BH_add_blog_categories_submenu', 10, 2);
 function BH_add_blog_categories_submenu($items, $args) {
 	if ( empty($args->add_blog_list_under) )
 		return $items;
@@ -541,3 +541,10 @@ function BH_get_mobile_menu($menu, $is_top_menu = false) {
 	
 	return $output;
 }
+
+
+function add_nav_class($output) {
+	$output= preg_replace('/<a/', '<a class="av-scroller-item"', $output, 1);
+    return $output;
+}
+add_filter('wp_nav_menu', 'add_nav_class');

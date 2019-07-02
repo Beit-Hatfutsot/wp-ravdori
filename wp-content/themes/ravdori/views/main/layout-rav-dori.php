@@ -38,7 +38,7 @@ $text = get_field('acf-main-ravdori-the-program-text');
 <section id="homepage_ravdori" class="row bh-display-flex">
 
     <?php if ( $text ): ?>
-        <div class="col-sm-5 col-homepage-about-the-program">
+        <div class="col-xs-12 col-sm-5 col-homepage-about-the-program">
             <div class="homepage-about-the-program">
                 <?php echo $text; ?>
             </div>
@@ -46,7 +46,7 @@ $text = get_field('acf-main-ravdori-the-program-text');
     <?php endif; ?>
 
 <?php if( have_rows( $repeaterName ) ): ?>
-    <div class="col-sm-6">
+    <div class="col-xs-12 col-sm-6">
         <?php $i = 1; ?>
         <?php while( have_rows( $repeaterName ) ): the_row();
 
@@ -61,13 +61,13 @@ $text = get_field('acf-main-ravdori-the-program-text');
                   <a href="<?php echo $link; ?>">
                   <?php endif; ?>
 
-                      <div class="col-sm-4 no-left-padding">
+                      <div class="col-xs-4 col-sm-5 no-left-padding">
                           <?php if( $image ): ?>
                             <img src="<?php echo $image; ?>">
                           <?php endif; ?>
                       </div>
 
-                      <div class="col-sm-8 col">
+                      <div class="col-xs-8 col-sm-7 col">
                           <div class="homepage-about-the-program-links">
                               <?php echo $text; ?>
                           </div>

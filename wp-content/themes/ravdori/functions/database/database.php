@@ -21,7 +21,7 @@ define ( 'DB_QUOTES'     , 'wp_quotes' );    //  The name of the quotes table in
 define ( 'DB_POSTS'      , 'wp_posts' );    //  The name of the posts table in the Wordpress database
 
 
-define ( 'MAX_ROWS_PER_PAGE'   , 10 ); // The maximum results to show in a page
+define ( 'MAX_ROWS_PER_PAGE'   , 12 ); // The maximum results to show in a page
 define ( 'MAX_QUOTES_PER_PAGE' , 30 ); // The maximum results to show in a page
 define ( 'MAX_TERMS_PER_PAGE'  , 20 ); // The maximum results to show in a page
 

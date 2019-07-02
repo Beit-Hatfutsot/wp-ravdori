@@ -2,16 +2,16 @@
 
 	<div class="container">
 	
-		<div class="row">
+		<div class="row footer-wrapper">
 	
-			<div class="col-sm-4" style="max-width: 29%; padding-left:0;">
+			<div class="col-xs-12 col-sm-6 col-md-4 footer-menu-wrapper" style="max-width: 29%; padding-left:0;">
 				<?php
 					// footer menu
 					get_template_part('views/components/footer-menu');
 				?>
 			</div>
                
-               <div class="col-sm-5" style="padding:0;">
+               <div class="col-xs-12 col-sm-12 col-md-5 footer-logos-wrapper" style="padding:0;">
 				<div class="nadav-logo">
                         
 						<div style="width:25%;float:right;">
@@ -47,7 +47,7 @@
 				</div>
 			</div>
                
-               <div class="col-sm-3">
+               <div class="col-xs-12 col-sm-6 col-md-3 footer-about-wrapper">
 				<div class="footer-about">
                     <?php
                             echo __('בית הספר הבינלאומי ללימודי העם היהודי','BH') . '<br/>' .

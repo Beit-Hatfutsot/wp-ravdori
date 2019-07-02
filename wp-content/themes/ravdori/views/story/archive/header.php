@@ -8,5 +8,5 @@
  */
 ?>
 <div class="archive-header">
-
+	<?php  include( locate_template( 'views/story/archive/header-toolbar.php' ) ); ?>
 </div>

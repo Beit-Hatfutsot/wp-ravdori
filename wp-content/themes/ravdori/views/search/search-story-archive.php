@@ -48,13 +48,49 @@ if ( array_key_exists('new-school-selected' , $_GET)) {
 $searchBy = (get_query_var('searchby')) ? get_query_var('searchby') : null;
 
 
+
+// Get the ordering
+$orderby = filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
+
+if ($orderby == FALSE OR in_array( $orderby, [STORY_GET_PARAM__NEW_STORIES, STORY_GET_PARAM__OLD_STORIES, STORY_GET_PARAM__TITLE_DESC, STORY_GET_PARAM__TITLE_ASC] ) == FALSE ) {
+	$orderby = STORY_GET_PARAM__NEW_STORIES;	
+}
+
+$order = 'desc';
+
+switch ( $orderby ) {
+	
+	case STORY_GET_PARAM__NEW_STORIES:
+		$orderby = 'date';
+		$order   = 'desc';
+	break;
+	
+	case STORY_GET_PARAM__OLD_STORIES:
+		$orderby = 'date';
+		$order   = 'asc';
+	break;
+	
+	case STORY_GET_PARAM__TITLE_DESC:
+		$orderby = 'title';
+		$order   = 'desc';
+	break;
+	
+	case STORY_GET_PARAM__TITLE_ASC:
+		$orderby = 'title';
+		$order   = 'asc';
+	break;
+	
+};
+
+
+
 $args  = array (
     'post_type'      => STORY_POST_TYPE,
     'post_status'    => 'publish',
     'paged'          => $paged,
     'posts_per_page' => MAX_ROWS_PER_PAGE ,
-    'orderby' 		 => 'date', /* 'orderby' => 'title', */
-    'order' 	     => 'DESC',
+    'orderby' 		 => $orderby,   /*'date',  'orderby' => 'title', */
+    'order' 	     => $order,
 );
 
 
@@ -182,71 +218,25 @@ $wp_query = $story_query;
 
 if( $story_query->have_posts() ): ?>
 
+	<?php
+				/**
+				* Display the archive filtering header
+				*/
+				include( locate_template( 'views/story/archive/header.php' ) );
+			?>
+			
 <div class="stories">
-    <div class="row">
-        <div class="col-xs-12 search-title">
-            <h2> תוצאות חיפוש: </h2>
-        </div>
-    </div>
+
 	<?php show_wp_pagenavi( $story_query , true ); ?>
 	
     <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
 
-        <?php
-        // Get the story meta
-        $stories_meta = get_story_meta_data( array( STORY_META_ARRAY_STUDENT_NAME , STORY_META_ARRAY_AUTHOR_NAME , STORY_META_ARRAY_SCHOOL_ONLY , STORY_META_ARRAY_SUBJECTS ) );
-        ?>
-        <div class="row archive-story" style="padding: 40px 0 0px; margin: 10px 0;">
+       <?php
+			 // Show a story
+			 include(locate_template('views/story/archive/loop-item.php'));
 
-            <div class="col-xs-3 image-container text-center">
-
-                <a href="<?php the_permalink();?>" class="title">
-                    <?php $imgChild = wp_get_attachment_image(get_field('acf-story-images-adult-child') , 'story-archive-thumb');?>
-                    <?php echo $imgChild; ?>
-                </a>
-
-            </div>
-
-            <div class="col-xs-5 meta-data">
-                <a href="<?php the_permalink();?>" class="title"> <?php the_title(); ?> </a>
-                <?php foreach ( $stories_meta as $story_meta ): ?>
-
-                    <div>
-                    <span>
-                     <?php if ( $story_meta['meta_data'] ): ?>
-                         <strong><?php echo $story_meta['meta_title']; ?></strong>
-                         <?php echo $story_meta['meta_data']; ?>
-                     <?php endif; ?>
-                     </span>
-                    </div>
-
-                <?php endforeach; ?>
-
-                <?php $secondary_text = get_field('acf-story-secondary-text'); ?>
-                <?php if ( $secondary_text ): ?>
-                    <div class="voffset2">
-                        <?php echo $secondary_text; ?>
-                    </div>
-                <?php endif; ?>
-
-            </div>
-
-            <div class="col-xs-4 quote">
-                <?php
-                $story_quote =  BH_quotes_get_post_quotes( get_the_id() );
-
-                if ( !empty( $story_quote ) ):
-                    ?>
-                    <blockquote>
-                        <p>
-                            <?php echo wp_trim_words(  htmlentities( stripslashes( $story_quote[0]->quote_value ) ) , 10 , '...' ); ?>
-                        </p>
-                    </blockquote>
-
-                <?php    endif; ?>
-            </div>
-
-        </div>
+		?>
+		
     <?php
     endwhile;
   //  if(function_exists('wp_pagenavi')) {

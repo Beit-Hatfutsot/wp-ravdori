@@ -4,7 +4,7 @@
 
     <div class="input-group add-on">
 
-        <input  placeholder="<?php echo $search_string; ?>" name="s" id="search-field" type="text">
+        <input  placeholder="<?php echo $search_string; ?>" name="s" id="search-field" type="text" value="<?php echo ( is_search() ? get_search_query() : '' ); ?>">
         <input type="hidden" name="post_type" value="<?php echo STORY_POST_TYPE; ?>" />
 
         <div class="input-group-btn">

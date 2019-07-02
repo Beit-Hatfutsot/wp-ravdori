@@ -34,7 +34,7 @@ add_filter('relevanssi_remove_punctuation', 'saveampersands_2', 11);
 function rlv_fix_order($orderby) {
     return "relevance";
 }
-add_filter('relevanssi_orderby', 'rlv_fix_order');
+//add_filter('relevanssi_orderby', 'rlv_fix_order');
  
  /* In order to be able to add and work with 
   * custom query vars there is a need to add them to the public query variables available to WP_Query. 
@@ -49,9 +49,50 @@ add_filter( 'query_vars', 'add_query_vars_filter' );
 
 function rlv_asc_date($query) {
 	
-    $query->set('orderby', 'post_date');
-    $query->set('order', 'DESC');
 	
+			// Get the ordering
+			$orderby = filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
+
+			if ($orderby == FALSE OR in_array( $orderby, [STORY_GET_PARAM__NEW_STORIES, STORY_GET_PARAM__OLD_STORIES, STORY_GET_PARAM__TITLE_DESC, STORY_GET_PARAM__TITLE_ASC] ) == FALSE ) {
+				$orderby = STORY_GET_PARAM__NEW_STORIES;	
+			}
+			
+			$order = 'desc';
+			
+			switch ( $orderby ) {
+				
+				case STORY_GET_PARAM__NEW_STORIES:
+					$orderby = 'post_date';
+					$order   = 'desc';
+				break;
+				
+				case STORY_GET_PARAM__OLD_STORIES:
+					$orderby = 'post_date';
+					$order   = 'asc';
+				break;
+				
+				case STORY_GET_PARAM__TITLE_DESC:
+					$orderby = 'post_title';
+					$order   = 'desc';
+				break;
+				
+				case STORY_GET_PARAM__TITLE_ASC:
+					$orderby = 'post_title';
+					$order   = 'asc';
+				break;
+				
+				case STORY_GET_PARAM__BEST_MATCH:
+					$orderby = 'relevance';
+					$order   = 'asc';
+				break;
+				
+			};
+			
+			
+    $query->set('orderby', $orderby);
+	$query->set('order'  , $order);
+	
+
 	/*
 	$is_exact_search = '';//get_query_var('exactsearch');
 	if ( $is_exact_search == 'true' )
@@ -62,7 +103,7 @@ function rlv_asc_date($query) {
 	
     return $query;
 }
-//add_filter('relevanssi_modify_wp_query', 'rlv_asc_date');
+add_filter('relevanssi_modify_wp_query', 'rlv_asc_date'); // 2019
 
 
  

@@ -26,7 +26,7 @@ get_header();
                 </div>
 
             </div>
-            <div class="row">
+            <div>
                 <?php get_template_part('views/search/search', 'story-archive'); ?>
             </div>
         </div>

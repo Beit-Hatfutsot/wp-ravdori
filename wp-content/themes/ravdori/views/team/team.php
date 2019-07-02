@@ -35,7 +35,7 @@ if( $team_query->have_posts() ):
 
 <div class="row voffset5">
 
-    <div class="col-xs-2 team-member-image">
+    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 team-member-image">
         <?php
             // Get and show the post thumbnail
             if ( has_post_thumbnail() )
@@ -46,7 +46,7 @@ if( $team_query->have_posts() ):
         ?>
     </div>
 
-    <div class="col-xs-10">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10">
         <h4><?php the_title(); ?></h4>
         <div><?php echo get_the_content(); ?></div>
 <br/>

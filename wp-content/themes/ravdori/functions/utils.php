@@ -222,3 +222,25 @@ function stripslashesFull( $value )
     return $value;
 
 }
+
+
+/**
+ * Returns the current URL with all the GET params
+ *
+ * @return   string   The current URL with all the GET params
+ */
+function get_current_url() {
+	
+	$parts = parse_url(home_url());
+	$uri   = $parts['scheme'] . '://' . $parts['host'];
+
+	
+	if (array_key_exists('port', $parts)) 
+	{
+		$uri .= ':' . $parts['port'];
+	}
+
+	$uri .= add_query_arg([]);
+
+	return ( $uri );
+}

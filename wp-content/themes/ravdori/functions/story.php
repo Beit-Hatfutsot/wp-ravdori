@@ -16,6 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /* Constants */
 /************/
 
+
+/*
+ *  GET params for story filtering 
+ */
+define ( 'STORY_GET_PARAM__NEW_STORIES'     , 'newstories' );
+define ( 'STORY_GET_PARAM__OLD_STORIES'     , 'oldstories' );
+define ( 'STORY_GET_PARAM__TITLE_DESC'      , 'titledesc' );
+define ( 'STORY_GET_PARAM__TITLE_ASC'       , 'titleasc' );
+define ( 'STORY_GET_PARAM__BEST_MATCH'      , 'bestmatch' );
+
+
 /* Those constants should be used in conjunction with the returning array of the
  * @see get_story_meta_data function, when there is a need to get a specific field,
  * instead of using "magic numbers".
@@ -189,11 +200,13 @@ function get_story_meta_data( $arrFields = null , $showDistricit = false )
 
 
     #region Get the story subjects
+	
+	$story_subjects = null;
+	
     if ( empty( $arrFields ) OR  in_array( STORY_META_ARRAY_SUBJECTS , $arrFields ) ) {
 
 		$terms          = wp_get_object_terms( $post->ID, SUBJECTS_TAXONOMY );
 		asort ( $terms );
-        $story_subjects = null;
 
         if ( !empty($terms) && !is_wp_error($terms) ) {
             $subjects_search_url = get_field('acf-options-search-subject', 'options');

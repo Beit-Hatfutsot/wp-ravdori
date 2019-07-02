@@ -41,6 +41,8 @@ if( $story_query->have_posts() ): ?>
 
         <div class="cycle-slideshow"
              data-cycle-timeout=50000
+			 data-cycle-swipe=true
+			 data-cycle-swipe-fx=scrollHorz
              data-cycle-fx=scrollHorz
              data-cycle-prev="#stories-slider-prev"
              data-cycle-next="#stories-slider-next"
@@ -54,16 +56,18 @@ if( $story_query->have_posts() ): ?>
 
             <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
                 <div class="slide-container grow">
-                    <a href="<?php echo get_the_permalink(); ?>">
-                        <div class="slide-caption">
-                            <h2><?php the_title();?></h2>
-                            <h3><?php the_field('acf-story-secondary-text');?></h3>
-                            <div class="read-story-button"><?php _e( 'לקריאת הסיפור' , 'BH' ); ?></div>
-                        </div>
-                        <div class="slide-image">
-                        <?php echo wp_get_attachment_image( get_field('acf-story-images-adult-past') , 'homepage-slider-thumb' );?>
-                        </div>
-                    </a>
+					 <div class="slide-content">	
+							<a href="<?php echo get_the_permalink(); ?>">
+								<div class="slide-caption">
+									<h2><?php the_title();?></h2>
+									<h3><?php the_field('acf-story-secondary-text');?></h3>
+									<div class="read-story-button"><?php _e( 'לקריאת הסיפור' , 'BH' ); ?></div>
+								</div>
+								<div class="slide-image">
+								<?php echo wp_get_attachment_image( get_field('acf-story-images-adult-past') , 'homepage-slider-thumb' );?>
+								</div>
+							</a>
+					</div>
                 </div>
             <?php endwhile; ?>
             <?php wp_reset_query(); ?>

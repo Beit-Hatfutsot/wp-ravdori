@@ -1,9 +1,9 @@
 var $ = jQuery;
 
 // put it in a function so you can easily reuse it elsewhere
-function fitImages(img1, img2, gutter , caption1 , caption2 ) {
+function fitImages(img1, img2, gutter , caption1 , caption2, addGutter ) {
 
-    var imagesContainerWidth = 730; //$('.portrait-wrapper').width();
+    var imagesContainerWidth = $('.portrait-wrapper').width();
 
     // turn images into jQuery objects (so we can use .width() )
     var $img1 = $(img1);
@@ -35,8 +35,8 @@ function fitImages(img1, img2, gutter , caption1 , caption2 ) {
 //    var caption2 = 'trtr';//'<?php echo  ( get_field('acf-story-images-adult-past-description')  ); ?>';
 
     if ( caption1 != '' && caption2 != '' ) {
-        addCaption($img2, caption1, gutter, 'fig1', true);
-        addCaption($img1, caption2, gutter, 'fig2', false);
+        addCaption($img2, caption1, gutter, 'fig1', true, addGutter);
+        addCaption($img1, caption2, gutter, 'fig2', false, addGutter);
     }
 
     heighestCaption = ( Math.max( $('#fig1').height() , $('#fig2').height() ) );
@@ -49,15 +49,21 @@ function fitImages(img1, img2, gutter , caption1 , caption2 ) {
 
 }
 
-function addCaption ( $imgElem , imgCaption , gutter , imgId  , isRight )
+function addCaption ( $imgElem , imgCaption , gutter , imgId  , isRight, addGutter )
 {
     var imgStyle = 'position: absolute;';
     imgStyle += 'top:' + $imgElem.height() + 'px;';
     imgStyle += 'max-width:' + $imgElem.width() + 'px;';
     imgStyle += 'padding:0;width:100%;';
 
-    if ( isRight )
-        imgStyle += 'right:' +  /*gutter*/ '19' + 'px;';
+    if ( isRight ) 
+    {
+
+        if (addGutter)
+            imgStyle += 'right:' +  /*gutter*/ '19' + 'px;';
+        else 
+            imgStyle += 'right:0';
+    }
     else
         imgStyle += 'left:0px;';
 

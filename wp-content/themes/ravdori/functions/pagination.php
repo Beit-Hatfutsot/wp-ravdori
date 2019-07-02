@@ -9,6 +9,9 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+define ( 'PAGINATION_STYLE__NUM_LIST' , 1 );
+define ( 'PAGINATION_STYLE__SELECT'   , 2 );
+define ( 'GLBL_WP_NAV__STYLE'   , 1 );
 
 
 /**
@@ -40,7 +43,7 @@ function create_pagination( $post_count , $page_number , $max_rows = MAX_ROWS_PE
 
     <?php if ( is_array($pages) ): ?>
                 <div class="pagination-container">
-                    <ul class="pagination">
+                    <ul class="pagination non-story-pager wp-pagenavi">
                         <?php
                             foreach ($pages as $i => $page)
                             {
@@ -82,6 +85,7 @@ function bh_pagination( $html )
     global $wp_query;
 	
 	$showTextOnTop = $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM];
+	$navStyle      = $GLOBALS[GLBL_WP_NAV__STYLE];
 
     $out    = '';
     $retStr = '';
@@ -95,7 +99,10 @@ function bh_pagination( $html )
     $out = str_replace("<span class='current'","<li class='active'><span",$out);
     $out = str_replace("</span>","</span></li>",$out);
     $out = str_replace("</div>","",$out);
-
+	
+	$out = str_replace("<select",'<span class="wizard-select-theme"><select class="chosen-rtl" id="story-archive-page-select" ',$out);
+	$out = str_replace("</select>","</select></span>",$out);
+	
 
     $currentDisplayedPage  = (get_query_var('paged')) ? get_query_var('paged') : 1;
 
@@ -103,7 +110,7 @@ function bh_pagination( $html )
 
     $postsNumberSoFar      =  ( $currentDisplayedPage * MAX_ROWS_PER_PAGE ) - ( MAX_ROWS_PER_PAGE - $wp_query->post_count );
 
-    $showingStoryOutOf  = 'מציג ';
+    $showingStoryOutOf  = 'מציג תוצאה ';
     $showingStoryOutOf .= $currentNumberOfPosts . ' - ';
     $showingStoryOutOf .= $postsNumberSoFar . ' ';
     $showingStoryOutOf .= 'מתוך: ';
@@ -115,9 +122,41 @@ function bh_pagination( $html )
 	
 	$retStr  = '<div class="row" ' . $top_pagintion_margin . ' >';
 	$retStr .= '<div class="col-xs-12 text-center">';
-	if ( $showTextOnTop ) {  $retStr .=  '<div>' .$showingStoryOutOf . '</div>'; }
-	$retStr .= '<ul class="pagination">' . $out . '</ul>';
-	if ( !$showTextOnTop ) { $retStr .=  '<div>' .$showingStoryOutOf . '</div>'; }
+	
+	if ( $showTextOnTop ) {  
+		$retStr .=  '<div class="stories-num-out-of">' .$showingStoryOutOf . '</div>'; 
+	}
+	
+	if ( $navStyle == PAGINATION_STYLE__NUM_LIST )
+		$retStr .= '<ul class="pagination">' . $out . '</ul>';
+	else 
+	{
+		$total_pages = max( 1, absint( $wp_query->max_num_pages ) );
+		
+		$next_page_link = get_next_posts_link('הבא');
+		$next_page_link = ($next_page_link) ? '<span class="next-story-page-link">' . $next_page_link . '</span>' : '<span class="next-story-page-link next-story-page-link--disabled">' . __('הבא') . '</span>';
+		
+		$prev_page_link = get_previous_posts_link('הקודם');
+		$prev_page_link = ($prev_page_link) ? '<span class="prev-story-page-link">' . $prev_page_link . '</span>' : '<span class="prev-story-page-link prev-story-page-link--disabled">' . __('הקודם') . '</span>';
+		
+		
+		
+		$retStr .= '<div class="select-pager-container">';
+		$retStr .= '<span class="select-pager-container__page-label">' . __( 'עמוד:' , 'BH' ) . '</span>';
+		$retStr .= $out;
+		$retStr .= sprintf('<span class="select-pager-container__page-of-label">%s %s</span>', __( 'מתוך:' , 'BH' ), $total_pages );
+		$retStr .= '<span class="next-prev-links">';
+		$retStr .= $prev_page_link;
+		$retStr .= $next_page_link;
+		$retStr .= '</span>';
+		$retStr .= '</div>';
+	}
+	
+	if ( !$showTextOnTop ) { 
+		$retStr .=  '<div>' .$showingStoryOutOf . '</div>'; 
+	}
+	
+	
 	$retStr .= '</div>';
 	$retStr .= '</div>';
 
@@ -127,12 +166,15 @@ add_filter( 'wp_pagenavi', 'bh_pagination', 10, 2 ); //attach our function to th
 
 
 
-function show_wp_pagenavi( $story_query , $text_on_top = false ) 
+function show_wp_pagenavi( $story_query , $text_on_top = false , $style = PAGINATION_STYLE__NUM_LIST ) 
 {
-	if(function_exists('wp_pagenavi')) {
-
+   if(function_exists('wp_pagenavi')):
+   
 		  $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM] = $text_on_top;
-          wp_pagenavi( array( 'query' => $story_query ) );
-      }
+		  $GLOBALS[GLBL_WP_NAV__STYLE] 	   = $style;
+		  
+          wp_pagenavi( array( 'query' => $story_query, 'options' => ['style' => $style], ) );
+		 
+   endif;
 }
 

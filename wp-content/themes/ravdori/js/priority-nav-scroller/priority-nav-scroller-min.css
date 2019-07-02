@@ -1,0 +1,135 @@
+.nav-scroller, .nav-scroller-wrapper {
+  display: -ms-flexbox;
+  display: flex;
+  background-color: #f9f9f9;
+}
+
+.nav-scroller {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.nav-scroller-nav {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  padding-bottom: 30px;
+  margin-bottom: -30px;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.nav-scroller-content {
+  position: relative;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-align: center;
+      align-items: center;
+  white-space: nowrap;
+  min-height: 44px;
+  transition: transform 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.nav-scroller-content.no-transition {
+  transition: none;
+}
+
+ul.nav-scroller-content {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-scroller-item {
+  -ms-flex: 1 0 auto;
+      flex: 1 0 auto;
+  display: block;
+  font-size: 1.125rem;
+  text-align: center;
+  padding: .2rem 1rem;
+}
+
+.nav-scroller-item:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.nav-scroller-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  padding: .5rem;
+  font-size: 1.25rem;
+  color: #000;
+  background: #fff;
+  border: 1px solid #ddd;
+  transition: color .3s, opacity .3s;
+  cursor: pointer;
+}
+
+.nav-scroller-btn:hover {
+  color: #666;
+}
+
+.nav-scroller-btn:focus {
+  outline: 0;
+}
+
+.nav-scroller-btn:not(.active) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-scroller-btn--left {
+  left: 0;
+}
+
+.nav-scroller-btn--right {
+  right: 0;
+}
+
+.nav-scroller-logo {
+  display: inline-block;
+  padding: .5rem;
+  margin-right: 1rem;
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+.nav-scroller--controls-inline .nav-scroller-content {
+  padding: 0 44px;
+}
+
+.nav-scroller--controls-inline .nav-scroller-btn:not(.active) {
+  color: #ddd;
+  opacity: 1;
+}
+
+.nav-scroller--expand .nav-scroller-nav, .nav-scroller--expand .nav-scroller-content {
+  width: 100%;
+}
+
+.nav-scroller--right .nav-scroller-nav {
+  margin-left: auto;
+}
+
+.nav-scroller--snap .nav-scroller-nav {
+  -ms-scroll-snap-type: x proximity;
+      scroll-snap-type: x proximity;
+  scroll-padding: 0 44px;
+}
+
+.nav-scroller--snap .nav-scroller-item {
+  scroll-snap-align: start;
+}
+
+.nav-scroller--snap .nav-scroller-content.no-transition .nav-scroller-item {
+  scroll-snap-align: none;
+}

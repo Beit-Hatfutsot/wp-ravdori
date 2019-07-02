@@ -38,7 +38,9 @@ $repeaterName = 'acf-main-useful-links-repeater';
          data-cycle-carousel-visible=3
          data-cycle-carousel-fluid=true
          data-cycle-log=false
-         data-allow-wrap=true
+         data-allow-wrap=false
+		 data-cycle-swipe=true
+		 data-cycle-carousel-slide-dimension=390
         >
 
     <?php while( have_rows( $repeaterName ) ): the_row();
@@ -53,35 +55,39 @@ $repeaterName = 'acf-main-useful-links-repeater';
 
         <?php if ( !$show_video AND $image ): ?>
             <div class="carousel-slide">
-                <?php if( $link ): ?>
-                 <a href="<?php echo $link; ?>" target="_blank">
-                <?php endif; ?>
+					<div class="carousel-content">
+						<?php if( $link ): ?>
+						 <a href="<?php echo $link; ?>" target="_blank">
+						<?php endif; ?>
 
-                    <?php if ( $image ): ?>
-                        <img src="<?php echo $image;?>">
-                    <?php endif; ?>
+							<?php if ( $image ): ?>
+								<img src="<?php echo $image;?>">
+							<?php endif; ?>
 
-                    <?php if ( $text ): ?>
-                        <div class="carousel-slide-overlay">
-                            <?php echo $text; ?>
-                        </div>
-                    <?php endif;?>
+							<?php if ( $text ): ?>
+								<div class="carousel-slide-overlay">
+									<?php echo $text; ?>
+								</div>
+							<?php endif;?>
 
-                <?php if( $link ): ?>
-                   </a>
-                <?php endif; ?>
-            </div>
+						<?php if( $link ): ?>
+						   </a>
+						<?php endif; ?>
+					</div>
+			</div>
         <?php endif;?>
-
+		
 
         <?php if ( $show_video AND $video_url ): ?>
 
-            <style>
-                .carousel-slide { top: -116px !important; }
-            </style>
-
             <div class="carousel-slide utube">
-                <?php echo wp_oembed_get( $video_url ); ?>
+					<?php //echo wp_oembed_get( $video_url ); ?>
+					<a href="https://www.youtube.com/watch?v=<?php echo $video_url?>" target="_blank">
+						<div class="utube-wrap">
+							<img src="https://img.youtube.com/vi/<?php echo $video_url?>/sddefault.jpg">
+						</div>	
+					</a>	
+					
             </div>
         <?php endif;?>
 
@@ -90,8 +96,13 @@ $repeaterName = 'acf-main-useful-links-repeater';
     </div>
 
 
-    <div id=carousel-prev></div>
-    <div id="carousel-next"></div>
+    <div id="carousel-prev" class="cycle-prev cycle-button">
+		<div class="button-wrap"></div>
+	</div>
+    
+	<div id="carousel-next"  class="cycle-next cycle-button">
+		<div class="button-wrap"></div>
+	</div>
 
 
 </div>
