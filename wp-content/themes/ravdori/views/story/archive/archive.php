@@ -13,7 +13,7 @@
 
         <div class="row">
 
-		  <?php
+		   <?php
 				/**
 				* Display the archive filtering header
 				*/

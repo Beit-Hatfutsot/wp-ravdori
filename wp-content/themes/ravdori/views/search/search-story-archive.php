@@ -218,12 +218,19 @@ $wp_query = $story_query;
 
 if( $story_query->have_posts() ): ?>
 
+   <?php
+		/**
+		* Display the archive filtering header
+		*/
+		include( locate_template( 'views/components/preloader.php' ) );
+	?>
+			
 	<?php
-				/**
-				* Display the archive filtering header
-				*/
-				include( locate_template( 'views/story/archive/header.php' ) );
-			?>
+			/**
+			* Display the archive filtering header
+			*/
+			include( locate_template( 'views/story/archive/header.php' ) );
+	?>
 			
 <div class="stories">
 
@@ -232,6 +239,10 @@ if( $story_query->have_posts() ): ?>
     <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
 
        <?php
+	   
+	   		 // Get the story meta
+			 $stories_meta = get_story_meta_data( array( STORY_META_ARRAY_STUDENT_NAME , STORY_META_ARRAY_AUTHOR_NAME , STORY_META_ARRAY_SCHOOL_ONLY , STORY_META_ARRAY_PUBLISH_DATE , STORY_META_ARRAY_TEACHER_NAME) );
+				
 			 // Show a story
 			 include(locate_template('views/story/archive/loop-item.php'));
 

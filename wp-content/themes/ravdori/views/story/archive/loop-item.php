@@ -51,16 +51,18 @@
 			</header>
 			
 			 <div class="story-item__meta-data col-xs-10">
-				<?php foreach ( $stories_meta as $story_meta ): ?>
-					<div class="col-xs-6">
-						<span>
-						 <?php if ( $story_meta['meta_data'] AND $story_meta['class'] != 'story-date'): ?>
-								 <strong><?php echo $story_meta['meta_title']; ?></strong>
-								 <?php echo $story_meta['meta_data']; ?>
-								<?php endif; ?>
-						 </span>
-					</div>
-				<?php endforeach; ?>
+				<?php if ( ! empty( $stories_meta ) AND ! is_wp_error( $stories_meta ) ): ?>
+						<?php foreach ( $stories_meta as $story_meta ): ?>
+							<div class="col-xs-6">
+								<span>
+								 <?php if ( $story_meta['meta_data']): ?>
+										 <strong><?php echo $story_meta['meta_title']; ?></strong>
+										 <?php echo $story_meta['meta_data']; ?>
+										<?php endif; ?>
+								 </span>
+							</div>
+						<?php endforeach; ?>
+				<?php endif; ?>		
 			</div>
 			
 			<div class="story-item__read-more story-item__read-more--list col-xs-2">

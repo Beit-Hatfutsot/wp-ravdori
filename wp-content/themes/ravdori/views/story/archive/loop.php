@@ -16,7 +16,7 @@
 
 		<?php
 			 // Get the story meta
-			 $stories_meta = get_story_meta_data( array( STORY_META_ARRAY_STUDENT_NAME , STORY_META_ARRAY_AUTHOR_NAME , STORY_META_ARRAY_SCHOOL_ONLY ) );
+			 $stories_meta = get_story_meta_data( array( STORY_META_ARRAY_STUDENT_NAME , STORY_META_ARRAY_AUTHOR_NAME , STORY_META_ARRAY_SCHOOL_ONLY , STORY_META_ARRAY_PUBLISH_DATE , STORY_META_ARRAY_TEACHER_NAME) );
 		?>
 		
 		
