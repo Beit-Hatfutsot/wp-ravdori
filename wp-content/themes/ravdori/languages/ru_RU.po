@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G2G: Generation to Generation\n"
 "POT-Creation-Date: 2018-02-14 13:56+0200\n"
-"PO-Revision-Date: 2018-09-26 10:33+0300\n"
+"PO-Revision-Date: 2019-09-09 11:31+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -284,11 +284,11 @@ msgstr ""
 
 #: functions/story.php:216
 msgid "מאת: "
-msgstr "автор:"
+msgstr "автор: "
 
 #: functions/story.php:222
 msgid "ארץ לידה: "
-msgstr "Страна:"
+msgstr "Страна: "
 
 #: functions/story.php:228
 msgid "מנחה: "
@@ -300,7 +300,7 @@ msgstr "Имя учителя:"
 
 #: functions/story.php:240
 msgid "שם ועיר בית הספר: "
-msgstr "Название и город школы:"
+msgstr "Название и город школы: "
 
 #: functions/story.php:247
 msgid "תאריך פרסום: "
@@ -1017,7 +1017,7 @@ msgstr "Язык истории:"
 
 #: views/wizard/story_details.php:483
 msgid "קיימות"
-msgstr ""
+msgstr "Там"
 
 #: views/wizard/story_details.php:485
 msgid "שגיאות:"
@@ -1068,6 +1068,14 @@ msgid "להטמעת סרטון וידאו ממקור חיצוני (כגון: י�
 msgstr ""
 "Чтобы вставлять видео из внешнего источника (например, YouTube), URL-адрес видео должен быть скопирован и вставлен в содержимое "
 "истории"
+
+#: views/wizard/story_details.php:844
+msgid "אסור להעלות תמונות מהרשת!"
+msgstr "Нельзя загружать фотографии из интернета!"
+
+#: views/wizard/story_details.php:845
+msgid "יש להעלות תמונות אישיות משותפות או תמונות מהאלבומים שלכם"
+msgstr "пожалуйста, публикуйте только личные и групповые фотографии из ваших семейных альбомов"
 
 #: views/wizard/story_details.php:797
 msgid "* העלאת תמונה משותפת של המספר והמתעד"

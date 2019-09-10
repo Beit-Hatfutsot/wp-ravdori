@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G2G: Generation to Generation\n"
 "POT-Creation-Date: 2017-11-13 12:47+0200\n"
-"PO-Revision-Date: 2018-12-16 10:33+0200\n"
+"PO-Revision-Date: 2019-09-09 11:30+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -1088,6 +1088,14 @@ msgstr "The Story: Write the story. Try to mention as many details as possible, 
 msgid "להטמעת סרטון וידאו ממקור חיצוני (כגון: יוטיוב) יש להעתיק את כתובת הסרטון (url) ולהדביקה בתוכן הסיפור"
 msgstr "To embed an external video link (i.e. youtube), copy the video address (url) and paste it within the text"
 
+#: views/wizard/story_details.php:844
+msgid "אסור להעלות תמונות מהרשת!"
+msgstr "Uploaded photos should be property of the user"
+
+#: views/wizard/story_details.php:845
+msgid "יש להעלות תמונות אישיות משותפות או תמונות מהאלבומים שלכם"
+msgstr "Please do not upload photos from the internet or photos that you do not have the rights to use"
+
 #: views/wizard/story_details.php:776
 msgid "* העלאת תמונה משותפת של המספר והמתעד"
 msgstr "* A Joint Picture"
@@ -1265,9 +1273,3 @@ msgstr "You cannot create a new story before sending your current story for publ
 
 msgid "יש לשמור על זכויות יוצרים"
 msgstr "Copyright must be maintained"
-
-msgid "אסור להעלות תמונות מהרשת!"
-msgstr "You cannot upload pictures from the web!"
-
-msgid "יש להעלות תמונות אישיות משותפות או תמונות מהאלבומים שלכם"
-msgstr "Upload photos from your personal albums"

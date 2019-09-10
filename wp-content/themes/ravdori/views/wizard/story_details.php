@@ -152,6 +152,10 @@ get_header();
                                     required: true,
                                     maxlength: 40,
                                 },
+								 <?php echo IWizardStep4Fields::RAVDORI_FEEDBACK;?>:
+                                {
+                                    required: true,
+                                },
 
                                 'STORY_SUBJECTS[]':
                                 {
@@ -193,6 +197,10 @@ get_header();
                                         required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
                                         maxlength: "<?php BH__e('ניתן לכתוב עד 40 תווים' , 'BH', $locale);?>",
                                     },
+								    <?php echo IWizardStep4Fields::RAVDORI_FEEDBACK;?>:
+									{
+										required: "<?php BH__e('שדה חובה' , 'BH', $locale);?>",
+									},
 
                                     'STORY_SUBJECTS[]':
                                     {
@@ -484,6 +492,10 @@ get_header();
                         case "<?php echo IWizardStep4Fields::STORY_LANGUAGE;?>[]":
                             msg = "<?php BH__e('שפת הסיפור:' , 'BH', $locale);?> ";
                             break;
+							
+						case "<?php echo IWizardStep4Fields::RAVDORI_FEEDBACK;?>":
+                            msg = "<?php BH__e('מהזוית האישית - מספר ומתעד' , 'BH', $locale);?>: ";
+                            break;	
 
                     };
 
@@ -1204,8 +1216,9 @@ $wizardSessionManager->setField( 'do-saving' , false );
 					?>
                     <div>
                         <h2><?php BH__e('מהזוית האישית - מספר ומתעד' , 'BH', $locale);?></h2>
-                        <label><?php showBackendErrors( $errors , IWizardStep4Fields::RAVDORI_FEEDBACK ); ?></label>
+                        <label id="lblStoryFeedback" for="<?php echo IWizardStep4Fields::RAVDORI_FEEDBACK;?>" class="title"><?php showBackendErrors( $errors , IWizardStep4Fields::RAVDORI_FEEDBACK ); ?></label>
                         <textarea name="<?php echo IWizardStep4Fields::RAVDORI_FEEDBACK; ?>"
+								  id="<?php echo IWizardStep4Fields::RAVDORI_FEEDBACK; ?>"
                                   placeholder="<?php BH__e('ספרו לנו על חווייתכם מהשתתפותכם בתכנית ומהעבודה המשותפת. מה הייתם רוצים להגיד ולאחל אחד לשני?' , 'BH', $locale);?>"
                                   style="width: 100%"><?php echo ( isset($feedback) ? $feedback : "" ) ?></textarea>
                     </div>

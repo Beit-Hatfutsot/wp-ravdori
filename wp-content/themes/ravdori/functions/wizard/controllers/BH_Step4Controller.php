@@ -216,6 +216,19 @@ class BH_Step4Controller extends BH_Controller{
         }
 
         #endregion
+		
+		
+		#region Story feedback validation
+
+        $storyFeedbackFromUser = isset ( $_POST[IWizardStep4Fields::RAVDORI_FEEDBACK] ) ?  sanitize_text_field ( $_POST[IWizardStep4Fields::RAVDORI_FEEDBACK] ) : null  ;
+
+        if ( !isset( $storyFeedbackFromUser ) )
+        {
+            $errors[ IWizardStep4Fields::RAVDORI_FEEDBACK ] = array( IWizardErrorsFields::IS_VALID => false , IWizardErrorsFields::MESSAGE => 'שדה חובה' );
+        }
+
+        #endregion
+		
 
 
         return ( $errors );
