@@ -75,7 +75,7 @@
 
                                 <?php  foreach ( $story_quote as $quote ): ?>
 
-                                                <span class="quotes-text">"<?php echo stripslashesFull( trim( trim_non_utf8_letters(trim( $quote->quote_value)) , '"' ) ); ?>"</span>
+                                                <span class="quotes-text">"<?php echo stripslashesFull( trim($quote->quote_value) ); ?>"</span>
                                                 <br/><br/>
 
                                  <?php endforeach; ?>
