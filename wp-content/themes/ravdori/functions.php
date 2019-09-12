@@ -58,7 +58,6 @@ require_once('functions/pagination.php');
 // Database
 require_once('functions/database/database.php');
 
-
 // Story
 require_once('functions/story.php');
 
