@@ -45,6 +45,7 @@ function posts_for_current_author($query) {
 												'taxonomy' => SCHOOLS_TAXONOMY,
 												'field'    => 'term_id',
 												'terms'    => $user_districts,
+												'include_children' => true,
 											),
 							   );
 				$query->set( 'tax_query', $tax_query );	

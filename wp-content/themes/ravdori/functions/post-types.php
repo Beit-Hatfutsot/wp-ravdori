@@ -498,11 +498,9 @@ function backend_create_filters() {
 			if ( $tax_obj->name == 'schools' )	{
 				
 				$user_districts = get_field( 'acf-user-editor-districts' , 'user_' . get_current_user_id() );
-				
+
 				if ( $user_districts )
-					$args['parent'] = $user_districts[0];
-				
-				
+					$args['child_of'] = $user_districts[0];			
 			}						  
 										  
             wp_dropdown_categories( $args );
