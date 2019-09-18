@@ -273,10 +273,12 @@ function ca_meta_callback( $post ) {
 /** Add columns with their titles to the backend (No content)*/
 function add_story_backend_columns( $columns ) {
 
+  
+	
     $columns = array(
         'cb'            => '<input type="checkbox" />',
         'title'         => __('כותרת הסיפור'),
-        'author'        => __('שם המבוגר'),
+        'author_adult'  => __('שם המבוגר'),
         'student'       => __( 'מנחה מתעד' ),
         'city'          => __('יישוב'),
         'district'      => __('מחוז'),
@@ -303,10 +305,21 @@ function add_story_backend_columns_data( $column, $post_id ) {
 
 
     list($student, $city, $school, $district, $subjects, $languages) = get_backend_story_data($post);
-
-
+	
     switch( $column ) {
-
+		
+		case 'author_adult':
+			$author_id = get_post_field ('post_author', $post_id);
+			
+			printf('<a href="%s" target="_blank">%s </a> |  <a href="%s" target="_blank">(%s %s)</a> ',
+														admin_url(sprintf( 'user-edit.php?user_id=%d', $author_id )),
+														get_the_author_meta( 'nickname', $author_id ),
+														admin_url(sprintf( 'edit.php?post_type=story&author=%s', $author_id )),
+														BH_get_author_post_type_counts_by_ID( $author_id ),
+														'סיפורים מפורסמים'
+														);
+		break;
+		
         case 'student' :
                 echo $student;
         break;
@@ -343,6 +356,11 @@ function add_story_backend_columns_data( $column, $post_id ) {
             break;
     }
 }
+add_action( 'manage_' . STORY_POST_TYPE .'_posts_custom_column', 'add_story_backend_columns_data', 10, 2 );
+
+
+
+
 
 /**
  * @param $post
@@ -407,7 +425,7 @@ function get_backend_story_data( $post )
     #endregion
 }
 
-add_action( 'manage_' . STORY_POST_TYPE .'_posts_custom_column', 'add_story_backend_columns_data', 10, 2 );
+
 
 
 
@@ -1086,7 +1104,7 @@ add_action('manage_users_columns','BH_manage_users_columns');
 
 function BH_manage_users_custom_column($custom_column,$column_name,$user_id) {
     if ($column_name=='custom_posts') {
-        $counts = BH_get_author_post_type_counts();
+        $counts = BH_get_author_post_type_counts( $user_id );
         $custom_column = array();
         if (isset($counts[$user_id]) && is_array($counts[$user_id]))
             foreach($counts[$user_id] as $count) {
@@ -1104,7 +1122,8 @@ function BH_manage_users_custom_column($custom_column,$column_name,$user_id) {
 add_action('manage_users_custom_column','BH_manage_users_custom_column',10,3);
 
 
-function BH_get_author_post_type_counts() {
+function BH_get_author_post_type_counts( $userid, $post_type = STORY_POST_TYPE ) {
+		
     static $counts;
     if (!isset($counts)) {
         global $wpdb;
@@ -1142,8 +1161,22 @@ SQL;
         }
     }
     return $counts;
+
 }
 
+
+
+function BH_get_author_post_type_counts_by_ID( $userid, $post_type = STORY_POST_TYPE ) {
+	
+global $wpdb;
+
+	$where = get_posts_by_author_sql( $post_type, true, $userid );
+
+	$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->posts $where" );
+
+  	return apply_filters( 'get_usernumposts', $count, $userid );
+	
+}
 
 
 ////////////////
