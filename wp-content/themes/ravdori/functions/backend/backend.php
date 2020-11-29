@@ -370,3 +370,50 @@ function BH_build_repeater_footer( $show_add_new_button = true )
 <?php
 
 }
+
+
+/***************************************************************
+ * Update tinyMCE buttons lines
+ ***************************************************************/
+function ratb_buttons_lines_tiny_mce(){
+	add_filter( 'mce_buttons', 'ratb_tiny_mce_buttons_justify', 5 );
+	add_filter( 'mce_buttons_2', 'ratb_tiny_mce_buttons_underline', 5 );
+}	 
+add_action( 'admin_init', 'ratb_buttons_lines_tiny_mce' );
+
+ 
+/***************************************************************
+ * First editor row buttons - Re-add underline
+ ***************************************************************/
+function ratb_tiny_mce_buttons_underline( $buttons_array ){
+		
+	if ( !in_array( 'underline', $buttons_array ) ){
+		$inserted = array( 'underline' );
+		
+		// We add the button at the begining of the second line
+		array_splice( $buttons_array, 0, 0, $inserted );
+	}
+	
+	return $buttons_array;
+	
+}
+
+/***************************************************************
+ * First editor row buttons - Re-add justify
+ ***************************************************************/
+function ratb_tiny_mce_buttons_justify( $buttons_array ){
+		
+	if ( !in_array( 'alignjustify', $buttons_array ) && in_array( 'alignright', $buttons_array ) ){
+		$key = array_search( 'alignright', $buttons_array );
+		$inserted = array( 'alignjustify' );
+		array_splice( $buttons_array, $key + 1, 0, $inserted );
+	}
+	
+	return $buttons_array;
+}
+
+
+
+
+
+
