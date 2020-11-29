@@ -310,14 +310,14 @@ get_header();
                     tmpError += "<span><?php BH__e('שדה חובה' , 'BH', $locale);?></span>";
                 }
 
-                // If more then 15 chars
-                if ( $(this).val().replace(/^[\s,.;]+/, "").replace(/[\s,.;]+$/, "").split(/[\s,.;]+/).length > 15 )
+                // If more then 20 words
+                if ( $(this).val().replace(/^[\s,.;]+/, "").replace(/[\s,.;]+$/, "").split(/[\s,.;]+/).length > 20 )
                 {
-                    $(this).before("<label class='quote_error'><span class='error'><?php BH__e('ניתן לרשום עד 15 מילים' , 'BH', $locale);?></span></label>");
+                    $(this).before("<label class='quote_error'><span class='error'><?php BH__e('ניתן לרשום עד 20 מילים' , 'BH', $locale);?></span></label>");
                     isFormValid = false;
 
                     hasError = true;
-                    tmpError += "<span><?php BH__e('ניתן לרשום עד 15 מילים' , 'BH', $locale);?></span>";
+                    tmpError += "<span><?php BH__e('ניתן לרשום עד 20 מילים' , 'BH', $locale);?></span>";
                 }
 
                 if ( hasError )
@@ -548,16 +548,16 @@ get_header();
             var regex = /\s+/gi;
             wordcount = $(this).val().trim().replace(regex, ' ').split(' ').length;
 
-            if ( wordcount > 15 )
+            if ( wordcount > 20 )
             {
-                $(this).prev("label.quote-error").html("<span class='error'><?php BH__e('ניתן לכתוב עד 15 מילים' , 'BH', $locale);?></span>");
+                $(this).prev("label.quote-error").html("<span class='error'><?php BH__e('ניתן לרשום עד 20 מילים' , 'BH', $locale);?></span>");
 
                 errorsMessages += "<strong><?php BH__e('ציטוטים' , 'BH', $locale);?></strong>";
-                errorsMessages += "<span><?php BH__e('ניתן לכתוב עד 15 מילים' , 'BH', $locale);?></span>";
+                errorsMessages += "<span><?php BH__e('ניתן לרשום עד 20 מילים' , 'BH', $locale);?></span>";
 
                 kp_e.preventDefault();
             }
-            else if (  wordcount < 15 )
+            else if (  wordcount < 20 )
             {
                 $(this).prev("label.quote-error").html("");
             }
@@ -1041,9 +1041,9 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                 <div data-repeater-item class="row">
 
                                     <div class="col-sm-12">
-                                        <label for="textarea-input2"><?php BH__e('כתבו כאן את הציטוט (עד 15 מילים)' , 'BH', $locale);?></label>
+                                        <label for="textarea-input2"><?php BH__e('כתבו כאן את הציטוט (עד 20 מילים)' , 'BH', $locale);?></label>
                                         <label class="quote-error"></label>
-                                        <textarea name="textarea-input2" placeholder="<?php BH__e('עד 15 מילה' , 'BH', $locale);?>" style="width: 100%"></textarea>
+                                        <textarea name="textarea-input2" placeholder="<?php BH__e('עד 20 מילים' , 'BH', $locale);?>" style="width: 100%"></textarea>
                                     </div>
 
                                     <div class="col-sm-12 text-left">
@@ -1061,7 +1061,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
                                         <div class="col-sm-12">
                                             <label for="textarea-input2"><?php BH__e('כתבו כאן את הציטוט' , 'BH', $locale);?></label>
                                             <label class="quote-error"></label>
-                                            <textarea name="textarea-input2"  placeholder="<?php BH__e('עד 15 מילה' , 'BH', $locale);?>"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? stripslashesFull ( $quote['textarea-input2'] ) : "" ;?></textarea>
+                                            <textarea name="textarea-input2"  placeholder="<?php BH__e('עד 20 מילים' , 'BH', $locale);?>"   style="width: 100%"><?php echo isset ( $quote['textarea-input2'] ) ? stripslashesFull ( $quote['textarea-input2'] ) : "" ;?></textarea>
                                         </div>
 
                                         <div class="col-sm-12 text-left">
