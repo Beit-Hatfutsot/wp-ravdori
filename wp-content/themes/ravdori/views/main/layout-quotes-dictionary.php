@@ -1,4 +1,4 @@
-<section id="homepage-terms" class="row voffset5">
+<section id="homepage-terms" class="row voffset4">
 
 
     <?php
@@ -35,7 +35,7 @@
                     <br/>
                     <?php  if ( !empty( $random_quote ) ): ?>
                         <div class="term-link">
-                            (<?php _e( 'מתוך: ' , 'BH' ); ?><a href="<?php echo get_the_permalink( $random_quote->post_id ); ?>"><?php echo get_the_title( $random_quote->post_id );?></a>)
+                            (<?php _e( 'מתוך: ' , 'BH' ); ?><a href="<?php echo get_the_permalink( $random_quote->post_id ); ?>"><?php echo stripslashes(get_the_title( $random_quote->post_id ));?></a>)
                         </div>
                     <?php endif; ?>
             </div>
@@ -55,11 +55,11 @@
                 <div class="col-sm-10">
 
                     <?php  if ( !empty( $random_dictionary ) ): ?>
-                    <div class="term-title"><?php echo $random_dictionary->dictionary_term; ?> - </div>
-                    <div class="term-value"><?php echo wp_trim_words ( $random_dictionary->dictionary_value , 20 ); ?></div>
+                    <div class="term-title"><?php echo stripslashes($random_dictionary->dictionary_term); ?> - </div>
+                    <div class="term-value"><?php echo stripslashes(wp_trim_words ( $random_dictionary->dictionary_value , 20 )); ?></div>
                     <br/>
                     <div class="term-link">
-                        (<?php _e( 'מתוך: ' , 'BH' ); ?><a href="<?php echo get_the_permalink( $random_dictionary->post_id ); ?>"><?php echo get_the_title( $random_dictionary->post_id );?></a>)
+                        (<?php _e( 'מתוך: ' , 'BH' ); ?><a href="<?php echo get_the_permalink( $random_dictionary->post_id ); ?>"><?php echo stripslashes(get_the_title( $random_dictionary->post_id ));?></a>)
                     </div>
                     <?php else: ?>
                         <div class="term-title">
