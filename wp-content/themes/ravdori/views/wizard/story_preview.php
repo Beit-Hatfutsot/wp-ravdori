@@ -100,6 +100,15 @@ get_header();
 
             <?php endif;?>
             <?php endif;?>
+			
+			
+		// Clear the session on exit	
+        $("#wizard-form-step4").on('submit', function(e){
+            sessionStorage.clear();
+            return true;
+        });
+
+			
 
     }); // Ready
 </script>

@@ -13,6 +13,7 @@ get_header();
 ?>
 
 <?php $locale = get_language_locale_filename_by_get_param(); ?>
+<?php $user_id  = get_current_user_id(); ?>
 
     <script>
 
@@ -183,6 +184,21 @@ get_header();
         $("#<?php echo IWizardStep2Fields::BIRTH_COUNTRY?>").change(function () {
             toggleImmigrationSelect();
         });
+		
+		 
+		 // If the user is a returning user, and he already accepted the notice
+		 if ( sessionStorage.getItem('user-notice-accepted') !== '<?php echo $user_id;?>' &&  $('.wizard-full-screen-notice').length > 0 ) {
+			 $('.wizard-full-screen-notice').removeClass('hidden');
+		 }
+		 
+		 
+        $('#close-notice').on('click', function(e){
+
+			$('.wizard-full-screen-notice').addClass('hidden');
+			sessionStorage.setItem('user-notice-accepted','<?php echo $user_id;?>');
+            
+        });
+		
 
         }); //Ready
 
@@ -252,7 +268,70 @@ get_header();
         <div class="container">
 
             <div class="row">
+				
 
+				<?php 
+				
+				$user_drafts_and_published_stories_count = 0;
+				
+				$published_stories_query_obj  = $data['user']['publish'];
+				
+				if ( isset( $published_stories_query_obj ) ) {
+					$user_drafts_and_published_stories_count += $published_stories_query_obj->found_posts;
+				}
+				
+				$draft_stories_query_obj  = $data['user']['draft'];
+				
+				if ( isset( $draft_stories_query_obj ) ) {
+					$user_drafts_and_published_stories_count += $draft_stories_query_obj->found_posts;
+				}
+				
+				
+				$user_id   = $query->query_vars['author'];
+				$user_info = get_userdata($user_id);
+		
+				if ( $user_info != false AND $user_drafts_and_published_stories_count > 0 ):?>
+					
+					<?php 
+						$adult_email = $user_info->user_email;
+						$user_name   = $user_info->first_name . ' ' . $user_info->last_name;
+					?>
+				
+					<div class="wizard-full-screen-notice hidden">
+							<div class="wizard-full-screen-notice__title">
+								<?php BH__e('שימו לב' , 'BH', $locale);?>
+							</div>
+							
+							<div class="wizard-full-screen-notice__text">
+								<p>
+									<?php printf('%s <span class="notify-strong">%s</span>', BH__("כתובת הדואר האלקטרוני שהוקלדה היא:" , "BH", $locale)
+														, $adult_email); ?>
+								</p>
+
+								<p>								
+									<?php printf('%s<span class="notify-strong">%s</span>.', BH__("הכתובת משויכת ל" , "BH", $locale)
+									, $user_name); ?>
+								</p>
+								
+								<p>
+									<?php BH__e('במידה ומדובר באדם אחר, לחץ על כפתור התנתקות והזן כתובת דוא"ל חלופית.' , "BH", $locale); ?>					
+								</p>	
+								
+								<p>
+									<?php BH__e('בכל מקרה אחר, לחץ על סגור' , "BH", $locale); ?>					
+								</p>	
+								
+								<div class="notice-buttons-container">
+									<a class="btn logout-link" href="<?php echo wp_logout_url( home_url() ); ?>"><?php BH__e('התנתקות' , 'BH' ,  $locale ); ?></a>
+									<div class="btn" id="close-notice"><?php BH__e('סגור' , 'BH' ,  $locale ); ?></div>
+								</div>
+								
+							</div>
+							
+							
+					</div>
+				<?php endif; ?>
+				
                 <?Php
                 //Show the prograss bar
                 include ( WIZARD_VIEWS . '/components/progressbar.php' );
