@@ -406,7 +406,11 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons::be
 
 <?php if ( is_user_logged_in() ): ?>
     <div class="col-sm-12 disconnect-area">
-        <a class="logout-link" href="<?php echo wp_logout_url( home_url() ); ?>"><?php BH__e('התנתקות / זה לא המשתמש שלי' , 'BH' ,  $locale ); ?></a>
+		<?php 
+			$wizard_url = get_field('acf-options-wizard-page-url','options'); 
+			$wizard_url = $wizard_url? $wizard_url : home_url();
+		?>
+        <a class="logout-link" href="<?php echo wp_logout_url( $wizard_url ); ?>"><?php BH__e('התנתקות / זה לא המשתמש שלי' , 'BH' ,  $locale ); ?></a>
     </div>
 <?php endif; ?>
 </div>

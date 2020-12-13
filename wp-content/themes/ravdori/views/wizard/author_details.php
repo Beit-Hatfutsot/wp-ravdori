@@ -322,7 +322,13 @@ get_header();
 								</p>	
 								
 								<div class="notice-buttons-container">
-									<a class="btn logout-link" href="<?php echo wp_logout_url( home_url() ); ?>"><?php BH__e('התנתקות' , 'BH' ,  $locale ); ?></a>
+								
+								<?php 
+									$wizard_url = get_field('acf-options-wizard-page-url','options'); 
+									$wizard_url = $wizard_url? $wizard_url : home_url();
+								?>
+								
+									<a class="btn logout-link" href="<?php echo wp_logout_url( $wizard_url ); ?>"><?php BH__e('התנתקות' , 'BH' ,  $locale ); ?></a>
 									<div class="btn" id="close-notice"><?php BH__e('סגור' , 'BH' ,  $locale ); ?></div>
 								</div>
 								
