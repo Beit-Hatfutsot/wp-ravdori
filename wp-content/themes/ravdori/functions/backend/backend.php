@@ -377,7 +377,7 @@ function BH_build_repeater_footer( $show_add_new_button = true )
  ***************************************************************/
 function ratb_buttons_lines_tiny_mce(){
 	add_filter( 'mce_buttons', 'ratb_tiny_mce_buttons_justify', 5 );
-	add_filter( 'mce_buttons_2', 'ratb_tiny_mce_buttons_underline', 5 );
+	add_filter( 'mce_buttons', 'ratb_tiny_mce_buttons_underline', 5 );
 }	 
 add_action( 'admin_init', 'ratb_buttons_lines_tiny_mce' );
 
@@ -390,8 +390,9 @@ function ratb_tiny_mce_buttons_underline( $buttons_array ){
 	if ( !in_array( 'underline', $buttons_array ) ){
 		$inserted = array( 'underline' );
 		
-		// We add the button at the begining of the second line
-		array_splice( $buttons_array, 0, 0, $inserted );
+		
+		// We add the button as the second button at the first line
+		array_splice( $buttons_array, 1, 0, $inserted );
 	}
 	
 	return $buttons_array;
