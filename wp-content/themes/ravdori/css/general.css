@@ -2986,3 +2986,10 @@ body.mobile-menu-open {
     height:100%;
 }
 
+
+
+.fa-facebook-f:before, .fa-facebook:before {
+   
+    font-family: 'FontAwesome' !important;
+    font-style: normal !important;
+}
