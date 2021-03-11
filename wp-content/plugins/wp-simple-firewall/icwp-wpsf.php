@@ -1,23 +1,21 @@
 <?php
 /*
  * Plugin Name: Shield Security
- * Plugin URI: http://icwp.io/2f
+ * Plugin URI: https://shsec.io/2f
  * Description: Powerful, Easy-To-Use #1 Rated WordPress Security System
- * Version: 5.10.0
+ * Version: 10.2.3
  * Text Domain: wp-simple-firewall
- * Domain Path: /languages/
- * Author: iControlWP
- * Author URI: http://icwp.io/2e
+ * Domain Path: /languages
+ * Author: Shield Security
+ * Author URI: https://shsec.io/bv
  */
 
 /**
- * Copyright (c) 2017 iControlWP <support@icontrolwp.com>
+ * Copyright (c) 2021 Shield Security <support@getshieldsecurity.com>
  * All rights reserved.
- *
  * "Shield" (formerly WordPress Simple Firewall) is distributed under the GNU
  * General Public License, Version 2, June 1991. Copyright (C) 1989, 1991 Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,91 +28,41 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-if ( !defined('ICWP_DS') ) {
-	define( 'ICWP_DS', DIRECTORY_SEPARATOR );
+if ( version_compare( PHP_VERSION, '7.0', '<' ) ) {
+	global $sIcwpWpsfPluginFile;
+	$sIcwpWpsfPluginFile = plugin_basename( __FILE__ );
+	include_once( dirname( __FILE__ ).'/unsupported.php' );
 }
+elseif ( @is_file( dirname( __FILE__ ).'/src/lib/vendor/autoload.php' ) ) {
 
-if ( !function_exists( '_wpsf_e' ) ) {
-	function _wpsf_e( $sStr ) {
-		_e( $sStr, 'wp-simple-firewall' );
+	require_once( dirname( __FILE__ ).'/src/lib/vendor/autoload.php' );
+
+	add_action( 'plugins_loaded', 'icwp_wpsf_init', 1 ); // use 0 for extensions to ensure hooks have been added.
+	function icwp_wpsf_init() {
+		$rootFile = __FILE__;
+		require_once( dirname( __FILE__ ).'/init.php' );
 	}
-}
-if ( !function_exists( '_wpsf__' ) ) {
-	function _wpsf__( $sStr ) {
-		return __( $sStr, 'wp-simple-firewall' );
-	}
-}
 
-// By requiring this file here, we assume we wont need to require it anywhere else.
-require_once( dirname(__FILE__).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'common'.DIRECTORY_SEPARATOR.'icwp-foundation.php' );
-
-if ( !class_exists( 'ICWP_Wordpress_Simple_Firewall', false ) ):
-
-	class ICWP_Wordpress_Simple_Firewall extends ICWP_WPSF_Foundation {
-
-		/**
-		 * @var ICWP_WPSF_Plugin_Controller
-		 */
-		protected static $oPluginController;
-
-		/**
-		 * @param ICWP_WPSF_Plugin_Controller $oPluginController
-		 */
-		public function __construct( ICWP_WPSF_Plugin_Controller $oPluginController ) {
-
-			// All core values of the plugin are derived from the values stored in this value object.
-			self::$oPluginController = $oPluginController;
-			$this->getController()->loadAllFeatures();
-			add_filter( $this->getController()->doPluginPrefix( 'plugin_update_message' ), array( $this, 'getPluginsListUpdateMessage' ) );
-
-			add_action( 'plugin_action_links',		array( $this, 'onWpPluginActionLinks' ), 10, 4 );
+	function icwp_wpsf_onactivate() {
+		icwp_wpsf_init();
+		try {
+			\FernleafSystems\Wordpress\Plugin\Shield\Controller\Controller::GetInstance()->onWpActivatePlugin();
 		}
-
-		/**
-		 * @return ICWP_WPSF_Plugin_Controller
-		 */
-		public static function getController() {
-			return self::$oPluginController;
-		}
-
-		public function getPluginsListUpdateMessage( $sMessage ) {
-			return _wpsf__( 'Upgrade Now To Keep Your Firewall Up-To-Date With The Latest Features.' );
-		}
-
-		/**
-		 * On the plugins listing page, hides the edit and deactivate links
-		 * for this plugin based on permissions
-		 *
-		 * @param $aActionLinks
-		 * @param $sPluginFile
-		 * @return mixed
-		 */
-		public function onWpPluginActionLinks( $aActionLinks, $sPluginFile ) {
-			$oCon = $this->getController();
-			if ( !$oCon->getIsValidAdminArea() ) {
-				return $aActionLinks;
-			}
-
-			if ( $sPluginFile == $oCon->getPluginBaseFile() ) {
-				if ( !$oCon->getHasPermissionToManage() ) {
-
-					if ( array_key_exists( 'edit', $aActionLinks ) ) {
-						unset( $aActionLinks['edit'] );
-					}
-					if ( array_key_exists( 'deactivate', $aActionLinks ) ) {
-						unset( $aActionLinks['deactivate'] );
-					}
-				}
-			}
-			return $aActionLinks;
+		catch ( Exception $e ) {
 		}
 	}
 
-endif;
-
-require_once( dirname(__FILE__).DIRECTORY_SEPARATOR.'icwp-plugin-controller.php' );
-
-$oICWP_Wpsf_Controller = ICWP_WPSF_Plugin_Controller::GetInstance( __FILE__ );
-if ( !is_null( $oICWP_Wpsf_Controller ) ) {
-	$oICWP_Wpsf = new ICWP_Wordpress_Simple_Firewall( $oICWP_Wpsf_Controller );
+	register_activation_hook( __FILE__, 'icwp_wpsf_onactivate' );
+}
+else {
+	add_action( 'admin_notices', function () {
+		echo sprintf( '<div class="error"><h4>%s</h4><p>%s</p></div>',
+			'Shield Security Plugin - Broken Installation',
+			implode( '<br/>', [
+				'It appears the Shield Security plugin was not upgraded/installed correctly.',
+				"We run a quick check to make sure certain important files are present in-case a faulty installation breaks your site.",
+				'Try refreshing this page, and if you continue to see this notice, we recommend that you reinstall the Shield Security plugin.'
+			] )
+		);
+	} );
 }

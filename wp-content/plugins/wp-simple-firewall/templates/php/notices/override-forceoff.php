@@ -1,1 +1,0 @@
-<h3><?php echo $strings['message']; ?></h3>
