@@ -5,6 +5,7 @@ namespace FernleafSystems\Utilities\Data\Adapter;
 /**
  * Trait DynamicProperties
  * @package FernleafSystems\Utilities\Data\Adapter
+ * @deprecated
  */
 trait DynamicProperties {
 

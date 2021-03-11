@@ -21,7 +21,7 @@ trait ExecOnce {
 		return (bool)$this->hasExecuted;
 	}
 
-	public function resetExecution() :self {
+	public function resetExecution() {
 		$this->hasExecuted = false;
 		return $this;
 	}

@@ -1,327 +1,177 @@
 Plugin Name: WP Smush Pro
-Author: Umesh Kumar
+Author: WPMU DEV
+Tested up to: 5.6
 
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-= 2.7.1 =
-
-    * Fixed: Progress bar not being updated
-
-= 2.7 =
-
-* Updated:
-    * Faster image uploads: Set async request timeout to 0, if you're having trouble with Auto Smush, set timeout using filter `smush_async_time_out`
-
-* Fixed:
-
-    * Issue with WP Smush Pro membership check
-    * Stats: Rating message shows incorrect image count
-    * Stats: Include directory smush stats in media stats
-    * Directory Smush: UI improvement
-    * Directory Smush: Allow re-smushing directory images, if the lossy feature is turned on
-    * Directory Smush: Fixed empty query warning if there are more than 5k images
-    * Site Ground Staging - Disable Async smush for staging sites, admin URL for async request is incorrect because of the Apache module
-    * Image appearing in Re-Smush list even after smushing, if resize settings are kept on.
-    * Performance: Updated query for smushed images count
-
-* Added:
-    * WP S3 Offload - Plugin Compatibility for Remove files from server feature ( Pro Version )
-    * WP RSS Aggregator compatibility for Auto Smush
-    * WordPress mobile app Auto smush compatibility
-
-= 2.6.3 =
-
-* Fixed:
-
-    * Compatibility issue with WP Defender
-    * Image dimensions not updated after resizing in Grid view
-
-* Added:
-
-    * Added a check to preserve smush stats on plugin deletion, You can add `define('WP_SMUSH_PRESERVE_STATS', true );` in wp-config.php
-
-= 2.6.2 =
-
-* Added:
-    * WP All Import Compatibility
-
-* Fixed:
-    * Image not being updated to S3 after resmush ( *Only if remove files from server is kept off in S3 plugin settings )
-    * Added check for directory smush savings
-    * Call `wp_update_attachment_metadata` after smushing, to allow the optimised image to be used
-    * Dir Smush: Images with special symbols doesn't gets optimised
-    * Dir Smush: Skip .bak files
-    * Retina Images @2x: Do not smush if auto smush is disabled
-    * Backup ( Pro ): Take backup of original untouched image, improved backup and restore.
-
-* Updated:
-    * Smush Limit ( 50 Images ), do not include images with error in count
-
-= 2.6.1 =
-
-* Fixed:
-    * PHP 5.2 compatibility
-    * DB error: Use a smaller value for Path Index size ( Prefix Indexes )
-    * Updated translation function name
-    * UI/UX fixes for directory smush
-    * Improved optimisation process for directory smush
-    * Updated uninstall.php
-    * Skip sites directory from Directory Smush in a Multisite
-
-= 2.6 =
-
-* Fixed:
-    * PHP 7 warning ( https://goo.gl/GKEMim ), @props: @alexis-mag
-    * Async Smush conflict with other plugins
-
-* Changes:
-    * Moved notice JS/CSS in footer
-    * Bulk Smush page optimisation
-    * Increased timeout for Async request - Fixes Async smush not working for some hosting services
-
-* Added:
-    * Directory Smush ( Pro Feature )
-
-= 2.5.3 =
-
-* Fixed:
-    * Show a Smush progress message in Grid view for Auto Smush
-      ( A lot of people reported it as Auto Smush not working, which works in background though )
-    * Translation domain was incorrect for few strings
-    * Translation: Load translation domain in main plugin file
-    * Include image size `medium_large` in smush list
-    * Error: Cannot use string offset as an array
-    * Error in PNG to JPG conversion ( Pro Feature ), added check for mime_content_type function
-    * Pro Status not recognised
-
-= 2.5.2 =
-
-* Added:
-    * Filter: `wp_smush_image`, Boolean, Whether to Smush image or not
-    * Async Optimisation for Auto Smush on upload ( Set WP_SMUSH_ASYNC to false to turn off async optimisation )
-    * Networkwide settings option in a Multisite
-
-* Fixed:
-    * Double slash in file path causing 403 on some of the sites
-    * Localisation error reported by @talgat ( Thank You :) )
-
-= 2.4.5 =
-
-* Fixed:
-    * Error "No file content sent" with WP 4.6
-
-= 2.4.4 =
-
-* Fixed:
-    * Stats Calculation, Use custom query to retrieve data
-    * Fixed warning and notices
-    * PNG to JPEG conversion not working for Multisite ( Pro Users )
-    * thumbnails not being converted for PNG to JPEG conversion
-* Removed option to convert Transparent PNGs to JPEGs ( Pro Users )
-* Added check for invalid membership
-
-= 2.4.3 =
-
-    * Fixed:
-        * Image resizing not working on image upload
-
-= 2.4.2 =
-
-    * Fixed:
-        * PHP 5.2 compatibility
-
-= 2.4.1 =
-
-* Fixed:
-    Conflict with customizer
-
-= 2.4 =
-
-* Compatibility:
-    * WPML Media Add-on compatibility, you can smush all the images for all the languages at once from Bulk Smush page
-
-* Features:
-    * Added PNG to JPG - Lossy Conversion for higher savings ( Pro Feature )
-
-*Fixed:
-    * EXIF: Device details were left out for some images, even when opted for stripping it
-
-* Updated:
-    * Minor Tweaks on WP Smush Page ( Bulk Smush )
-    * Stats calculation is more accurate
-    * Show current image size and image size dimensions in media library after image has been smushed
-    * JPEG optimisation - higher savings for JPEGs lossy optimisation ( Pro Feature )
-
-= 2.3.1 =
-
-* Fixed:
-    * Stats not updated on resizing images
-    * CSS conflict in Media Library
-
-= 2.3 =
-
-* Fixed:
-    * Tooltip on image edit page
-    * Warning and Notices
-* Updated:
-    * Improved stats calculation
-    * Bulk Smush page optimised for Image heavy sites
-    * Cleanup on uninstall
-* Added:
-    * Image Resizing option for Media, NextGen(Pro Only) images
-    * Total image count on stats page
-
-= 2.2.2 =
-- Fixed: JS error causing issue with Editor on some installs, plugin conflict with CoursePress plugin, ACF ( Clear All Caches after plugin upgrade, Cloudflare as well )
-- Fixed: ReSmush count for bulk smushing
-- Fixed: Smush settings accessibility for Screen reader/Keyboard
-- Fixed: WP Admin loading slow ( Load smush stats on required admin pages only )
-
-= 2.2.1 =
-* New: Option to resmush image if settings are changed after optimising images
-* New: Added an option to preserve EXIF
-* New: Remove Smush meta on image regeneration,
-       This allows user to manually smush them later, if auto smush is off ( WP Image Editor support )
-* New: Manual Image restore option for Media Library and NextGen Gallery, if "Backup Original Images" was kept on while smushing ( Pro Only )
-* New: Delete Backup Files (Pro Only) on attachment deletion
-* Updated: Upfront Integration
-* Fixed: jQuery tooltip conflict
-* Code Optimisation, Updated Settings page UI
-
-= 2.1.5 =
-* Fixed: WP Media Folder Plugin compatibility
-* Fixed: Warning on Plugins Page
-* Updated: Settings Page styling
-
-= 2.1.4 =
-* Fixed: Preserve file permission after smushing ( Fix for Images disappearing in Media library on some hosts )
-* Fixed: Styles plugin compatibility
-* Fixed: Append URL params considering the existing arguments ( WPML Compatibility )
-* Fixed: Warning: For settings link in Network admin, Warning: https://goo.gl/HAfhaF ( Thank you @Maks3w for suggestions )
-* Fixed: Fatal error if both pro version and free version are activated
-* Fixed: NextGen-Smush conflict on plugin activation on a fresh install
-
-= 2.1.3 =
-* Fixed: Compatibility with v4.0 of our Dashboard plugin, was not detecting pro status
-
-= 2.1.2 =
-* Fixed: Important fix for transient issue leading to mutliple api requests
-
-= 2.1.1 =
-* Fixed: Workaround for terrible bug in W3TC file based object caching
-
-= 2.1 =
-
-* Fixed: Untranslatable strings in settings
-* Fixed: Increased is_pro() API timeouts
-* Fixed: Remove redundant _get_api_key() cache check
-* Fixed: Some PHP notices on fresh installs
-* Fixed: Bulk Smush button keeps spinning after 50 images for free version
-* Fixed: NextGen Bulk Smush button issue
-* Fixed: Invalid header issue
-* Fixed: Warnings in file functions
-* Updated: Added limit on query results, for sites with higher image count, Use filter `wp_smush_media_query_limit` to adjust values
-* Added: Sortable WP Smush column in Media Library
-* Added: Filters `wp_smush_media_image` for Media Gallery, `wp_smush_nextgen_image` For NextGen gallery,
-          allows to skip a particular image size from smushing
-* Added: NextGen Gallery support
-
-= 2.0.6.5 =
-
-* Updated: Skip webp images ( causing ajax error for few sites )
-* Fixed: Warning and Notices ( Media Library not loading )
-* Fixed: Smush full size image if no other sizes are available
-* Added: Detailed text for stats and settings
-
-= 2.0.6.3 =
-
-* Fixed: Change File permission after replacing image
-* Fixed: Directory path for files
-* Fixed: Workaround for Auto Smush issue on Hostgator
-* Fixed: Smush button doesn't works in media library dialog on post screen, when add media is clicked
-		 (https://wordpress.org/support/topic/like-wp-smush-a-lot)
-* New:   Show number of images smushed in stats column
-* Added: Support for WP Retina 2x Plugin
-* Added: Filter `WP_SMUSH_API_TIMEOUT` to change the default time out value from 60s
-* Added: Smush original image option (Pro Only)
-
-= 2.0.6.2 =
-
-* Use string for text domain instead of PHP Constant ( WordPress Guideline )
-
-2.0.6.1 - 2015-05-20 - Umesh Kumar
-
-- Updated: Max image size set to 32Mb for Pro Version
-
-2.0.6 - 2015-05-20 - Umesh Kumar
-
-- Fixed: Conflict with various themes while editing post and page
-- Fixed: Word Count not working
-- Fixed: Notice and Warnings
-
-2.0.5 - 2015-04-17 - Aaron Edwards, Sam Najian, Umesh Kumar
-
-- New:   Allow Super-smush for existing smushed images
-- Fixed: IMPORTANT - broken transient caching for is_pro
-- Fixed: Fixed conflict with wp gallery link plugin in grid view
-- Fixed: Other small fixes
-
-2.0.4 - 2015-04-14 - Aaron Edwards, Umesh Kumar
-
-- Fix: Fatal error conflict with some plugins on fronted of site
-
-2.0.3 - 2015-04-14 - Aaron Edwards, Sam Najian and Umesh Kumar
-----------------------------------------------------------------------
-
-- Complete rewrite to use WPMU DEV's new fast and reliable API service.
-- New: "Super-Smush" your images with our intelligent multi-pass lossy compression. Get >60% average compression with almost no noticeable quality loss!
-- New: Keep a backup of your original un-smushed images in case you want to restore later.
-- UX/UI updated with overall stats, progress bar.
-
-1.1.1 - 2015-03-27 - Umesh Kumar
-----------------------------------------------------------------------
-- Updated: Use simplified meta queries
-
-1.1 - 2015-03-27 - Umesh Kumar
-----------------------------------------------------------------------
-- New:     New API Servers added for faster optimization
-- Fixed:   PHP warning for broken files
-
-1.0.3.1 - 2015-03-26 - Umesh Kumar
-----------------------------------------------------------------------
-- New:     Suggest manual smushing for smaller bulk request
-- New:     Allow media sorting in list view as per smush status
-- Updated: Bulk smush query
-- Updated: Wait time estimation
-
-1.0.3 - 2015-02-27 - Umesh Kumar
-----------------------------------------------------------------------
-- New:   Added constant 'WPMUDEV_APIKEY', to specify WPMU membership key explicitly
-- Fixed: Plugin activation issue in Multisite
-- Fixed: Decode URLs received from API to remove any encoded characters
-
-1.0.2 - 2015-02-03 - Umesh Kumar
-----------------------------------------------------------------------
-- Fixed: Use options instead of transient to fix W3TC object caching issue
-- New:   Modify email address for bulk smush notification
-
-1.0.1 - 2015-01-01 - Umesh Kumar
-----------------------------------------------------------------------
-- New:      CDN, suggestion to whitelist IP
-- New:      Use Ajax to check API status
-- New:      Limit concurrent pending single smush to 1000, to avoid hogging up of server resources
-- Fixed:    Db cleanup on uninstall
-- Fixed:    Remove unnecessary meta on install
-- Fixed:    Request status for removed bulk requests
-- Updated:  Allowed file types (JPEF, PNG, GIF )
-- Updated:  Wait Time reduced
-
-
-1.0 - 2014-11-24 - Saurabh Shukla, Umesh Kumar
-----------------------------------------------------------------------
-- First release
-
-
-379612-1498898142
+= 3.8.3 ( 2021-02-10 ) =
+
+- Enhance: Allow local WebP on WPMU DEV staging sites
+- Enhance: Display the WebP test request code and message in the status on failure
+- Enhance: Remove unused setting and methods for converting transparent PNGs to JPEG
+- Enhance: Validate the paths submitted by the user for Directory smush
+- Enhance: Compatibility with WP Offload Media
+- Fix: Bulk Smush getting stuck after 100 images on free version
+- Fix: Loading of Wistia assets on free version
+- Fix: Data usage option not being saved on the free version during the onboarding wizard
+- Fix: Do not adjust sizes attribute when automatic resizing on CDN is disabled
+- Fix: WebP rules path is wrong in Flywheel sites
+- Fix: Extra horizontal line after the last row of the WebP metabox
+- Fix: Choose Directory modal not opening when in tabs other than "Directory Smush"
+- Fix: Cached list of attachments with backups getting out of sync with backups
+- Fix: Empty images in media library after PNG to JPG conversion on servers without "fileinfo" extension
+
+= 3.8.2 ( 2020-12-09 ) =
+
+- Enhance: Compatibility with PHP 8.0
+- Enhance: Compatibility with WP 5.6
+- Enhance: Compatibility with Hub
+- Fix: API validation on new installs
+
+= 3.8.1 ( 2020-12-03 ) =
+
+- Fix: Error when querying stats from Hub
+
+= 3.8.0 ( 2020-12-03 ) =
+
+- New: Local WebP support
+- Enhance: Plugin performance
+- Enhance: Lazy load module will properly distinguish between single/double quotes
+- Enhance: srcset generation speed
+- Fix: Image resize detection flagging images that have been auto resized by CDN
+- Fix: Lazy Load conflicting with Maintenance plugin
+- Fix: PHP warning when saving lazy load settings
+- Fix: Copy URL functionality in media library
+- Fix: Whitelabel branding
+- Fix: Tools link in network admin Settings page
+- Fix: Upsell notice breaking after re-checking images
+- Fix: smush_check_for_conflicts cron running on every page load
+- Fix: Compatibility with SupportCandy plugin
+- Fix: Minor UI issues in Tutorials module
+- Fix: Minor UI issues in NextGen Smush page
+- Fix: CDN image paths on sub-directory installs
+
+= 3.7.3 ( 2020-11-23 ) =
+
+- Enhance: Minor UI/UX details
+
+= 3.7.2 ( 2020-11-10 ) =
+
+- Enhance: Plugin UI/UX
+- Enhance: Compatibility with NextGen
+- Fix: CDN parsing of background images
+- Fix: Image counter when re-checking images
+- Fix: Bulk Smush counter going over total number of images
+- Fix: Bulk Smush counter on network admin
+
+= 3.7.1 ( 2020-09-24 ) =
+
+- New: Tutorials sections
+- Enhance: Update the modal that displays the highlights of this release
+- Enhance: Compatibility with NextGen
+- Enhance: Compatibility with SVG images
+- Fix: Image resize detection styles
+- Fix: Tracking option on network subsites
+- Fix: Lazy load placeholder background colors
+- Fix: Lazy load custom placeholders on network installs
+- Fix: Jetpack CDN compatibility
+- Fix: Notice on CDN page
+
+= 3.7.0 ( 2020-09-03 ) =
+
+- New: Option to disable noscript in lazy load
+- New: WordPress 5.5 lazy load compatibility
+- New: Integration with Translate Press
+- New: WP_SMUSH_CDN_DELAY_SRCSET constant to delay wp_calculate_image_srcset filter
+- New: WP_SMUSH_ASYNC_LAZY constant to utilize async loading for lazy load scripts
+- Enhance: Compatibility with S3-Uploads plugin
+- Enhance: Disable CDN and lazy load modules on customizer pages
+- Enhance: CDN parsing of background images
+- Enhance: Allow directory Smush in site directories
+- Enhance: Improve wording in directory Smush notices
+- Enhance: Async load lazy load scripts
+- Fix: Image resize detection styles
+- Fix: Fix errors detecting mime type of remote streams
+- Fix: Lazy loading integration with fusion galleries (Avada)
+- Fix: Lazy loading not working with images that have GET parameters
+- Fix: Lazy loading placeholders not visible on some themes
+- Fix: CDN background images not working with images that have GET parameters
+- Fix: CDN usage of content_width global
+- Fix: Skip iframes with invalid URLs from lazy loading
+- Fix: W3C validation warnings with CDN
+- Fix: Compatibility with Vimeography plugin
+- Fix: Soliloquy slider images' incorrect source
+- Fix: Soliloquy navigation misalignment when lazy loading
+- Fix: Smush page in NextGen Gallery plugin looking unstyled
+
+= 3.6.3 ( 2020-05-06 ) =
+
+- Fix: CDN auto resize option causing issues with images
+
+= 3.6.2 ( 2020-05-04 ) =
+
+- New: CDN and lazy load integration with Soliloquy slider
+- Enhance: Native lazy loading disabled by default, added option to enable it
+- Enhance: Lazy load and CDN page parsing
+- Enhance: Summary module layout
+- Enhance: Image resize detection highlighting
+- Fix: Images with relative paths not processing by CDN
+- Fix: Object cache not clearing out stats during Re-Check Images action
+- Fix: Pages with lazy loading showing errors during W3C validation
+- Fix: Multiple noscript tags when lazy loading duplicate images
+- Fix: NextGen Re-Smush UI
+- Fix: Image resize settings not respecting the largest dimension
+
+= 3.6.1 ( 2020-03-06 ) =
+
+- Enhance: Directory Smush image processing
+- Enhance: CDN background image processing performance
+- Fix: Lazy loading breaking visual editors (Oxygen, Thrive Architect, Tatsu)
+- Fix: WooCommerce breaking Smush onboarding dialog
+- Fix: CDN processing of background images with spaces
+- Fix: REST API errors
+
+= 3.6.0 ( 2020-02-25 ) =
+
+- New: CDN support for images in REST API responses
+- New: Media library filter to show uncompressed images
+- New: Native lazy loading support
+- Enhance: Image resize detection functionality
+- Enhance: Allow excluding images from lazy loading with data-skip-lazy attribute
+- Enhance: Improve restore backup UI
+- Enhance: Bulk smush UI
+- Fix: NextGEN Gallery integration
+- Fix: Error detecting language error on Settings page
+- Fix: "Choose directory" button disabled state after first click
+- Fix: Some notices not being dismissible
+- Fix: Image restore
+
+= 3.5.1 ( 2020-02-10 ) =
+
+- Fix: Browser console errors on pages without Backbone js scripts
+- Fix: Lazy load compatibility with Beaver Builder
+- Fix: Lazy load breaking videos
+
+= 3.5.0 ( 2020-02-03 ) =
+
+- New: Add custom post types to include/exclude filters in the lazy load module
+- New: CDN support for source in the picture element
+- New: Lazy loading for WebP images
+- New: Lazy loading support for picture element
+- Enhance: Page parsing performance
+- Enhance: Media library UI
+- Enhance: CDN compatibility with empty srcset and sizes image attributes
+- Enhance: CDN support for background images
+- Enhance: Lazy load compatibility with Envira Gallery plugin
+- Enhance: Plugins page links
+- Fix: CDN not detecting background images surrounded by HTML entities
+- Fix: CDN not replacing srcset in some cases
+- Fix: Lazy load Gravatars
+- Fix: WPBakery Page Builder integration
+- Fix: Typos in the lazy load module
+
+
+
+555537-1615469460-au
