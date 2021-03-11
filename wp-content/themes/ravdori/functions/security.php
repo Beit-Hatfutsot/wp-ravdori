@@ -19,9 +19,6 @@ function sanitize($input) {
         }
     }
     else {
-        if (get_magic_quotes_gpc()) {
-            $input = stripslashes($input);
-        }
         $input  = cleanInput($input);
         $output = $input; // esc_sql($input);
 

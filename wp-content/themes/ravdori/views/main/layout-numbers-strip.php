@@ -33,7 +33,7 @@
 
 			<div class="col-xs-3 col-sm-3 text-center">
 				<?php 
-					
+								
 					// Init the Google Analytics API
 					$analytics = initializeAnalytics();
 					

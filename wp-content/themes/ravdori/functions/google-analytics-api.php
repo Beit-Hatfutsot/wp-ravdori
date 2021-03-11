@@ -3,6 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once(FUNCTIONS_DIR . '/libs/google-api/src/Google/' . 'autoload.php');
+require_once(ABSPATH . 'wp-admin/includes/file.php');
 
 
 

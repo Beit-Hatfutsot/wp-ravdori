@@ -404,7 +404,7 @@ function get_backend_story_data( $post )
     #region Get the story languagess
 
     $terms = wp_get_object_terms($post->ID, LANGUAGES_TAXONOMY);
-    $languages = '';
+    $languages = [];
 
     if (!empty($terms) && !is_wp_error($terms)) {
         // $subjects_search_url = get_field('acf-options-search-subject', 'options');

@@ -78,7 +78,7 @@ function BH_register_admin_scripts() {
  */
 function BH_register_styles() {
 		
-        wp_register_style( 'bootstrap'      ,	CSS_DIR . '/libs/bootstrap.min.css'        ,  array()             ,	VERSION );
+        wp_register_style( 'bootstrap'      ,	CSS_DIR . '/libs/bootstrap.min.css'    ,  array()  ,	VERSION );
 		wp_register_style( 'bootstrap-rtl'  ,	CSS_DIR . '/libs/bootstrap-rtl.min.css'    ,  array('bootstrap')  ,	VERSION );
 		wp_register_style( 'general'        ,	CSS_DIR . '/general.css'                   ,  array('bootstrap')  ,	VERSION );
 		wp_register_style( 'responsive'     ,	CSS_DIR . '/responsive.css'                   ,  array('general')  ,	VERSION );
@@ -109,14 +109,14 @@ function BH_load_theme_styles() {
  */
 function BH_register_scripts() {
 
-    //wp_register_script( 'bootstrap'      ,	JS_DIR . '/libs/bootstrap.min.js'             ,	array('jquery')       , VERSION  ,	true );
+		//wp_register_script( 'bootstrap'      ,	'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js'            ,	array('jquery')       , VERSION  ,	true );
         //wp_register_script( 'jquery'         ,	JS_DIR . '/jquery.js'                         ,	array()               , VERSION  ,	true );
-		wp_register_script( 'JCycle2'        ,	JS_DIR . '/jquery.cycle2.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
+		wp_register_script( 'JCycle2'        ,	JS_DIR . '/jquery.cycle2.min.js'              ,	array('jquery') , VERSION  ,	true );
 		wp_register_script( 'JCycle2Swipe'        ,	JS_DIR . '/jquery.cycle2.swipe.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
 		wp_register_script( 'jcycle2video'        ,	JS_DIR . '/jquery.cycle2.video.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
 		wp_register_script( 'Pushy'        ,	JS_DIR . '/pushy/pushy.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'JRepeater'      ,	JS_DIR . '/jquery.repeater.min.js'            ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
-        wp_register_script( 'chosen'   ,	JS_DIR . '/chosen/chosen.jquery.js'  ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
+        wp_register_script( 'chosen'   ,	JS_DIR . '/chosen/chosen.jquery.js'  ,	array('jquery') , VERSION  ,	true );
         wp_register_script( 'toastr'   ,	JS_DIR . '/toastr/toastr.min.js'  ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'Wizard'         ,	JS_DIR . '/wizard.js'                         ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
         wp_register_script( 'chained'         ,	JS_DIR . '/jquery.chained.min.js'                         ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
@@ -130,15 +130,16 @@ function BH_register_scripts() {
 		
 		
 		
-		wp_register_script( 'theme-global'   ,	JS_DIR . '/theme-global.js' ,	array('jquery'), VERSION  );
+		wp_register_script( 'theme-global'   ,	JS_DIR . '/theme-global.js' ,	array('jquery','JCycle2','chosen'), VERSION  );
 }
 
 function BH_load_theme_scripts() {
 
     //wp_enqueue_script('jquery');
+    
 	
-	
-	wp_enqueue_script('theme-global');
+	//wp_enqueue_script('bootstrap');
+
 	
     // JCycle2 script
     wp_enqueue_script('JCycle2');
@@ -171,8 +172,19 @@ function BH_load_theme_scripts() {
 
     wp_enqueue_script('select-togglebutton');
 	
-
-    
+	
+	 
+	// Localize the script with new data
+	
+	$story_country_menu_string	= __('חיפוש לפי ארץ מוצא', 'BH');
+	
+	$translation_array = array(
+		'search_string' => $story_country_menu_string,
+		'no_results_text' => BH__("לא נמצאו תוצאות ל - " , "BH" , 'he'),
+	);
+	wp_localize_script( 'theme-global', 'rh_translation_arr', $translation_array );
+	
+	wp_enqueue_script('theme-global');
 
 }
 

@@ -28,9 +28,14 @@
 		{
 			$story_thumbnail = wp_get_attachment_image($image_adult_past , 'story-archive-thumb');
 		}
-		
 	
 	#endregion
+	
+	$story_url = get_the_permalink();
+	
+	if ( isset($_GET['advanced_search__word_name']) AND ! empty ($_GET['advanced_search__word_name']) AND  isset($_GET['word-name-exact']) AND ($_GET['word-name-exact'] == 'on') ):
+		$story_url = add_query_arg ( 'advanced_search__word_name', $_GET['advanced_search__word_name'], $story_url ) ;
+	endif;
 
 ?>
 		
@@ -39,13 +44,13 @@
 		
 
 		 <div class="story-item__image">
-            <a href="<?php the_permalink();?>" class="title"><?php echo $story_thumbnail; ?></a>
+            <a href="<?php echo $story_url; ?>" class="title"><?php echo $story_thumbnail; ?></a>
         </div>
 		
 		
 		<section class="story-item__details">
 			<header class="story-item__title">
-					<a href="<?php the_permalink();?>" class="title"> 
+					<a href="<?php echo $story_url; ?>" class="title"> 
 						<?php the_title(); ?> 
 					</a>			
 			</header>
@@ -66,7 +71,7 @@
 			</div>
 			
 			<div class="story-item__read-more story-item__read-more--list col-xs-2">
-				<a href="<?php the_permalink();?>" class="title">לחצו לקריאה</a>	
+				<a href="<?php echo $story_url; ?>" class="title">לחצו לקריאה</a>	
 			</div>
 			
 
@@ -78,7 +83,7 @@
             
 			
 			<div class="story-item__read-more story-item__read-more--grid col-xs-12">
-				<a href="<?php the_permalink();?>" class="title">לחצו לקריאה</a>	
+				<a href="<?php echo $story_url; ?>" class="title">לחצו לקריאה</a>	
 			</div>
 			
 			<div class="col-xs-12 voffset2 story-item__excerpt">

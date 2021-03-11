@@ -75,6 +75,7 @@
                      <div class="row">
                          <div class="hidden-xs col-sm-12 col-md-7  col-lg-8 header-search-container">
                             <?php  get_template_part('views/components/search', 'form'); ?>
+                            <?php  get_template_part('views/components/advanced-search', 'form'); ?>
                          </div>
 						 
 						 <div class="col-xs-push-2 col-xs-12 visible-xs header-mobile-search-button-container">
@@ -180,6 +181,8 @@
 <?php  
 	/* Mobile fullscreen search*/
 	get_template_part('views/components/full', 'screen-search'); 
+	
+	//get_template_part('views/components/advanced-search', 'form'); 
 ?>	
 	
 </header>

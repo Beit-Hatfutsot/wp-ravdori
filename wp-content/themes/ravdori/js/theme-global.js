@@ -1,34 +1,78 @@
-jQuery(function(){
-    jQuery(".dropdown").hover(            
-            function() {
-                jQuery('.dropdown-menu', this).stop( true, true ).fadeIn("fast");
-                jQuery(this).toggleClass('open');
-                jQuery('b', this).toggleClass("caret caret-up");                
-            },
-            function() {
-                jQuery('.dropdown-menu', this).stop( true, true ).fadeOut("fast");
-                jQuery(this).toggleClass('open');
-                jQuery('b', this).toggleClass("caret caret-up");                
-            });
-    
-    });
-
-
-
 jQuery( document ).ready(function() {
     
+	
+	$ = jQuery;
+	
     initCycle();  
+	
+	$(".dropdown:not(.advanced-search-dropdown)").hover(            
+		function() {
+			$('.dropdown-menu', this).stop( true, true ).fadeIn("fast");
+			$(this).toggleClass('open');
+			$('b', this).toggleClass("caret caret-up");                
+		},
+		function() {
+			$('.dropdown-menu', this).stop( true, true ).fadeOut("fast");
+			$(this).toggleClass('open');
+			$('b', this).toggleClass("caret caret-up");                
+		});
+	
     
     // Mobile fullscreen search
-    jQuery('.btn-mobile-search').on( "click", function() {
-            jQuery('#search-fullscreen-overlay').show();
+    $('.btn-mobile-search').on( "click", function() {
+            $('#search-fullscreen-overlay').show();
+			$('body').addClass('mobile-menu-open');
     });
 
 
-    jQuery('#search-fullscreen-overlay .closebtn').on( "click", function() {
-        jQuery('#search-fullscreen-overlay').hide();
+    $('#search-fullscreen-overlay .closebtn').on( "click", function() {
+        $('#search-fullscreen-overlay').hide();
+		$('body').removeClass('mobile-menu-open');
+    });
+	
+	
+	$('.clean-adv-form-btn').on( "click", function() {
+       $('#advanced_search__country').prop('selectedIndex',0);
+	   $(".advanced-search-container select").trigger("chosen:updated");
+	   
+	   clearAdvancedSearchForm();
+	   
+	   
     });
 
+	
+	function clearAdvancedSearchForm() {
+		
+		$('#advanced-search-form input[type="text"]').val('');
+		$('#advanced-search-form input[type="checkbox"]').prop("checked", false); 
+	}
+  
+	
+	function updateCountry()
+    {
+        sortCountriesByTermName();
+        $(".advanced-search-container select").trigger("chosen:updated");
+    }
+
+
+    function sortCountriesByTermName()
+    {
+            // Loop for each select element on the page.
+            $('.advanced-search-container select').each(function() {
+                // Keep track of the selected option.
+                var selectedValue = $(this).val();
+                // Sort all the options by text.
+                $(this).html($('option', $(this)).sort(function(a, b) {
+                    return $(a).text() == $(b).text() ? 0 : $(a).text() < $(b).text() ? -1 : 1
+                }));
+                // Select one option.
+                $(this).val(selectedValue);
+            });
+     }
+	 
+	 
+	// Make the country select box searchable
+	$(".advanced-search-container select").chosen( { placeholder_text_single :  rh_translation_arr.search_string, no_results_text:rh_translation_arr.no_results_text, search_contains: true  } );
 
 
 });

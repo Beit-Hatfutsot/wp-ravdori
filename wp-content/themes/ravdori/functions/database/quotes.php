@@ -122,6 +122,36 @@ function BH_quotes_get_post_quotes( $post_id ) {
 
 
 
+/**
+ * Gets the post's id for quotes containing $search_string.
+ *
+ * @param 
+ *
+ * @return 
+ */
+function BH_quotes_search_quotes( $search_string, $compare_operator = 'LIKE' ) {
+
+    global $wpdb;
+	
+	$how_to_search = ' WHERE quote_value LIKE \'%' . $wpdb->esc_like( $search_string ) . '%\'';
+	
+	
+	if ( $compare_operator != 'LIKE' ):
+		$term = esc_sql( like_escape( $search_string ) );
+
+		$how_to_search = ' WHERE quote_value REGEXP ' . '\'[[:<:]]' . $term . '[[:>:]]\'';
+		
+	endif;
+	
+    $query_string = ' SELECT post_id FROM ' . DB_QUOTES  . $how_to_search;
+
+
+    $query_result = $wpdb->get_results( $wpdb->prepare( $query_string  , $post_id ) );
+
+    return ( $query_result );
+}
+
+
 
 /**
  * Insert's a quote value to the database.

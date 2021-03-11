@@ -8,6 +8,70 @@
 
 
  
+ function htmline_add_html_to_content( $content ) {
+  
+   if( is_singular(STORY_POST_TYPE) AND isset($_GET['advanced_search__word_name']) AND ! empty ($_GET['advanced_search__word_name'])):
+   
+	 $sr = sanitize_text_field($_GET['advanced_search__word_name']);
+	
+     $keys = explode(" ",$sr);
+     $content = preg_replace('/\b('.implode('|', $keys) .')\b/iu', '<strong class="search-highlight-word">'.$sr.'</strong>', $content);
+   
+   endif;  
+     
+  return $content;
+}
+add_filter( 'the_content', 'htmline_add_html_to_content', 99);
+ 
+ 
+ 
+function advanced_search_title_filter( $where, &$wp_query ){
+    global $wpdb;
+
+	
+    if ( $search_term = $wp_query->get( 'search_story_title' ) ):
+		
+		$how_to_search = 'LIKE \'%' . esc_sql( $wpdb->esc_like( $search_term ) ) . '%\'';
+		
+		if ( $wp_query->get( 'search_story_title_exact' ) == 1 ) {
+			
+			$term = esc_sql( $wpdb->esc_like( $search_term ) );
+			
+			$how_to_search = ' REGEXP ' . '\'[[:<:]]' . $term . '[[:>:]]\'';
+	
+		}
+		
+        $where .= ' AND ' . $wpdb->posts . '.post_title ' . $how_to_search;
+		
+		error_log(  print_r($where,true)  );
+		
+    endif;
+    return $where;
+}
+
+
+
+function advanced_search_content_filter( $where, &$wp_query ){
+    global $wpdb;
+	
+	
+    if ( $search_term = $wp_query->get( 'search_story_content' ) ) {
+		
+		$how_to_search = 'LIKE \'%' . esc_sql( $wpdb->esc_like( $search_term ) ) . '%\'';
+		
+		if ( $wp_query->get( 'search_story_content_exact' ) == 1 ) {
+			
+			$term = esc_sql( $wpdb->esc_like( $search_term ) );
+			
+			$how_to_search = ' REGEXP ' . '\'[[:<:]]' . $term . '[[:>:]]\'';
+	
+		}
+		
+        $where .= ' AND ' . $wpdb->posts . '.post_content  ' . $how_to_search;
+    }
+    return $where;
+}
+ 
  
 
 /*  By default Relevanssi cleans out ampersands (and other punctuation). 

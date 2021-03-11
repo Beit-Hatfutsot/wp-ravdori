@@ -29,8 +29,16 @@ $search_string = __(' חיפוש חופשי', 'BH');
                 <input type="text" class="search-field <?php echo ( isset( $_GET['s'] ) && $_GET['s'] ) ? 'active' : ''; ?>" placeholder="<?php echo $search_string; ?>" value="<?php echo ( isset( $_GET['s'] ) && $_GET['s'] ) ? $_GET['s'] : ''; ?>" name="s" />  
 					<button class="btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
             </div>
-
         </form>
-    </div>
+		
+		<div class="mobile-advanced-search visible-xs">
+			<?php get_template_part('views/components/advanced-search', 'form'); ?>
+		</div>	
+	</div>
+
+	
+	
 </div>
+
+
 
