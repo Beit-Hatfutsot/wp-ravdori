@@ -378,6 +378,10 @@ body.upload-php.eml-grid #wpbody-content > #screen-meta {
 
 /* == Attachment(s) Details == */
 
+body.eml-media-css .attachment-details {
+    overflow-y: hidden;
+}
+
 .media-sidebar .eml-toggle-collapse {
     text-decoration: none;
     height: 14px;

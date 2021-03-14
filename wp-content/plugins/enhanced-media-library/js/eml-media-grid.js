@@ -1,13 +1,19 @@
 window.wp = window.wp || {};
+window.eml = window.eml || { l10n: {} };
 
 
 
 ( function( $, _ ) {
 
     var media = wp.media,
+        mediaTrash = media.view.settings.mediaTrash,
         l10n = media.view.l10n,
-        original = {};
+        original = {},
+        newEvents = {};
 
+
+
+    _.extend( eml.l10n, wpuxss_eml_media_grid_l10n );
 
 
 
@@ -23,7 +29,7 @@ window.wp = window.wp || {};
 
 
 
-    var newEvents = { 'click .edit': 'emlEditAttachment' };
+    newEvents = { 'click .edit': 'emlEditAttachment' };
     _.extend( newEvents, media.view.Attachment.prototype.events);
 
     _.extend( media.view.Attachment.prototype, {
@@ -60,9 +66,284 @@ window.wp = window.wp || {};
     });
 
 
+    
+    newEvents = { 'click .eml-toggle-collapse': 'toggleCollapse' };
+    _.extend( newEvents, media.view.Attachment.Details.prototype.events);
+
+    media.view.emlGridAttachmentDetails = media.view.Attachment.Details.extend({
+
+        events: newEvents,
+
+        render: function() {
+
+            media.view.Attachment.Details.prototype.render.apply( this, arguments );
+
+            // collapse
+            this.$el.find('.setting, #alt-text-description').wrapAll( '<div class="eml-collapse" />' );
+            this.$el.find('.compat-meta').before( '<a class="eml-toggle-collapse" href="javascript:;">'+eml.l10n.more_details+'</a>' );
+
+            this.toggleCollapse();
+        },
+
+        toggleCollapse: function( event ) {
+
+            var collapsed = this.controller._attachmentDetailsCollapsed;
+
+            if ( typeof event !== 'undefined' && 'eml-toggle-collapse' === event.currentTarget.className ) {
+
+                this.$el.find('.eml-collapse').toggle( 300 );
+                collapsed = ! collapsed;
+            }
+            else if ( collapsed ) {
+                this.$el.find('.eml-collapse').hide();
+            }
+            else {
+                this.$el.find('.eml-collapse').show();
+            }
+
+            this.$el.find('.eml-toggle-collapse').html(function(i, html) {
+                return ! collapsed ? eml.l10n.less_details+' \u2191' : eml.l10n.more_details+' \u2193';
+            });
+
+            this.controller._attachmentDetailsCollapsed = collapsed;
+        }
+    });
 
 
-    media.view.MediaFrame.emlManage = media.view.MediaFrame.Select.extend({
+
+    /**
+     * media.view.emlGridSelection
+     *
+     */
+    media.view.emlGridSelection = media.view.Selection.extend({
+
+        template:  media.template('eml-media-selection')
+    });
+
+
+
+    /**
+     * wp.media.view.emlSelectAllButton
+     *
+     * Used in the bulk mode only right now
+     */
+    media.view.emlSelectAllButton = media.view.Button.extend({
+
+        initialize: function() {
+            media.view.Button.prototype.initialize.apply( this, arguments );
+            this.controller.state().get( 'selection' ).on( 'add remove reset', this.toggleDisabled, this );
+        },
+
+        toggleDisabled: function() {
+            this.$el.toggleClass( 'hidden', !! this.controller.state().get( 'selection' ).length );
+            this.model.set( 'disabled', !! this.controller.state().get( 'selection' ).length );
+        },
+
+        render: function() {
+            media.view.Button.prototype.render.apply( this, arguments );
+            this.toggleDisabled();
+            return this;
+        },
+
+        click: function() {
+            this.controller.selectAll();
+        }
+    });
+
+
+
+    /**
+     * wp.media.view.emlDeselectButton
+     *
+     */
+    media.view.emlDeselectButton = media.view.Button.extend({
+
+        initialize: function() {
+            media.view.Button.prototype.initialize.apply( this, arguments );
+            this.controller.state().get( 'selection' ).on( 'add remove reset', this.toggleDisabled, this );
+        },
+
+        toggleDisabled: function() {
+            this.$el.toggleClass( 'hidden', ! this.controller.state().get( 'selection' ).length );
+            this.model.set( 'disabled', ! this.controller.state().get( 'selection' ).length );
+        },
+
+        render: function() {
+            media.view.Button.prototype.render.apply( this, arguments );
+            this.toggleDisabled();
+            return this;
+        },
+
+        click: function() {
+
+            var selection = this.controller.state().get( 'selection' );
+
+            selection.reset();
+
+            // Keep focus inside media modal
+            if ( this.controller.modal ) {
+                this.controller.modal.focusManager.focus();
+            }
+        }
+    });
+
+
+
+    /**
+     * wp.media.view.emlDeleteSelectedButton
+     *
+     */
+    media.view.emlDeleteSelectedButton = media.view.DeleteSelectedButton.extend({
+
+        initialize: function() {
+            media.view.Button.prototype.initialize.apply( this, arguments );
+            if ( this.options.filters ) {
+                this.options.filters.model.on( 'change', this.filterChange, this );
+            }
+            this.controller.state().get( 'selection' ).on( 'add remove reset', this.toggleDisabled, this );
+        },
+
+        toggleDisabled: function() {
+            this.$el.toggleClass( 'hidden', ! this.controller.state().get( 'selection' ).length );
+            this.model.set( 'disabled', ! this.controller.state().get( 'selection' ).length );
+        },
+
+        render: function() {
+            media.view.Button.prototype.render.apply( this, arguments );
+            this.toggleDisabled();
+            return this;
+        },
+
+        click: function() {
+
+            var changed = [], removed = [], action = 'delete',
+                selection = this.controller.state().get( 'selection' ),
+                library = this.controller.state().get( 'library' );
+
+
+            if ( typeof this.controller._bulk !== 'undefined' ) {
+
+                if ( mediaTrash ) {
+                    action = 'trash' === selection.at( 0 ).get( 'status' ) ? 'restore' : 'trash';
+                }
+
+                this.controller.bulk( action );
+            }
+            else {
+
+                if ( ! selection.length ) {
+                    return;
+                }
+
+                if ( ! mediaTrash && ! window.confirm( l10n.warnBulkDelete ) ) {
+                    return;
+                }
+
+                if ( mediaTrash &&
+                    'trash' !== selection.at( 0 ).get( 'status' ) &&
+                    ! window.confirm( l10n.warnBulkTrash ) ) {
+
+                    return;
+                }
+
+                selection.each( function( model ) {
+                    if ( ! model.get( 'nonces' )['delete'] ) {
+                        removed.push( model );
+                        return;
+                    }
+
+                    if ( mediaTrash && 'trash' === model.get( 'status' ) ) {
+                        model.set( 'status', 'inherit' );
+                        changed.push( model.save() );
+                        removed.push( model );
+                    } else if ( mediaTrash ) {
+                        model.set( 'status', 'trash' );
+                        changed.push( model.save() );
+                        removed.push( model );
+                    } else {
+                        model.destroy({wait: true});
+                    }
+                } );
+
+                if ( changed.length ) {
+                    selection.remove( removed );
+
+                    $.when.apply( null, changed ).then( _.bind( function() {
+                        library._requery( true );
+                        this.controller.trigger( 'selection:action:done' );
+                    }, this ) );
+                } else {
+                    this.controller.trigger( 'selection:action:done' );
+                }
+            }
+        }
+    });
+
+
+
+    /**
+     * wp.media.view.emlDeleteSelectedPermanentlyButton
+     *
+     */
+    media.view.emlDeleteSelectedPermanentlyButton = media.view.emlDeleteSelectedButton.extend({
+
+        filterChange: function( model ) {
+            this.canShow = ( 'trash' === model.get( 'status' ) );
+        },
+
+        toggleDisabled: function() {
+            this.$el.toggleClass( 'hidden', ! this.canShow );
+            this.model.set( 'disabled', ! this.canShow );
+        },
+
+        click: function() {
+
+            if ( typeof this.controller._bulk !== 'undefined' ) {
+                this.controller.bulk( 'delete' );
+            }
+            else {
+
+                var removed = [],
+                    destroy = [],
+                    selection = this.controller.state().get( 'selection' );
+
+                if ( ! selection.length || ! window.confirm( l10n.warnBulkDelete ) ) {
+                    return;
+                }
+
+                selection.each( function( model ) {
+                    if ( ! model.get( 'nonces' )['delete'] ) {
+                        removed.push( model );
+                        return;
+                    }
+
+                    destroy.push( model );
+                } );
+
+                if ( removed.length ) {
+                    selection.remove( removed );
+                }
+
+                if ( destroy.length ) {
+                    $.when.apply( null, destroy.map( function (item) {
+                        return item.destroy();
+                    } ) ).then( _.bind( function() {
+                        this.controller.trigger( 'selection:action:done' );
+                    }, this ) );
+                }
+            }
+        }
+    });
+
+
+
+    /**
+     * wp.media.view.MediaFrame.emlGrid
+     *
+     */
+    media.view.MediaFrame.emlGrid = media.view.MediaFrame.Select.extend({
+
+        _attachmentDetailsCollapsed: true,
 
         initialize: function() {
 
@@ -71,6 +352,11 @@ window.wp = window.wp || {};
             _.defaults( this.options, {
                 title    : '',
                 modal    : false,
+
+                selection: [],
+                library:   {}, // Options hash for the query to the media library.
+                // uploader:  true,
+
                 multiple : 'reset',
                 state    : 'library',
                 mode     : [ 'eml-grid', 'edit' ]
@@ -89,7 +375,10 @@ window.wp = window.wp || {};
             // Append the frame view directly the supplied container.
             this.$el.appendTo( this.options.container );
 
+            this.createStates();
             this.render();
+
+            media.frames.browse = this;
         },
 
         createStates: function() {
@@ -108,7 +397,7 @@ window.wp = window.wp || {};
                     multiple           : options.multiple,
 
                     content            : 'browse',
-                    toolbar            : false,
+                    toolbar            : 'bulk-edit',
                     menu               : false,
                     router             : false,
 
@@ -118,7 +407,7 @@ window.wp = window.wp || {};
                     filterable         : 'all',
 
                     autoSelect         : true,
-                    idealColumnWidth   : $( window ).width() < 640 ? 135 : 150
+                    idealColumnWidth   : $( window ).width() < 640 ? 135 : 175
                 })
             ]);
         },
@@ -126,7 +415,19 @@ window.wp = window.wp || {};
         bindHandlers: function() {
 
             media.view.MediaFrame.Select.prototype.bindHandlers.apply( this, arguments );
+
+            this.on( 'toolbar:create:bulk-edit', this.createToolbar, this );
+            this.on( 'toolbar:render:bulk-edit', this.selectionStatusToolbar, this );
             this.on( 'edit:attachment', this.openEditAttachmentModal, this );
+        },
+
+        selectionStatusToolbar: function( view ) {
+
+            view.set( 'selection', new media.view.emlGridSelection({
+                controller: this,
+                collection: this.state().get('selection'),
+                priority:   -40,
+            }).render() );
         },
 
         addNewClickHandler: function( event ) {
@@ -238,7 +539,7 @@ window.wp = window.wp || {};
 
     $( document ).ready( function() {
 
-        media.frame = new media.view.MediaFrame.emlManage({
+        media.frame = new media.view.MediaFrame.emlGrid({
             container: $('#wp-media-grid')
         });
     });
