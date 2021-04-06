@@ -8,7 +8,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.3.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -42,6 +42,9 @@ require_once('functions/wizard/editor.php');
 
 // Scripts & styles registration
 require_once('functions/scripts-n-styles.php');
+
+// Login screen
+require_once('functions/login.php');
 
 // Post types
 require_once('functions/post-types.php');

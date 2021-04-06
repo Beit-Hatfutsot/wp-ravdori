@@ -4,11 +4,25 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.3.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+/**
+ * bh_login_scripts_n_styles
+ *
+ * used before authentication
+ *
+ * @param   N/A
+ * @return  N/A
+ */
+function bh_login_scripts_n_styles() {
+
+    wp_register_style( 'admin-login',   CSS_DIR . '/admin/login.css',    array(),    VERSION );
+
+}
+add_action( 'login_enqueue_scripts', 'bh_login_scripts_n_styles' );
 
 
 /**

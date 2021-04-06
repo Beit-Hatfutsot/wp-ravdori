@@ -1,0 +1,15 @@
+/****************/
+/* login screen */
+/****************/
+
+body.login {
+	background-color: transparent;
+}
+
+body.login #login h1 a {
+	padding-top: 20px;
+	width: 320px;
+	height: 37px;
+	background: url( "../../images/general/anu-logo-v1.png" ) no-repeat 50% 50%;
+	background-size: contain;
+}
