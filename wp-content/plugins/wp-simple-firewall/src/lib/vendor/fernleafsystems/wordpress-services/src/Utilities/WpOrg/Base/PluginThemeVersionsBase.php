@@ -20,19 +20,19 @@ abstract class PluginThemeVersionsBase {
 	 * @return string[]
 	 */
 	public function allVersionsUrls() {
-		$aVersions = [];
-		$sSlug = $this->getWorkingSlug();
-		if ( !empty( $sSlug ) ) {
+		$versions = [];
+		$slug = $this->getWorkingSlug();
+		if ( !empty( $slug ) ) {
 			try {
-				$oInfo = $this->getApi()
-							  ->setWorkingSlug( $sSlug )
+				$info = $this->getApi()
+							  ->setWorkingSlug( $slug )
 							  ->getInfo();
-				$aVersions = isset( $oInfo->versions ) ? $oInfo->versions : [];
+				$versions = $info->versions ?? [];
 			}
-			catch ( \Exception $oE ) {
+			catch ( \Exception $e ) {
 			}
 		}
-		return is_array( $aVersions ) ? $aVersions : [];
+		return is_array( $versions ) ? $versions : [];
 	}
 
 	/**
@@ -56,9 +56,9 @@ abstract class PluginThemeVersionsBase {
 	}
 
 	/**
-	 * @param string $sVersion
-	 * @param bool   $bVerifyUrl
+	 * @param string $version
+	 * @param bool   $verifyUrl
 	 * @return bool
 	 */
-	abstract public function exists( $sVersion, $bVerifyUrl = false );
+	abstract public function exists( $version, $verifyUrl = false );
 }

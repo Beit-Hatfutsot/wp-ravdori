@@ -3,18 +3,35 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules;
-use FernleafSystems\Wordpress\Services\Utilities\Net\IpIdentify;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\Lib\Bots\ShieldNET\BuildData;
+use FernleafSystems\Wordpress\Plugin\Shield\Tests\RunTests;
 
 class Debug extends Modules\Base\Debug {
 
 	public function run() {
-		$this->ipID();
-		die();
+		$this->tests();
+		die( 'finish' );
 	}
 
-	private function ipID() {
-		$id = ( new IpIdentify( '198.61.176.9' ) )
+	private function testbotsignals() {
+		$r = ( new BuildData() )
+			->setMod( $this->getCon()->getModule_IPs() )
+			->build( true );
+		var_dump( $r );
+	}
+
+	private function getIpRefs() {
+		$ipRefs = $this->getCon()
+					   ->getModule_Data()
+					   ->getDbH_ReqLogs()
+					   ->getQuerySelector()
+					   ->getDistinctForColumn( 'ip_ref' );
+		var_dump( $ipRefs );
+	}
+
+	private function tests() {
+		( new RunTests() )
+			->setCon( $this->getCon() )
 			->run();
-		var_dump( $id );
 	}
 }

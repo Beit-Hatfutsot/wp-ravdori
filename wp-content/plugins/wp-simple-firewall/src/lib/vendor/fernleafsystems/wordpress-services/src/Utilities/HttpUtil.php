@@ -13,35 +13,35 @@ class HttpUtil {
 	/**
 	 * @var string[]
 	 */
-	private $aDownloads;
+	private $downloads;
 
 	public function __construct() {
-		$this->aDownloads = [];
+		$this->downloads = [];
 		add_action( 'shutdown', [ $this, 'deleteDownloads' ] );
 	}
 
 	public function deleteDownloads() {
-		$oFS = Services::WpFs();
-		foreach ( $this->aDownloads as $sFile ) {
-			if ( $oFS->exists( $sFile ) ) {
-				$oFS->deleteFile( $sFile );
+		$FS = Services::WpFs();
+		foreach ( $this->downloads as $file ) {
+			if ( $FS->exists( $file ) ) {
+				$FS->deleteFile( $file );
 			}
 		}
 	}
 
 	/**
-	 * @param string $sUrl
-	 * @param array  $aValidResponseCodes
+	 * @param string $url
+	 * @param array  $validResponseCodes
 	 * @return $this
 	 * @throws \Exception
 	 */
-	public function checkUrl( $sUrl, $aValidResponseCodes = [ 200, 304 ] ) {
-		$oReq = new HttpRequest();
-		if ( !$oReq->get( $sUrl ) ) {
-			throw new \Exception( $oReq->lastError->get_error_message() );
+	public function checkUrl( $url, $validResponseCodes = [ 200, 304 ] ) {
+		$request = new HttpRequest();
+		if ( !$request->get( $url ) ) {
+			throw new \Exception( $request->lastError->get_error_message() );
 		}
 
-		if ( !in_array( $oReq->lastResponse->getCode(), $aValidResponseCodes ) ) {
+		if ( !in_array( $request->lastResponse->getCode(), $validResponseCodes ) ) {
 			throw new \Exception( 'Head Request Failed. Likely the version does not exist.' );
 		}
 
@@ -49,20 +49,20 @@ class HttpUtil {
 	}
 
 	/**
-	 * @param string $sUrl
+	 * @param string $url
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function downloadUrl( $sUrl ) {
-		/** @var string|\WP_Error $sFile */
-		$sFile = download_url( $sUrl );
-		if ( is_wp_error( $sFile ) ) {
-			throw new \Exception( $sFile->get_error_message() );
+	public function downloadUrl( $url ) {
+		/** @var string|\WP_Error $file */
+		$file = download_url( $url );
+		if ( is_wp_error( $file ) ) {
+			throw new \Exception( $file->get_error_message() );
 		}
-		if ( !realpath( $sFile ) ) {
-			throw new \Exception( 'Downloaded could not be found' );
+		if ( !realpath( $file ) ) {
+			throw new \Exception( 'Downloaded file could not be found' );
 		}
-		$this->aDownloads[] = $sFile;
-		return $sFile;
+		$this->downloads[] = $file;
+		return $file;
 	}
 }

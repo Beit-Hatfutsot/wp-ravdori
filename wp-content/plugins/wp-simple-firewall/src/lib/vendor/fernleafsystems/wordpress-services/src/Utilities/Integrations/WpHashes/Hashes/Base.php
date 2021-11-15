@@ -1,10 +1,8 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Hashes;
 
-use FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes;
-
-abstract class Base extends WpHashes\ApiBase {
+abstract class Base extends \FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\ApiBase {
 
 	const API_ENDPOINT = 'hashes';
 }

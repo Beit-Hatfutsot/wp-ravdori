@@ -30,11 +30,6 @@ class Options extends BaseShield\Options {
 		return $this->getOpt( 'visitor_address_source' );
 	}
 
-	public function getShieldNetApiData() :array {
-		$d = $this->getOpt( 'snapi_data', [] );
-		return is_array( $d ) ? $d : [];
-	}
-
 	/**
 	 * @return bool
 	 */
@@ -52,7 +47,7 @@ class Options extends BaseShield\Options {
 	}
 
 	public function isTrackingEnabled() :bool {
-		return $this->isOpt( 'enable_tracking', 'Y' );
+		return $this->isPremium() || $this->isOpt( 'enable_tracking', 'Y' );
 	}
 
 	public function isEnabledWpcli() :bool {
@@ -63,16 +58,16 @@ class Options extends BaseShield\Options {
 		return !$this->isOpt( 'tracking_permission_set_at', 0 );
 	}
 
-	public function isImportExportPermitted() :bool {
-		return $this->isPremium() && $this->isOpt( 'importexport_enable', 'Y' );
-	}
-
 	/**
 	 * @return string[]
 	 */
 	public function getImportExportWhitelist() :array {
 		$whitelist = $this->getOpt( 'importexport_whitelist', [] );
 		return is_array( $whitelist ) ? $whitelist : [];
+	}
+
+	public function isEnabledShieldNET() :bool {
+		return $this->isOpt( 'enable_shieldnet', 'Y' );
 	}
 
 	/**

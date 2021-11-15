@@ -1,4 +1,4 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Services\Utilities\File\Cache;
 
@@ -13,5 +13,5 @@ namespace FernleafSystems\Wordpress\Services\Utilities\File\Cache;
  */
 class CacheDefVO {
 
-	use \FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+	use \FernleafSystems\Utilities\Data\Adapter\DynProperties;
 }

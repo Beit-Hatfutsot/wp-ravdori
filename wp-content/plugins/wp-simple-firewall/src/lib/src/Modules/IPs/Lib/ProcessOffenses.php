@@ -2,22 +2,24 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\Lib;
 
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
-class ProcessOffenses {
+class ProcessOffenses extends ExecOnceModConsumer {
 
-	use ModConsumer;
+	protected function canRun() :bool {
+		return !$this->getMod()->isTrustedVerifiedBot();
+	}
 
-	public function run() {
+	protected function run() {
 		/** @var IPs\ModCon $mod */
 		$mod = $this->getMod();
 
 		$mod->loadOffenseTracker()->setIfCommit( true );
 
 		$con = $this->getCon();
-		add_filter( $con->prefix( 'firewall_die_message' ), [ $this, 'augmentFirewallDieMessage' ] );
+		add_filter( 'shield/firewall_die_message', [ $this, 'augmentFirewallDieMessage' ] );
 		add_action( $con->prefix( 'pre_plugin_shutdown' ), function () {
 			$this->processOffense();
 		} );
@@ -28,9 +30,9 @@ class ProcessOffenses {
 		/** @var IPs\ModCon $mod */
 		$mod = $this->getMod();
 
-		$oTracker = $mod->loadOffenseTracker();
+		$tracker = $mod->loadOffenseTracker();
 		if ( !$this->getCon()->plugin_deleting
-			 && $oTracker->hasVisitorOffended() && $oTracker->isCommit() ) {
+			 && $tracker->hasVisitorOffended() && $tracker->isCommit() ) {
 			( new IPs\Components\ProcessOffense() )
 				->setMod( $mod )
 				->setIp( Services::IP()->getRequestIp() )
@@ -39,15 +41,15 @@ class ProcessOffenses {
 	}
 
 	/**
-	 * @param array $aMessages
+	 * @param array $msg
 	 * @return array
 	 */
-	public function augmentFirewallDieMessage( $aMessages ) {
-		if ( !is_array( $aMessages ) ) {
-			$aMessages = [];
+	public function augmentFirewallDieMessage( $msg ) {
+		if ( !is_array( $msg ) ) {
+			$msg = [];
 		}
 
-		$aMessages[] = sprintf( '<p>%s</p>', sprintf(
+		$msg[] = sprintf( '<p>%s</p>', sprintf(
 			$this->getMod()->getTextOpt( 'text_remainingtrans' ),
 			max( 0, ( new IPs\Components\QueryRemainingOffenses() )
 				->setMod( $this->getMod() )
@@ -55,28 +57,28 @@ class ProcessOffenses {
 				->run() )
 		) );
 
-		return $aMessages;
+		return $msg;
 	}
 
 	/**
 	 * Allows 3rd parties to trigger Shield offenses
-	 * @param string $sMessage
-	 * @param int    $nOffenseCount
-	 * @param bool   $bIncludeLoggedIn
+	 * @param string $message
+	 * @param int    $offenseCount
+	 * @param bool   $includedLoggedIn
 	 */
-	public function processCustomShieldOffense( $sMessage, $nOffenseCount = 1, $bIncludeLoggedIn = true ) {
+	public function processCustomShieldOffense( $message, $offenseCount = 1, $includedLoggedIn = true ) {
 		if ( $this->getCon()->isPremiumActive() ) {
-			if ( empty( $sMessage ) ) {
-				$sMessage = __( 'No custom message provided.', 'wp-simple-firewall' );
+			if ( empty( $message ) ) {
+				$message = __( 'No custom message provided.', 'wp-simple-firewall' );
 			}
 
-			if ( $bIncludeLoggedIn || !did_action( 'init' ) || !Services::WpUsers()->isUserLoggedIn() ) {
+			if ( $includedLoggedIn || !did_action( 'init' ) || !Services::WpUsers()->isUserLoggedIn() ) {
 				$this->getCon()
 					 ->fireEvent(
 						 'custom_offense',
 						 [
-							 'audit'         => [ 'message' => $sMessage ],
-							 'offense_count' => $nOffenseCount
+							 'audit_params'  => [ 'message' => $message ],
+							 'offense_count' => (int)$offenseCount
 						 ]
 					 );
 			}

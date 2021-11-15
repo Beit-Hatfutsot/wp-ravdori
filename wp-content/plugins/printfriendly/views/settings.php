@@ -8,6 +8,8 @@
 
 		  <?php include_once PRINTFRIENDLY_BASEPATH . '/views/tabs.php'; ?>
 
+		  <input type="hidden" name="tab" id="current-tab" value="<?php echo get_transient( 'pf-tab' ); ?>">
+
 		<footer id="after-submit" class="pf-bu-footer">
 		  <div class="pf-bu-content pf-bu-has-text-centered">
 			<p>

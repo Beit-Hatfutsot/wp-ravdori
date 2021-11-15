@@ -28,44 +28,41 @@ class Processor extends BaseShield\Processor {
 		add_filter( 'login_message', [ $this, 'printLinkToAdmin' ] );
 
 		$this->setupLoginCaptureHooks();
-		$this->setToCaptureApplicationLogin( true );
+		$this->setToCaptureApplicationLogin( true )
+			 ->setAllowMultipleCapture( true );
 	}
 
 	protected function captureLogin( \WP_User $user ) {
-		$this->activateUserSession( $user );
+		if ( !empty( $this->getLoggedInCookie() ) ) {
+			$sessonCon = $this->getCon()->getModule_Sessions()->getSessionCon();
+			$sessonCon->terminateCurrentSession();
+			$sessonCon->createSession( $user, $this->getLoggedInCookie() );
+			$this->getCon()->fireEvent( 'login_success' );
+		}
+	}
+
+	public function onWpInit() {
+		$this->autoAddSession();
 	}
 
 	public function onWpLoaded() {
-		if ( Services::WpUsers()->isUserLoggedIn() && !Services::Rest()->isRest() ) {
-			$this->autoAddSession();
-		}
-	}
-
-	public function onModuleShutdown() {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 
-		if ( !Services::Rest()->isRest() && !$this->getCon()->plugin_deleting ) {
-			$session = $mod->getSessionCon()->getCurrent();
-			if ( $session instanceof Session\EntryVO ) {
-				/** @var Session\Update $oUpd */
-				$oUpd = $mod->getDbHandler_Sessions()->getQueryUpdater();
-				$oUpd->updateLastActivity( $session );
-			}
+		if ( $mod->getSessionCon()->hasSession() ) {
+			/** @var Session\Update $update */
+			$update = $mod->getDbHandler_Sessions()->getQueryUpdater();
+			$update->updateLastActivity( $mod->getSessionCon()->getCurrent() );
 		}
-
-		parent::onModuleShutdown();
 	}
 
 	private function autoAddSession() {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 		$sessCon = $mod->getSessionCon();
-		if ( !$sessCon->hasSession() && $mod->isAutoAddSessions() ) {
-			$user = Services::WpUsers()->getCurrentWpUser();
-			if ( $user instanceof \WP_User ) {
-				$sessCon->queryCreateSession( $this->getCon()->getSessionId( true ), $user );
-			}
+		$user = Services::WpUsers()->getCurrentWpUser();
+		if ( $user instanceof \WP_User && !$sessCon->hasSession() ) {
+			$sessCon->createSession( $user );
 		}
 	}
 
@@ -92,11 +89,18 @@ class Processor extends BaseShield\Processor {
 		return $msg;
 	}
 
-	private function activateUserSession( \WP_User $user ) {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-		// If they have a currently active session, terminate it (i.e. we replace it)
-		$mod->getSessionCon()->terminateCurrentSession();
-		$mod->getSessionCon()->queryCreateSession( $this->getCon()->getSessionId( true ), $user );
+	protected function getWpHookPriority( string $hook ) :int {
+		switch ( $hook ) {
+			case 'init':
+				$pri = 1;
+				break;
+			default:
+				$pri = parent::getWpHookPriority( $hook );
+		}
+		return $pri;
+	}
+
+	protected function getHookPriority() :int {
+		return 100;
 	}
 }

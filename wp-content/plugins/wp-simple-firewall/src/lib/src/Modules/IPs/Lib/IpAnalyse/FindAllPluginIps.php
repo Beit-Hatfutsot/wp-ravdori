@@ -3,6 +3,7 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\Lib\IpAnalyse;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Databases;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Data\DB\IPs\Ops\Select;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\PluginControllerConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Utilities\Tool\IpListSort;
 
@@ -10,7 +11,7 @@ class FindAllPluginIps {
 
 	use PluginControllerConsumer;
 
-	public function run() :array {
+	public function run( string $ipFilter = '' ) :array {
 		$con = $this->getCon();
 
 		// User Sessions
@@ -20,17 +21,9 @@ class FindAllPluginIps {
 				   ->getQuerySelector();
 		$ips = $sel->getDistinctIps();
 
-		// Traffic
-		/** @var Databases\Traffic\Select $sel */
-		$sel = $con->getModule_Traffic()
-				   ->getDbHandler_Traffic()
-				   ->getQuerySelector();
-		$ips = array_merge( $ips, $sel->getDistinctIps() );
-
-		// Audit Trail
-		/** @var Databases\AuditTrail\Select $sel */
-		$sel = $con->getModule_AuditTrail()
-				   ->getDbHandler_AuditTrail()
+		/** @var Select $sel */
+		$sel = $con->getModule_Data()
+				   ->getDbH_IPs()
 				   ->getQuerySelector();
 		$ips = array_merge( $ips, $sel->getDistinctIps() );
 
@@ -41,6 +34,12 @@ class FindAllPluginIps {
 				   ->getQuerySelector();
 		$ips = array_merge( $ips, $sel->getDistinctForColumn( 'ip' ) );
 
-		return IpListSort::Sort( array_unique( $ips ) );
+		$ips = array_unique( $ips );
+		if ( !empty( $ipFilter ) ) {
+			$ips = array_filter( $ips, function ( $ip ) use ( $ipFilter ) {
+				return is_int( strpos( $ip, $ipFilter ) );
+			} );
+		}
+		return IpListSort::Sort( $ips );
 	}
 }

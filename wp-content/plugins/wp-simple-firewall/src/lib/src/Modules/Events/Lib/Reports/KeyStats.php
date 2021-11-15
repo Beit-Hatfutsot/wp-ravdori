@@ -8,20 +8,15 @@ use FernleafSystems\Wordpress\Plugin\Shield\Modules\Reporting\Lib\Reports\BaseRe
 
 class KeyStats extends BaseReporter {
 
-	/**
-	 * @inheritDoc
-	 */
-	public function build() {
-		$aAlerts = [];
+	public function build() :array {
+		$alerts = [];
 
 		/** @var Events\ModCon $mod */
 		$mod = $this->getMod();
-		/** @var DBEvents\Select $oSelEvts */
-		$oSelEvts = $mod->getDbHandler_Events()->getQuerySelector();
-		/** @var Events\Strings $oStrings */
-		$oStrings = $mod->getStrings();
+		/** @var DBEvents\Select $selector */
+		$selector = $mod->getDbHandler_Events()->getQuerySelector();
 
-		$aEventKeys = [
+		$eventKeys = [
 			'ip_offense',
 			'ip_blocked',
 			'conn_kill',
@@ -32,24 +27,25 @@ class KeyStats extends BaseReporter {
 			'bottrack_loginfailed',
 			'bottrack_logininvalid',
 			'bottrack_xmlrpc',
+			'bottrack_invalidscript',
 			'spam_block_bot',
 			'spam_block_recaptcha',
 			'spam_block_human',
 		];
 
-		$oRep = $this->getReport();
+		$rep = $this->getReport();
 
-		$aCounts = [];
-		foreach ( $aEventKeys as $sEvent ) {
+		$sums = [];
+		$srvEvents = $this->getCon()->loadEventsService();
+		foreach ( $eventKeys as $event ) {
 			try {
-				$nCount = $oSelEvts
-					->filterByEvent( $sEvent )
-					->filterByBoundary( $oRep->interval_start_at, $oRep->interval_end_at )
-					->count();
-				if ( $nCount > 0 ) {
-					$aCounts[ $sEvent ] = [
-						'count' => $nCount,
-						'name'  => $oStrings->getEventName( $sEvent ),
+				$eventSum = $selector
+					->filterByBoundary( $rep->interval_start_at, $rep->interval_end_at )
+					->sumEvent( $event );
+				if ( $eventSum > 0 ) {
+					$sums[ $event ] = [
+						'count' => $eventSum,
+						'name'  => $srvEvents->getEventName( $event ),
 					];
 				}
 			}
@@ -57,12 +53,12 @@ class KeyStats extends BaseReporter {
 			}
 		}
 
-		if ( count( $aCounts ) > 0 ) {
-			$aAlerts[] = $this->getMod()->renderTemplate(
+		if ( count( $sums ) > 0 ) {
+			$alerts[] = $this->getMod()->renderTemplate(
 				'/components/reports/mod/events/info_keystats.twig',
 				[
 					'vars'    => [
-						'counts' => $aCounts
+						'counts' => $sums
 					],
 					'strings' => [
 						'title' => __( 'Top Security Statistics', 'wp-simple-firewall' ),
@@ -73,6 +69,6 @@ class KeyStats extends BaseReporter {
 			);
 		}
 
-		return $aAlerts;
+		return $alerts;
 	}
 }

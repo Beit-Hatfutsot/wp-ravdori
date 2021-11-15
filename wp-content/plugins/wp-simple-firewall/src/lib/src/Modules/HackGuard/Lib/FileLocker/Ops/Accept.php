@@ -13,31 +13,29 @@ use FernleafSystems\Wordpress\Services\Services;
 class Accept extends BaseOps {
 
 	/**
-	 * @param FileLocker\EntryVO $oLock
-	 * @return bool
 	 * @throws \ErrorException
 	 */
-	public function run( $oLock ) {
+	public function run( FileLocker\EntryVO $lock ) :bool {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 
-		$aPublicKey = $this->getPublicKey();
-		$sRawContent = ( new BuildEncryptedFilePayload() )
+		$publicKey = $this->getPublicKey();
+		$raw = ( new BuildEncryptedFilePayload() )
 			->setMod( $mod )
-			->build( $oLock->file, reset( $aPublicKey ) );
+			->build( $lock->file, reset( $publicKey ) );
 
-		/** @var FileLocker\Update $oUpdater */
-		$oUpdater = $mod->getDbHandler_FileLocker()->getQueryUpdater();
-		$bSuccess = $oUpdater->updateEntry( $oLock, [
-			'hash_original' => hash_file( 'sha1', $oLock->file ),
-			'content'       => base64_encode( $sRawContent ),
-			'public_key_id' => key( $aPublicKey ),
+		/** @var FileLocker\Update $updater */
+		$updater = $mod->getDbHandler_FileLocker()->getQueryUpdater();
+		$success = $updater->updateEntry( $lock, [
+			'hash_original' => hash_file( 'sha1', $lock->file ),
+			'content'       => base64_encode( $raw ),
+			'public_key_id' => key( $publicKey ),
 			'detected_at'   => 0,
 			'updated_at'    => Services::Request()->ts(),
 			'created_at'    => Services::Request()->ts(), // update "locked at"
 		] );
 
 		$this->clearFileLocksCache();
-		return $bSuccess;
+		return $success;
 	}
 }

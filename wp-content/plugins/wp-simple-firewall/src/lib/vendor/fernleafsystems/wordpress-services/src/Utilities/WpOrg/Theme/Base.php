@@ -4,58 +4,54 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme;
 
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Trait Base
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme
- */
 trait Base {
 
 	/**
 	 * @var string
 	 */
-	private $sWorkingSlug;
+	private $workingSlug;
 
 	/**
 	 * @var string
 	 */
-	private $sWorkingVersion;
+	private $workingVersion;
 
 	/**
 	 * @return string
 	 */
 	public function getWorkingSlug() {
-		return $this->sWorkingSlug;
+		return $this->workingSlug;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getWorkingVersion() {
-		$sVersion = $this->sWorkingVersion;
-		if ( empty( $sVersion ) ) {
-			$oT = Services::WpThemes()->getTheme( $this->getWorkingSlug() );
-			if ( $oT instanceof \WP_Theme ) {
-				$sVersion = $oT->get( 'Version' );
+		$version = $this->workingVersion;
+		if ( empty( $version ) ) {
+			$theme = Services::WpThemes()->getTheme( $this->getWorkingSlug() );
+			if ( $theme instanceof \WP_Theme ) {
+				$version = $theme->get( 'Version' );
 			}
 		}
-		return $sVersion;
+		return $version;
 	}
 
 	/**
-	 * @param string $sSlug
+	 * @param string $slug
 	 * @return $this
 	 */
-	public function setWorkingSlug( $sSlug ) {
-		$this->sWorkingSlug = $sSlug;
+	public function setWorkingSlug( $slug ) {
+		$this->workingSlug = $slug;
 		return $this;
 	}
 
 	/**
-	 * @param string $sV
+	 * @param string $version
 	 * @return $this
 	 */
-	public function setWorkingVersion( $sV ) {
-		$this->sWorkingVersion = $sV;
+	public function setWorkingVersion( $version ) {
+		$this->workingVersion = $version;
 		return $this;
 	}
 }

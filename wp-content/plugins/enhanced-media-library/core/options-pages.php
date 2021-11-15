@@ -77,7 +77,7 @@ if ( ! function_exists( 'wpuxss_eml_register_setting' ) ) {
  *  @created  28/04/18
  */
 
-add_action( 'admin_menu', 'wpuxss_eml_admin_media_menu' );
+add_action( 'admin_menu', 'wpuxss_eml_admin_media_menu', 12 );
 
 if ( ! function_exists( 'wpuxss_eml_admin_media_menu' ) ) {
 
@@ -191,8 +191,8 @@ if ( ! function_exists( 'wpuxss_eml_network_admin_menu' ) ) {
 
         $eml_network_options_page = add_submenu_page(
             'settings.php',
-            __('Enhanced Media Library','enhanced-media-library'),
-            __('Enhanced Media Library','enhanced-media-library'),
+            __('Enhanced Media Library Utilities','enhanced-media-library'),
+            __('EML Utilities','enhanced-media-library'),
             'manage_options',
             'eml-settings',
             'wpuxss_eml_print_network_settings'
@@ -1987,7 +1987,7 @@ if ( ! function_exists( 'wpuxss_eml_print_taxonomies_options' ) ) {
         }
 
 
-        $wpuxss_eml_taxonomies = get_option( 'wpuxss_eml_taxonomies' );
+        $wpuxss_eml_taxonomies = get_option( 'wpuxss_eml_taxonomies', array() );
         $title = __('Media Settings'); ?>
 
 
@@ -2070,8 +2070,8 @@ if ( ! function_exists( 'wpuxss_eml_print_taxonomies_options' ) ) {
                                                 $html .= '<li><label>' . __('Show in Nav Menu','enhanced-media-library') . '</label><input type="checkbox" class="wpuxss-eml-show_in_nav_menus" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][show_in_nav_menus]" value="1" ' . checked( true, (bool) $taxonomy->show_in_nav_menus, false ) . ' /></li>';
                                                 $html .= '<li><label>' . __('Remember Terms Order (sort)','enhanced-media-library') . '</label><input type="checkbox" class="wpuxss-eml-sort" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][sort]" value="1" ' . checked( true, (bool) $taxonomy->sort, false ) . ' /></li>';
                                                 $html .= '<li><label>' . __('Show in REST','enhanced-media-library') . '</label><input type="checkbox" class="wpuxss-eml-show_in_rest" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][show_in_rest]" value="1" ' . checked( true, (bool) $taxonomy->show_in_rest, false ) . ' /></li>';
-                                                $html .= '<li><label>' . __('Rewrite Slug','enhanced-media-library') . '</label><input type="text" class="wpuxss-eml-slug" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][rewrite][slug]" value="' . esc_attr($taxonomy->rewrite['slug']) . '" /></li>';
-                                                $html .= '<li><label>' . __('Slug with Front','enhanced-media-library') . '</label><input type="checkbox" class="wpuxss-eml-with_front" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][rewrite][with_front]" value="1" ' . checked( true, (bool) $taxonomy->rewrite['with_front'], false ) . ' /></li>';
+                                                $html .= '<li><label>' . __('Rewrite Slug','enhanced-media-library') . '</label><input type="text" class="wpuxss-eml-slug" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][rewrite][slug]" value="' . esc_attr($wpuxss_eml_taxonomies[$taxonomy->name]['rewrite']['slug']) . '" /></li>';
+                                                $html .= '<li><label>' . __('Slug with Front','enhanced-media-library') . '</label><input type="checkbox" class="wpuxss-eml-with_front" name="wpuxss_eml_taxonomies[' . esc_attr($taxonomy->name) . '][rewrite][with_front]" value="1" ' . checked( true, (bool) $wpuxss_eml_taxonomies[$taxonomy->name]['rewrite']['with_front'], false ) . ' /></li>';
                                                 $html .= '</ul>';
                                                 $html .= '</div>';
 

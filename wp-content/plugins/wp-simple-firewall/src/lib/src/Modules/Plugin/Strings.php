@@ -11,51 +11,111 @@ class Strings extends Base\Strings {
 	/**
 	 * @inheritDoc
 	 */
-	protected function getAdditionalDisplayStrings() :array {
+	public function getEventStrings() :array {
 		return [
-			'actions_title'   => __( 'Plugin Actions', 'wp-simple-firewall' ),
-			'actions_summary' => __( 'E.g. Import/Export', 'wp-simple-firewall' ),
+			'debug_log'         => [
+				'name'  => __( 'Custom Debug', 'wp-simple-firewall' ),
+				'audit' => [
+					'{{message}}',
+				],
+			],
+			'frontpage_load'    => [
+				'name'  => sprintf( '%s: %s', __( 'Loaded', 'wp-simple-firewall' ),
+					__( 'Front Page', 'wp-simple-firewall' ) ),
+				'audit' => [
+					__( 'Front page loaded', 'wp-simple-firewall' ),
+				],
+			],
+			'loginpage_load'    => [
+				'name'  => sprintf( '%s: %s', __( 'Loaded', 'wp-simple-firewall' ),
+					__( 'Login Page', 'wp-simple-firewall' ) ),
+				'audit' => [
+					__( 'Login page loaded', 'wp-simple-firewall' ),
+				],
+			],
+			'recaptcha_success' => [
+				'name'  => __( 'CAPTCHA Pass', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'CAPTCHA test successful.', 'wp-simple-firewall' ),
+				],
+			],
+			'recaptcha_fail'    => [
+				'name'  => __( 'CAPTCHA Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'CAPTCHA test failed.', 'wp-simple-firewall' ),
+				],
+			],
+			'test_cron_run'     => [
+				'name'  => __( 'Test Cron Run', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Test WP Cron ran successfully.', 'wp-simple-firewall' ),
+				],
+			],
+			'import_notify_sent'     => [
+				'name'  => __( 'Import Notify Sent', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Sent notifications to whitelisted sites for required options import.', 'wp-simple-firewall' ),
+				],
+			],
+			'import_notify_received'     => [
+				'name'  => __( 'Import Notify Received', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Received notification that options import required.', 'wp-simple-firewall' ),
+					__( 'Current master site: {{master_site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'options_exported'     => [
+				'name'  => __( 'Options Exported', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Options exported to site: {{site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'options_imported'     => [
+				'name'  => __( 'Options Imported', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Options exported from site: {{site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'whitelist_site_added'     => [
+				'name'  => __( 'Whitelist Site Added', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Site added to export white list: {{site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'whitelist_site_removed'     => [
+				'name'  => __( 'Whitelist Site Removed', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Site removed from export white list: {{site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'master_url_set'     => [
+				'name'  => __( 'Whitelist Site Removed', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Master Site URL set: {{site}}', 'wp-simple-firewall' ),
+				],
+			],
+			'antibot_pass'     => [
+				'name'  => __( 'AntiBot Pass', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Request passed the AntiBot Test with a Visitor Score of "{{score}}" (minimum score: {{minimum}}).', 'wp-simple-firewall' ),
+				],
+			],
+			'antibot_fail'     => [
+				'name'  => __( 'AntiBot Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Request failed the AntiBot Test with a Visitor Score of "{{score}}" (minimum score: {{minimum}}).', 'wp-simple-firewall' ),
+				],
+			],
 		];
 	}
 
 	/**
-	 * @return string[][]
+	 * @inheritDoc
 	 */
-	protected function getAuditMessages() :array {
+	protected function getAdditionalDisplayStrings() :array {
 		return [
-			'suresend_success'       => [
-				__( 'Attempt to send email using SureSend: %s', 'wp-simple-firewall' ),
-				__( 'SureSend email success.', 'wp-simple-firewall' ),
-			],
-			'suresend_fail'          => [
-				__( 'Attempt to send email using SureSend: %s', 'wp-simple-firewall' ),
-				__( 'SureSend email failed.', 'wp-simple-firewall' ),
-			],
-			'import_notify_sent'     => [
-				__( 'Sent notifications to whitelisted sites for required options import.', 'wp-simple-firewall' )
-			],
-			'import_notify_received' => [
-				__( 'Received notification that options import required.', 'wp-simple-firewall' ),
-				__( 'Current master site: %s', 'wp-simple-firewall' )
-			],
-			'options_exported'       => [
-				__( 'Options exported to site: %s', 'wp-simple-firewall' ),
-			],
-			'options_imported'       => [
-				__( 'Options imported from site: %s', 'wp-simple-firewall' ),
-			],
-			'whitelist_site_added'   => [
-				__( 'Site added to export white list: %s', 'wp-simple-firewall' ),
-			],
-			'whitelist_site_removed' => [
-				__( 'Site removed from export white list: %s', 'wp-simple-firewall' ),
-			],
-			'master_url_set'         => [
-				__( 'Master Site URL set: %s', 'wp-simple-firewall' ),
-			],
-			'recaptcha_fail'         => [
-				__( 'CAPTCHA Test Fail', 'wp-simple-firewall' )
-			],
+			'actions_title'   => __( 'Plugin Actions', 'wp-simple-firewall' ),
+			'actions_summary' => __( 'E.g. Import/Export', 'wp-simple-firewall' ),
 		];
 	}
 
@@ -72,7 +132,7 @@ class Strings extends Base\Strings {
 			case 'section_global_security_options' :
 				$title = __( 'Global Security Plugin Disable', 'wp-simple-firewall' );
 				$titleShort = sprintf( __( 'Disable %s', 'wp-simple-firewall' ), $sPlugName );
-				$aSummary = [
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Use this option to completely disable all active Shield Protection.', 'wp-simple-firewall' ) ),
 				];
 				break;
@@ -80,18 +140,18 @@ class Strings extends Base\Strings {
 			case 'section_defaults' :
 				$title = __( 'Plugin Defaults', 'wp-simple-firewall' );
 				$titleShort = __( 'Plugin Defaults', 'wp-simple-firewall' );
-				$aSummary = [
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Important default settings used throughout the plugin.', 'wp-simple-firewall' ) ),
 				];
 				break;
 
 			case 'section_importexport' :
 				$title = sprintf( '%s / %s', __( 'Import', 'wp-simple-firewall' ), __( 'Export', 'wp-simple-firewall' ) );
-				$aSummary = [
-					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Automatically import options, and deploy configurations across your entire network.', 'wp-simple-firewall' ) ),
-					sprintf( __( 'This is a Pro-only feature.', 'wp-simple-firewall' ) ),
-				];
 				$titleShort = sprintf( '%s / %s', __( 'Import', 'wp-simple-firewall' ), __( 'Export', 'wp-simple-firewall' ) );
+				$summary = [
+					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Automatically import options, and deploy configurations across your entire network.', 'wp-simple-firewall' ) ),
+					__( 'This is a Pro-only feature.', 'wp-simple-firewall' ),
+				];
 				break;
 
 			case 'section_suresend' :
@@ -112,13 +172,12 @@ class Strings extends Base\Strings {
 			case 'section_third_party_captcha' :
 				$title = __( 'CAPTCHA', 'wp-simple-firewall' );
 				$titleShort = __( 'CAPTCHA', 'wp-simple-firewall' );
-				$aSummary = [
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), sprintf( __( 'Setup CAPTCHA for use across %s.', 'wp-simple-firewall' ), $sPlugName ) ),
 					sprintf( '%s - %s',
 						__( 'Recommendation', 'wp-simple-firewall' ),
-						sprintf( __( 'Use of this feature is highly recommend.', 'wp-simple-firewall' ).' '
-								 .sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You must create your own CAPTCHA API Keys.', 'wp-simple-firewall' ) )
-						)
+						__( 'Use of this feature is highly recommend.', 'wp-simple-firewall' )
+						.sprintf( ' %s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You must create your own CAPTCHA API Keys.', 'wp-simple-firewall' ) )
 						.'<ul class="mt-1"><li>- '.sprintf( ' <a href="%s" target="_blank">%s</a>', 'https://www.google.com/recaptcha/admin', __( 'Google reCAPTCHA Keys', 'wp-simple-firewall' ) )
 						.'</li><li>- '.sprintf( ' <a href="%s" target="_blank">%s</a>', 'https://dashboard.hcaptcha.com/', __( 'hCaptcha Keys', 'wp-simple-firewall' ) ).'</li></ul>'
 					),
@@ -138,7 +197,7 @@ class Strings extends Base\Strings {
 		return [
 			'title'       => $title,
 			'title_short' => $titleShort,
-			'summary'     => ( isset( $aSummary ) && is_array( $aSummary ) ) ? $aSummary : [],
+			'summary'     => ( isset( $summary ) && is_array( $summary ) ) ? $summary : [],
 		];
 	}
 
@@ -187,21 +246,33 @@ class Strings extends Base\Strings {
 				];
 				break;
 
+			case 'enable_shieldnet' :
+				$name = __( 'Enable ShieldNET', 'wp-simple-firewall' );
+				$summary = __( 'Enhanced Website Security Through Network Intelligence', 'wp-simple-firewall' );
+				$desc = [
+					__( 'By leveraging and sharing information about threats to WordPress sites, ShieldNET brings the power of the entire network to your WordPress security.', 'wp-simple-firewall' )
+				];
+				break;
+
 			case 'visitor_address_source' :
 				$name = __( 'IP Source', 'wp-simple-firewall' );
 				$summary = __( 'Which IP Address Is Yours', 'wp-simple-firewall' );
-				$desc = __( 'There are many possible ways to detect visitor IP addresses. If Auto-Detect is not working, please select yours from the list.', 'wp-simple-firewall' )
-						.'<br />'.__( 'If the option you select becomes unavailable, we will revert to auto detection.', 'wp-simple-firewall' )
-						.'<br />'.sprintf(
-							__( 'Current source is: %s (%s)', 'wp-simple-firewall' ),
-							'<strong>'.$opts->getIpSource().'</strong>',
-							Services::IP()->getRequestIp()
-						)
-						.sprintf(
-							'<p class="mt-2"><a href="%s" target="_blank">%s</a></p>',
-							'https://shsec.io/shieldwhatismyip',
-							__( 'What Is My IP Address?', 'wp-simple-firewall' )
-						);
+				$desc = [
+					__( "Knowing the real IP address of your visitors is critical to your security, but many hosts aren't configured correctly to let us find it easily.", 'wp-simple-firewall' ),
+					__( 'There are many possible ways to detect visitor IP addresses. If Auto-Detect is not working, please select yours from the list.', 'wp-simple-firewall' ),
+					__( 'Use the link below to find your correct IP address, then select the option on the list.', 'wp-simple-firewall' ),
+					sprintf(
+						'<p class="mt-2"><a href="%s" target="_blank">%s</a></p>',
+						'https://shsec.io/shieldwhatismyip',
+						__( 'What Is My IP Address?', 'wp-simple-firewall' )
+					),
+					sprintf(
+						__( 'Current source is: %s (%s)', 'wp-simple-firewall' ),
+						'<strong>'.$opts->getIpSource().'</strong>',
+						Services::IP()->getRequestIp()
+					),
+					__( 'If the option you select becomes unavailable at some point, we will revert to auto detection.', 'wp-simple-firewall' ),
+				];
 				break;
 
 			case 'block_send_email_address' :
@@ -225,7 +296,7 @@ class Strings extends Base\Strings {
 
 			case 'display_plugin_badge' :
 				$name = __( 'Show Plugin Badge', 'wp-simple-firewall' );
-				$summary = __( 'Display Plugin Badge On Your Site', 'wp-simple-firewall' );
+				$summary = __( 'Display Plugin Security Badge To Your Visitors', 'wp-simple-firewall' );
 				$desc = [
 					__( 'Enabling this option helps support the plugin by spreading the word about it on your website.', 'wp-simple-firewall' )
 					.' '.__( 'The plugin badge also lets visitors know your are taking your website security seriously.', 'wp-simple-firewall' ),

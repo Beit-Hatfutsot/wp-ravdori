@@ -20,6 +20,7 @@ use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme;
  * @property bool   $active
  * @property string $version      - alias for Version
  * @property string $unique_id    - alias for file/stylesheet
+ * @deprecated
  */
 abstract class WpBaseVo {
 

@@ -26,12 +26,12 @@ class Includes {
 	}
 
 	/**
-	 * @param string $sInclude
+	 * @param string $include
 	 * @return string
 	 */
-	public function getIncludeUrl( $sInclude ) {
-		$sInclude = path_join( 'wp-includes', $sInclude );
-		return $this->addIncludeModifiedParam( path_join( Services::WpGeneral()->getWpUrl(), $sInclude ), $sInclude );
+	public function getIncludeUrl( $include ) {
+		$include = path_join( 'wp-includes', $include );
+		return $this->addIncludeModifiedParam( path_join( Services::WpGeneral()->getWpUrl(), $include ), $include );
 	}
 
 	/**
@@ -54,12 +54,16 @@ class Includes {
 	}
 
 	/**
-	 * @param $sUrl
-	 * @param $sInclude
+	 * @param $url
+	 * @param $include
 	 * @return string
 	 */
-	public function addIncludeModifiedParam( $sUrl, $sInclude ) {
-		$nTime = Services::WpFs()->getModifiedTime( path_join( ABSPATH, $sInclude ) );
-		return add_query_arg( [ 'mtime' => $nTime ], $sUrl );
+	public function addIncludeModifiedParam( $url, $include ) :string {
+		$FS = Services::WpFs();
+		$file = path_join( ABSPATH, $include );
+		if ( $FS->isFile( $file ) ) {
+			$url = add_query_arg( [ 'mtime' => $FS->getModifiedTime( $file ) ], $url );
+		}
+		return (string)$url;
 	}
 }

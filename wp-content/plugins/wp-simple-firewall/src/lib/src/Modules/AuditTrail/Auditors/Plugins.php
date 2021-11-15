@@ -1,49 +1,47 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\AuditTrail\Auditors;
 
+use FernleafSystems\Wordpress\Services\Services;
+
 class Plugins extends Base {
 
-	public function run() {
+	protected function run() {
 		add_action( 'deactivated_plugin', [ $this, 'auditDeactivatedPlugin' ] );
 		add_action( 'activated_plugin', [ $this, 'auditActivatedPlugin' ] );
-		add_action( 'check_admin_referer', [ $this, 'auditEditedFile' ], 10, 2 );
+		add_action( 'wp_ajax_edit-theme-plugin-file', [ $this, 'auditEditedFile' ], -1 ); // they hook on 1
 	}
 
 	/**
-	 * @param string $sPlugin
+	 * @param string $plugin
 	 */
-	public function auditActivatedPlugin( $sPlugin ) {
-		if ( !empty( $sPlugin ) ) {
+	public function auditActivatedPlugin( $plugin ) {
+		if ( !empty( $plugin ) ) {
 			$this->getCon()->fireEvent(
 				'plugin_activated',
-				[ 'audit' => [ 'plugin' => $sPlugin ] ]
+				[ 'audit_params' => [ 'plugin' => $plugin ] ]
 			);
 		}
 	}
 
 	/**
-	 * @param string $sPlugin
+	 * @param string $plugin
 	 */
-	public function auditDeactivatedPlugin( $sPlugin ) {
-		if ( !empty( $sPlugin ) ) {
+	public function auditDeactivatedPlugin( $plugin ) {
+		if ( !empty( $plugin ) ) {
 			$this->getCon()->fireEvent(
 				'plugin_deactivated',
-				[ 'audit' => [ 'plugin' => $sPlugin ] ]
+				[ 'audit_params' => [ 'plugin' => $plugin ] ]
 			);
 		}
 	}
 
-	/**
-	 * @param string $sAction
-	 * @param bool   $bResult
-	 */
-	public function auditEditedFile( $sAction, $bResult ) {
-		$sStub = 'edit-plugin_';
-		if ( strpos( $sAction, $sStub ) === 0 ) {
+	public function auditEditedFile() {
+		$req = Services::Request();
+		if ( !empty( $req->post( 'plugin' ) ) ) {
 			$this->getCon()->fireEvent(
 				'plugin_file_edited',
-				[ 'audit' => [ 'file' => str_replace( $sStub, '', $sAction ) ] ]
+				[ 'audit_params' => [ 'file' => sanitize_text_field( $req->post( 'file' ) ) ] ]
 			);
 		}
 	}

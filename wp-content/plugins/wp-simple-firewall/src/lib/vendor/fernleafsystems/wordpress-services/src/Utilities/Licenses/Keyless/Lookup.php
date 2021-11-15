@@ -18,38 +18,32 @@ class Lookup extends Base {
 
 	const API_ACTION = 'lookup';
 
-	/**
-	 * @return EddLicenseVO
-	 */
-	public function lookup() {
+	public function lookup() :EddLicenseVO {
 		if ( empty( $this->url ) ) {
 			$this->url = Services::WpGeneral()->getHomeUrl( '', true );
 		}
 
-		$aRaw = $this->sendReq();
-		if ( is_array( $aRaw ) && !empty( $aRaw[ 'keyless' ] ) && !empty( $aRaw[ 'keyless' ][ 'license' ] ) ) {
-			$aLicenseInfo = $aRaw[ 'keyless' ][ 'license' ];
+		$raw = $this->sendReq();
+		if ( is_array( $raw ) && !empty( $raw[ 'keyless' ] ) && !empty( $raw[ 'keyless' ][ 'license' ] ) ) {
+			$info = $raw[ 'keyless' ][ 'license' ];
 		}
 		else {
-			$aLicenseInfo = [];
+			$info = [];
 		}
 
-		$oLic = ( new EddLicenseVO() )->applyFromArray( $aLicenseInfo );
-		$oLic->last_request_at = Services::Request()->ts();
-		return $oLic;
+		$lic = ( new EddLicenseVO() )->applyFromArray( $info );
+		$lic->last_request_at = Services::Request()->ts();
+		return $lic;
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiRequestUrl() {
+	protected function getApiRequestUrl() :string {
 		return sprintf( '%s/%s/%s', parent::getApiRequestUrl(), $this->item_id, $this->install_id );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	protected function getRequestBodyParamKeys() {
+	protected function getRequestBodyParamKeys() :array {
 		return [
 			'url',
 			'nonce',

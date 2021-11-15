@@ -4,23 +4,19 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Plugin;
 
 use FernleafSystems\Wordpress\Services\Utilities\HttpUtil;
 
-/**
- * Class Download
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Plugin
- */
 class Download {
 
 	use Base;
 
 	/**
-	 * @param string $sVersion
+	 * @param string $version
 	 * @return string|null
 	 */
-	public function getDownloadUrlForVersion( $sVersion ) {
-		$aAll = ( new Versions() )
+	public function getDownloadUrlForVersion( $version ) {
+		$all = ( new Versions() )
 			->setWorkingSlug( $this->getWorkingSlug() )
 			->allVersionsUrls();
-		return empty( $aAll[ $sVersion ] ) ? null : $aAll[ $sVersion ];
+		return empty( $all[ $version ] ) ? null : $all[ $version ];
 	}
 
 	/**
@@ -28,19 +24,19 @@ class Download {
 	 * @throws \Exception
 	 */
 	public function latest() {
-		$sUrl = ( new Versions() )
+		$url = ( new Versions() )
 			->setWorkingSlug( $this->getWorkingSlug() )
 			->latest();
-		return empty( $sUrl ) ? null : ( new HttpUtil() )->downloadUrl( $sUrl );
+		return empty( $url ) ? null : ( new HttpUtil() )->downloadUrl( $url );
 	}
 
 	/**
-	 * @param string $sVersion
+	 * @param string $version
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function version( $sVersion ) {
-		$sUrl = $this->getDownloadUrlForVersion( $sVersion );
-		return empty( $sUrl ) ? null : ( new HttpUtil() )->downloadUrl( $sUrl );
+	public function version( $version ) {
+		$url = $this->getDownloadUrlForVersion( $version );
+		return empty( $url ) ? null : ( new HttpUtil() )->downloadUrl( $url );
 	}
 }

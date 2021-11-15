@@ -16,6 +16,7 @@ jQuery(document).ready(function($) {
         $('body').addClass('ead-popup-on');
         tb_show("Embed Any Document", "#TB_inline?inlineId=embed-popup-wrap&amp;width=1030&amp;modal=true", null);
         ead_tb_position();
+        $("#upload-doc").focus();
         return;
     });
     
@@ -49,7 +50,7 @@ jQuery(document).ready(function($) {
         $('.ead-options').fadeIn();
     });
      // Close embed dialog
-    $('#embed-popup').on('click', '.cancel-embed,.mfp-close', function(e) {
+    $('#embed-popup').on('click', '.cancel-embed,.ead-close', function(e) {
         // Prevent default action
         e.preventDefault();
         ead_remove_pop();
@@ -122,11 +123,13 @@ jQuery(document).ready(function($) {
             download = $('#ead-download').val(),
             provider = $('#ead-provider').val(),
             text = $('#ead-text').val(),
+            cache = $('#ead-cache').is(':checked'),
             heightstr = "",
             widthstr = "",
             downloadstr = "",
             providerstr = "",
             textstr="",
+            cachestr="",
             drivestr = "";
         if (ead_itemcheck('height', item)) {
             heightstr = ' height="' + height + '"';
@@ -144,7 +147,23 @@ jQuery(document).ready(function($) {
         if (ead_itemcheck('text', item) && download!='none' ) {
             textstr = ' text="' + text + '"';
         }
-        return '[embeddoc url="' + url + '"' + widthstr + heightstr + downloadstr + providerstr + drivestr + textstr +']';
+
+        if (provider == 'google') {
+            $('#eadcachemain').show();
+            if (cache) {
+                cachestr = ' cache="off"';
+            }
+        } else {
+            $('#eadcachemain').hide();
+        }
+
+        if (provider === 'browser') {
+            $('.ead-browser-viewer-note').show();
+        } else {
+            $('.ead-browser-viewer-note').hide();
+        }
+
+        return '[embeddoc url="' + url + '"' + widthstr + heightstr + downloadstr + providerstr + cachestr + drivestr + textstr +']';
     }
     // Checks with default setting value
     function ead_itemcheck(item, dataitem) {
@@ -179,7 +198,7 @@ jQuery(document).ready(function($) {
             ead_validateurl(checkurl);
         } else {
             $embedurl.addClass('urlerror');
-            updateshortcode();
+            ead_updateshortcode();
         }
     }
     function ead_is_valid_url(url) {
@@ -189,14 +208,21 @@ jQuery(document).ready(function($) {
     function ead_validateurl(url) {
         var uClass = 'link';
         $('#embed-message').hide();
-        if(ead_is_valid_url(url)){
+        if(ead_is_valid_url(url)) {
             fileurl = url;
+            var filename = url.split('/').pop();
+            if (!filename) filename = emebeder.from_url;
+            var file = {
+                url: fileurl,
+                filename: filename
+            };
             $('#insert-doc').removeAttr('disabled');
             $('#ead-filename').html(emebeder.from_url);
             $('#ead-filesize').html('&nbsp;');
             $('.upload-success').fadeIn();
             $container.hide();
             ead_upload_class(uClass);
+            ead_valid_viewer(file, uClass);
             ead_updateshortcode();
         }else{
             ead_showmsg(emebeder.invalidurl);
@@ -211,7 +237,17 @@ jQuery(document).ready(function($) {
 
     function ead_shortcode() {
         if (fileurl) {
-            wp.media.editor.insert($shortcode.text());
+            // @rel: document guten-block
+            var ins_shortcode = true;
+            if(typeof wp.blocks !== 'undefined') {
+                var document_block = wp.blocks.getBlockType('embed-any-document/document');
+                if(typeof document_block !== 'undefined') {
+                    ins_shortcode = false;
+                }
+            }
+            if(ins_shortcode) {
+                wp.media.editor.insert($shortcode.text());
+            }
             ead_remove_pop();
         } else {
             showmsg(emebeder.nocontent);
@@ -256,17 +292,49 @@ jQuery(document).ready(function($) {
     // Viewer Check
     function ead_valid_viewer(file, provider) {
         var cprovider = ["link", "upload"];
+
         var validext = msextension.split(',');
-        var ext = '.' + file.filename.split('.').pop();
-        $("#new-provider  option[value='microsoft']").attr('disabled', false);
-        if ($.inArray(provider, cprovider) != -1) {
-            if ($.inArray(ext, validext) == -1) {
+        var checkitem = file.filename;
+        if (provider == 'link') {
+            checkitem = file.url;
+        }
+        var ext = '.' + checkitem.split('.').pop();
+
+        var flexible_viewers = ['built-in', 'browser', 'microsoft'];
+        $.each(flexible_viewers, function(i, value) {
+            $("#new-provider option[value='" + value + "']").attr({
+                'disabled': false,
+                'hidden': false
+            });
+        });
+        $('.ead-browser-viewer-note').hide();
+
+        if ($.inArray(provider, cprovider) !== -1) {
+            if ($.inArray(ext, validext) === -1) {
                 newprovider = "google";
                 $("#new-provider option[value='google']").attr("selected", "selected");
-                $("#new-provider  option[value='microsoft']").attr('disabled', true);
+                $("#new-provider option[value='microsoft']").attr({
+                    'disabled': true,
+                    'hidden': true
+                });
             } else {
                 newprovider = "microsoft";
                 $("#new-provider option[value='microsoft']").attr("selected", "selected");
+            }
+
+            // Hide the Browser viewer and built-in viewer if the extension is not pdf and also if the provider is not in the supported providers list.
+            if (ext !== '.pdf'){
+                $("#new-provider option[value='browser']").attr({
+                    'disabled': true,
+                    'hidden': true
+                });
+            }
+
+            if (ext !== '.pdf' || (provider === 'link' && checkitem.indexOf(emebeder.site_url) === -1)) {
+                $("#new-provider option[value='built-in']").attr({
+                    'disabled': true,
+                    'hidden': true
+                });
             }
         }
     }

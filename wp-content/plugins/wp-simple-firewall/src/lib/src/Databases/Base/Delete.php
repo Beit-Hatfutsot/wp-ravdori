@@ -2,7 +2,34 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Databases\Base;
 
+use FernleafSystems\Wordpress\Services\Services;
+
 class Delete extends BaseQuery {
+
+	private $isSoftDelete = false;
+
+	/**
+	 * @return bool
+	 */
+	public function query() {
+		if ( $this->isSoftDelete && $this->getDbH()->getTableSchema()->hasColumn( 'deleted_at' ) ) {
+
+			$updateWheres = [];
+			foreach ( $this->getRawWheres() as $where ) {
+				$updateWheres[ $where[ 0 ] ] = $where[ 2 ];
+			}
+
+			$success = $this->getDbH()
+							->getQueryUpdater()
+							->setUpdateWheres( $updateWheres )
+							->setUpdateData( [ 'deleted_at' => Services::Request()->ts(), ] )
+							->query();
+		}
+		else {
+			$success = parent::query();
+		}
+		return $success;
+	}
 
 	/**
 	 * @return bool
@@ -12,13 +39,12 @@ class Delete extends BaseQuery {
 	}
 
 	/**
-	 * @param int $nId
+	 * @param int $id
 	 * @return bool
 	 */
-	public function deleteById( $nId ) {
+	public function deleteById( $id ) {
 		return $this->reset()
-					->addWhereEquals( 'id', (int)$nId )
-					->setLimit( 1 )//perhaps an unnecessary precaution
+					->addWhereEquals( 'id', (int)$id )
 					->query();
 	}
 
@@ -32,14 +58,14 @@ class Delete extends BaseQuery {
 
 	/**
 	 * NOTE: Does not reset() before query, so may be customized with where.
-	 * @param int    $nMaxEntries
-	 * @param string $sSortColumn
+	 * @param int    $maxEntries
+	 * @param string $orderByColumn
 	 * @param bool   $bOldestFirst
 	 * @return int
 	 * @throws \Exception
 	 */
-	public function deleteExcess( $nMaxEntries, $sSortColumn = 'created_at', $bOldestFirst = true ) {
-		if ( is_null( $nMaxEntries ) ) {
+	public function deleteExcess( $maxEntries, $orderByColumn = 'created_at', $bOldestFirst = true ) {
+		if ( is_null( $maxEntries ) ) {
 			throw new \Exception( 'Max Entries not specified for table excess delete.' );
 		}
 
@@ -48,12 +74,12 @@ class Delete extends BaseQuery {
 		// The same WHEREs should apply
 		$nTotal = $this->getDbH()
 					   ->getQuerySelector()
-					   ->setWheres( $this->getWheres() )
+					   ->setRawWheres( $this->getRawWheres() )
 					   ->count();
-		$nToDelete = $nTotal - $nMaxEntries;
+		$nToDelete = $nTotal - $maxEntries;
 
 		if ( $nToDelete > 0 ) {
-			$nEntriesDeleted = $this->setOrderBy( $sSortColumn, $bOldestFirst ? 'ASC' : 'DESC' )
+			$nEntriesDeleted = $this->setOrderBy( $orderByColumn, $bOldestFirst ? 'ASC' : 'DESC' )
 									->setLimit( $nToDelete )
 									->query();
 		}
@@ -71,5 +97,15 @@ class Delete extends BaseQuery {
 	 */
 	protected function buildOffsetPhrase() {
 		return '';
+	}
+
+	public function setIsHardDelete() {
+		$this->isSoftDelete = false;
+		return $this;
+	}
+
+	public function setIsSoftDelete() {
+		$this->isSoftDelete = true;
+		return $this;
 	}
 }

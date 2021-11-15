@@ -2,34 +2,31 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\ShieldNetApi\FileLocker;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\ShieldNetApi\Common\BaseShieldNetApi;
 use FernleafSystems\Wordpress\Services\Utilities\Encrypt\OpenSslEncryptVo;
 
 class DecryptFile extends BaseShieldNetApi {
 
-	use ModConsumer;
 	const API_ACTION = 'filelocker/decrypt';
 
 	/**
-	 * @param OpenSslEncryptVo $oOpenSslVO
-	 * @param int              $nPublicKeyId
-	 * @return string|null
+	 * @param int $publicKeyId
 	 */
-	public function retrieve( OpenSslEncryptVo $oOpenSslVO, $nPublicKeyId ) {
-		$sContent = null;
+	public function retrieve( OpenSslEncryptVo $openSslVO, $publicKeyId ) :string {
+		$content = null;
 
 		$this->request_method = 'post';
 		$this->params_body = [
-			'key_id'      => $nPublicKeyId,
-			'sealed_data' => $oOpenSslVO->sealed_data,
-			'sealed_pass' => $oOpenSslVO->sealed_password,
+			'key_id'      => $publicKeyId,
+			'sealed_data' => $openSslVO->sealed_data,
+			'sealed_pass' => $openSslVO->sealed_password,
+			'cipher'      => $openSslVO->cipher,
 		];
 
-		$aRaw = $this->sendReq();
-		if ( is_array( $aRaw ) && !empty( $aRaw[ 'data' ] ) ) {
-			$sContent = base64_decode( $aRaw[ 'data' ][ 'opened_data' ] );
+		$raw = $this->sendReq();
+		if ( is_array( $raw ) && !empty( $raw[ 'data' ] ) ) {
+			$content = base64_decode( $raw[ 'data' ][ 'opened_data' ] );
 		}
-		return $sContent;
+		return (string)$content;
 	}
 }

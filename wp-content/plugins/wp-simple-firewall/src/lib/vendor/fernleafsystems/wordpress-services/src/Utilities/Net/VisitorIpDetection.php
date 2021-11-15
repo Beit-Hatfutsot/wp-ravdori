@@ -49,14 +49,12 @@ class VisitorIpDetection extends BaseIP {
 
 	public function getIPIdentity() :string {
 		if ( empty( $this->identity ) ) {
-			$this->identity = IpIdentify::UNKNOWN;
+			$this->identity = IpID::UNKNOWN;
 			if ( !empty( $this->getIP() ) ) {
 				try {
-					$this->identity = key(
-						( new IpIdentify( $this->getIP(), Services::Request()->getUserAgent() ) )->run()
-					);
-					if ( $this->identity === IpIdentify::VISITOR ) {
-						$this->identity = IpIdentify::UNKNOWN;
+					$this->identity = ( new IpID( $this->getIP(), Services::Request()->getUserAgent() ) )->run()[ 0 ];
+					if ( $this->identity === IpID::VISITOR ) {
+						$this->identity = IpID::UNKNOWN;
 					}
 				}
 				catch ( \Exception $e ) {

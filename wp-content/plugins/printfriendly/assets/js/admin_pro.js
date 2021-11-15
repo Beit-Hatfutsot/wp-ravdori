@@ -1,4 +1,4 @@
-(function ($) {
+(function ($, pf_config) {
 
     $(document).ready(function($) {
       $.fn.valid = function() {
@@ -48,7 +48,7 @@
 
       function checkStatus() {
         if ($email.valid() && $domain.valid()) {
-          showLoading(config.i10n.check_status);
+          showLoading(pf_config.i10n.check_status);
           $.getJSON(API + '/status', { domain: $domain.val() })
             .done(handleResponse)
             .fail(handleError)
@@ -58,7 +58,7 @@
 
       function activate() {
         if ($email.valid() && $domain.valid()) {
-          showLoading(config.i10n.activation);
+          showLoading(pf_config.i10n.activation);
           $.post(API, { email: $email.val(), domain: $domain.val() })
             .done(handleResponse)
             .fail(handleError)
@@ -94,7 +94,7 @@
             message = + ', ' + error;
           }
 
-          message += '. ' + config.i10n.connection;
+          message += '. ' + pf_config.i10n.connection;
         }
 
         $communicationErrorMessage.html(message);
@@ -123,25 +123,25 @@
           case 'none':
             $activate.show();
             $pro.addClass('pf-notice-warning');
-            $statusHeader.text(config.i10n.activate).addClass('pf-text-warning');
+            $statusHeader.text(pf_config.i10n.activate).addClass('pf-text-warning');
             $('.password_protected_yes').attr('data-sub-status', 'none');
             break;
           case 'trial':
             $buy.show();
             $pro.addClass('pf-notice-success');
-            $statusHeader.text(config.i10n.active_trial).addClass('pf-text-success');
+            $statusHeader.text(pf_config.i10n.active_trial).addClass('pf-text-success');
             $('.password_protected_yes').attr('data-sub-status', 'trial');
             break;
           case 'pro':
             $details.show();
             $pro.addClass('pf-notice-success');
-            $statusHeader.text(config.i10n.active).addClass('pf-text-success');
+            $statusHeader.text(pf_config.i10n.active).addClass('pf-text-success');
             $('.password_protected_yes').attr('data-sub-status', 'pro');
             break;
           case 'expired':
             $buy.show();
             $pro.addClass('pf-notice-error');
-            $statusHeader.text(config.i10n.expired).addClass('pf-text-error');
+            $statusHeader.text(pf_config.i10n.expired).addClass('pf-text-error');
             $('.password_protected_yes').attr('data-sub-status', 'expired');
             break;
         }
@@ -156,4 +156,4 @@
       }
     });
 
-})(jQuery, config);
+})(jQuery, pf_config);

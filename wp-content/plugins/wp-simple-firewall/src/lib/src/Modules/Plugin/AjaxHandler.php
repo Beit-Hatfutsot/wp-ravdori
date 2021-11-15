@@ -3,6 +3,7 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin;
 
 use FernleafSystems\Wordpress\Plugin\Shield;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Lib\Request\FormParams;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\Net\FindSourceFromIp;
@@ -12,76 +13,69 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 	protected function processAjaxAction( string $action ) :array {
 		switch ( $action ) {
 			case 'bulk_action':
-				$aResponse = $this->ajaxExec_BulkItemAction();
+				$response = $this->ajaxExec_BulkItemAction();
 				break;
 
 			case 'delete_forceoff':
-				$aResponse = $this->ajaxExec_DeleteForceOff();
+				$response = $this->ajaxExec_DeleteForceOff();
 				break;
 
 			case 'render_table_adminnotes':
-				$aResponse = $this->ajaxExec_RenderTableAdminNotes();
+				$response = $this->ajaxExec_RenderTableAdminNotes();
 				break;
 
 			case 'note_delete':
-				$aResponse = $this->ajaxExec_AdminNotesDelete();
+				$response = $this->ajaxExec_AdminNotesDelete();
 				break;
 
 			case 'note_insert':
-				$aResponse = $this->ajaxExec_AdminNotesInsert();
+				$response = $this->ajaxExec_AdminNotesInsert();
 				break;
 
 			case 'import_from_site':
-				$aResponse = $this->ajaxExec_ImportFromSite();
+				$response = $this->ajaxExec_ImportFromSite();
 				break;
 
 			case 'plugin_badge_close':
-				$aResponse = $this->ajaxExec_PluginBadgeClose();
+				$response = $this->ajaxExec_PluginBadgeClose();
 				break;
 
 			case 'set_plugin_tracking':
-				$aResponse = $this->ajaxExec_SetPluginTrackingPerm();
-				break;
-
-			case 'send_deactivate_survey':
-				$aResponse = $this->ajaxExec_SendDeactivateSurvey();
+				$response = $this->ajaxExec_SetPluginTrackingPerm();
 				break;
 
 			case 'sgoptimizer_turnoff':
-				$aResponse = $this->ajaxExec_TurnOffSiteGroundOptions();
+				$response = $this->ajaxExec_TurnOffSiteGroundOptions();
 				break;
 
 			case 'ipdetect':
-				$aResponse = $this->ajaxExec_IpDetect();
+				$response = $this->ajaxExec_IpDetect();
 				break;
 
 			case 'mark_tour_finished':
-				$aResponse = $this->ajaxExec_MarkTourFinished();
+				$response = $this->ajaxExec_MarkTourFinished();
 				break;
 
+			case 'wizard_step':
+				$response = $this->ajaxExec_Wizard();
+				break;
 			default:
-				$aResponse = parent::processAjaxAction( $action );
+				$response = parent::processAjaxAction( $action );
 		}
 
-		return $aResponse;
+		return $response;
 	}
 
-	private function ajaxExec_SendDeactivateSurvey() :array {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-		$results = [];
-		foreach ( $_POST as $sKey => $sValue ) {
-			if ( strpos( $sKey, 'reason_' ) === 0 ) {
-				$results[] = str_replace( 'reason_', '', $sKey ).': '.$sValue;
-			}
-		}
-		$mod->getEmailProcessor()
-			->send(
-				$mod->getSurveyEmail(),
-				'Shield Deactivation Survey',
-				implode( "\n<br/>", $results )
-			);
-		return [ 'success' => true ];
+	private function ajaxExec_Wizard() {
+		$params = FormParams::Retrieve();
+		// step will be step1, step2 etc.
+		$currentStep = intval( str_replace( 'step', '', $params[ 'step' ] ) );
+		$data = $params[ $params[ 'step' ] ];
+		return [
+			'success' => true,
+			'message' => $currentStep < 3 ? $data : 'done done done',
+			'next'    => $currentStep < 3 ? 'step'.++$currentStep : 'done',
+		];
 	}
 
 	private function ajaxExec_PluginBadgeClose() :array {
@@ -115,7 +109,7 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 			$success = false;
 			$msg = __( 'No items selected.', 'wp-simple-firewall' );
 		}
-		elseif ( !in_array( $req->post( 'bulk_action' ), [ 'delete' ] ) ) {
+		elseif ( $req->post( 'bulk_action' ) != 'delete' ) {
 			$msg = __( 'Not a supported action.', 'wp-simple-firewall' );
 		}
 		else {
@@ -193,22 +187,22 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 
 	private function ajaxExec_ImportFromSite() :array {
 		$success = false;
-		$aFormParams = array_merge(
+		$formParams = array_merge(
 			[
 				'confirm' => 'N'
 			],
-			$this->getAjaxFormParams()
+			FormParams::Retrieve()
 		);
 
 		// TODO: align with wizard AND combine with file upload errors
-		if ( $aFormParams[ 'confirm' ] !== 'Y' ) {
+		if ( $formParams[ 'confirm' ] !== 'Y' ) {
 			$msg = __( 'Please check the box to confirm your intent to overwrite settings', 'wp-simple-firewall' );
 		}
 		else {
-			$sMasterSiteUrl = $aFormParams[ 'MasterSiteUrl' ];
-			$sSecretKey = $aFormParams[ 'MasterSiteSecretKey' ];
-			$bEnabledNetwork = $aFormParams[ 'ShieldNetwork' ] === 'Y';
-			$bDisableNetwork = $aFormParams[ 'ShieldNetwork' ] === 'N';
+			$sMasterSiteUrl = $formParams[ 'MasterSiteUrl' ];
+			$sSecretKey = $formParams[ 'MasterSiteSecretKey' ];
+			$bEnabledNetwork = $formParams[ 'ShieldNetwork' ] === 'Y';
+			$bDisableNetwork = $formParams[ 'ShieldNetwork' ] === 'N';
 			$bNetwork = $bEnabledNetwork ? true : ( $bDisableNetwork ? false : null );
 
 			/** @var Shield\Databases\AdminNotes\Insert $oInserter */
@@ -234,19 +228,19 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 		$success = false;
-		$aFormParams = $this->getAjaxFormParams();
+		$formParams = FormParams::Retrieve();
 
-		$sNote = isset( $aFormParams[ 'admin_note' ] ) ? $aFormParams[ 'admin_note' ] : '';
+		$note = trim( $formParams[ 'admin_note' ] ?? '' );
 		if ( !$mod->getCanAdminNotes() ) {
 			$msg = __( "Sorry, the Admin Notes feature isn't available.", 'wp-simple-firewall' );
 		}
-		elseif ( empty( $sNote ) ) {
+		elseif ( empty( $note ) ) {
 			$msg = __( 'Sorry, but it appears your note was empty.', 'wp-simple-firewall' );
 		}
 		else {
-			/** @var Shield\Databases\AdminNotes\Insert $oInserter */
-			$oInserter = $mod->getDbHandler_Notes()->getQueryInserter();
-			$success = $oInserter->create( $sNote );
+			/** @var Shield\Databases\AdminNotes\Insert $inserter */
+			$inserter = $mod->getDbHandler_Notes()->getQueryInserter();
+			$success = $inserter->create( $note );
 			$msg = $success ? __( 'Note created successfully.', 'wp-simple-firewall' ) : __( 'Note could not be created.', 'wp-simple-firewall' );
 		}
 		return [

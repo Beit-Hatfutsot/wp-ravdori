@@ -22,16 +22,16 @@ class ModCon extends BaseShield\ModCon {
 		/** @var Options $opts */
 		$opts = $this->getOptions();
 
-		$sStyle = $opts->getOpt( 'google_recaptcha_style_comments' );
+		$style = $opts->getOpt( 'google_recaptcha_style_comments' );
 		if ( $this->isPremium() ) {
-			$oCfg = $this->getCaptchaCfg();
-			if ( $oCfg->provider == $oCfg::PROV_GOOGLE_RECAP2 ) {
-				if ( !$oCfg->invisible && $sStyle == 'invisible' ) {
+			$cfg = $this->getCaptchaCfg();
+			if ( $cfg->provider == $cfg::PROV_GOOGLE_RECAP2 ) {
+				if ( !$cfg->invisible && $style == 'invisible' ) {
 					$opts->setOpt( 'google_recaptcha_style_comments', 'default' );
 				}
 			}
 		}
-		elseif ( !in_array( $sStyle, [ 'disabled', 'default' ] ) ) {
+		elseif ( !in_array( $style, [ 'disabled', 'default' ] ) ) {
 			$opts->setOpt( 'google_recaptcha_style_comments', 'default' );
 		}
 	}
@@ -73,6 +73,11 @@ class ModCon extends BaseShield\ModCon {
 		);
 
 		$this->ensureCorrectCaptchaConfig();
+
+		if ( $opts->isEnabledAntiBot() ) {
+			$opts->setOpt( 'google_recaptcha_style_comments', 'disabled' );
+			$opts->setOpt( 'enable_comments_gasp_protection', 'N' );
+		}
 	}
 
 	public function isEnabledCaptcha() :bool {
@@ -82,14 +87,11 @@ class ModCon extends BaseShield\ModCon {
 			   && $this->getCaptchaCfg()->ready;
 	}
 
-	public function setEnabledGasp( bool $enabled = true ) {
-		$this->getOptions()->setOpt( 'enable_comments_gasp_protection', $enabled ? 'Y' : 'N' );
+	public function setEnabledAntiBot( bool $enabled = true ) {
+		$this->getOptions()->setOpt( 'enable_antibot_check', $enabled ? 'Y' : 'N' );
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSpamBlacklistFile() {
-		return $this->getCon()->getPluginCachePath( 'spamblacklist.txt' );
+	public function getSpamBlacklistFile() :string {
+		return $this->getCon()->paths->forCacheItem( 'spamblacklist.txt' );
 	}
 }

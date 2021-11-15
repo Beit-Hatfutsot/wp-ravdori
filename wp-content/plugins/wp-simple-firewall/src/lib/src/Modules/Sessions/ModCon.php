@@ -22,7 +22,7 @@ class ModCon extends BaseShield\ModCon {
 	}
 
 	public function getDbHandler_Sessions() :Databases\Session\Handler {
-		return $this->getDbH( 'session' );
+		return $this->getDbH( 'sessions' );
 	}
 
 	public function isAutoAddSessions() :bool {

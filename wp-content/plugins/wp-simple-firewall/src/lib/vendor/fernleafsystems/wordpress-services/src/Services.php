@@ -331,6 +331,11 @@ class Services {
 		return self::getObj( __FUNCTION__ );
 	}
 
+	public static function DataDir( string $path = '' ) :string {
+		$dir = path_join( __DIR__, 'Data' );
+		return empty( $path ) ? $dir : path_join( $dir, $path );
+	}
+
 	protected static function getObj( $sKeyFunction ) {
 		$sFullKey = 'service_'.strtolower( $sKeyFunction );
 		if ( !is_array( self::$aItems ) ) {

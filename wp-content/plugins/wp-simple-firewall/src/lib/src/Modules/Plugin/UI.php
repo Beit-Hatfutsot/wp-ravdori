@@ -38,28 +38,56 @@ class UI extends BaseShield\UI {
 		];
 	}
 
+	public function buildInsightsVars_Wizard( $wizard, $step ) :array {
+		$data = [];
+		switch ( $wizard ) {
+			case 'welcome':
+				$data = [
+					'steps'       => [
+						'step1' => 'content for step1',
+						'step2' => 'content for step2',
+						'step3' => 'content for step3',
+					],
+					'currentStep' => 'step'.$step,
+					'ajax'        => [
+						'wizard_step' => $this->getMod()->getAjaxActionData( 'wizard_step', true ),
+					],
+					'strings'     => [
+						'hohoho' => sprintf( __( '%s %s Page' ), $wizard, $this->getCon()->getHumanName() ),
+					],
+					'showSideNav' => 0,
+				];
+				break;
+			default:
+				break;
+		}
+
+		return $data;
+	}
+
 	/**
-	 * @param array $aOptParams
+	 * @param array $option
 	 * @return array
 	 */
-	protected function buildOptionForUi( $aOptParams ) {
-		$aOptParams = parent::buildOptionForUi( $aOptParams );
-		if ( $aOptParams[ 'key' ] === 'visitor_address_source' ) {
-			$aNewOptions = [];
-			$oIPDet = Services::IP()->getIpDetector();
-			foreach ( $aOptParams[ 'value_options' ] as $sValKey => $sSource ) {
-				if ( $sValKey == 'AUTO_DETECT_IP' ) {
-					$aNewOptions[ $sValKey ] = $sSource;
+	protected function buildOptionForUi( $option ) {
+		$option = parent::buildOptionForUi( $option );
+		if ( $option[ 'key' ] === 'visitor_address_source' ) {
+			$newOptions = [];
+			$ipDetector = Services::IP()->getIpDetector();
+			foreach ( $option[ 'value_options' ] as $valKey => $source ) {
+				if ( $valKey == 'AUTO_DETECT_IP' ) {
+					$newOptions[ $valKey ] = $source;
 				}
 				else {
-					$sIPs = implode( ', ', $oIPDet->getIpsFromSource( $sSource ) );
-					$aNewOptions[ $sValKey ] = sprintf( '%s (%s)',
-						$sSource, empty( $sIPs ) ? '-' : $sIPs );
+					$IPs = implode( ', ', $ipDetector->getIpsFromSource( $source ) );
+					if ( !empty( $IPs ) ) {
+						$newOptions[ $valKey ] = sprintf( '%s (%s)', $source, $IPs );
+					}
 				}
 			}
-			$aOptParams[ 'value_options' ] = $aNewOptions;
+			$option[ 'value_options' ] = $newOptions;
 		}
-		return $aOptParams;
+		return $option;
 	}
 
 	protected function getSectionWarnings( string $section ) :array {
@@ -77,25 +105,13 @@ class UI extends BaseShield\UI {
 							->checkAll();
 					}
 					if ( $opts->getOpt( 'captcha_checked_at' ) == 0 ) {
-						$warnings[] = sprintf(
-							__( "Your captcha key and secret haven't been verified.", 'wp-simple-firewall' ).' '
-							.__( "Please double-check and make sure you haven't mixed them about, and then re-save.", 'wp-simple-firewall' )
-						);
+						$warnings[] = __( "Your captcha key and secret haven't been verified.", 'wp-simple-firewall' ).' '
+									  .__( "Please double-check and make sure you haven't mixed them about, and then re-save.", 'wp-simple-firewall' );
 					}
 				}
 				break;
 		}
 
 		return $warnings;
-	}
-
-	protected function getSettingsRelatedLinks() :array {
-		$modInsights = $this->getCon()->getModule_Insights();
-		return [
-			[
-				'href'  => $modInsights->getUrl_SubInsightsPage( 'importexport' ),
-				'title' => __( 'Run Import/Export', 'wp-simple-firewall' ),
-			]
-		];
 	}
 }

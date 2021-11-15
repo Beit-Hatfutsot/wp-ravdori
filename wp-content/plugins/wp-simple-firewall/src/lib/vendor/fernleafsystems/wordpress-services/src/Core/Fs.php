@@ -239,45 +239,37 @@ class Fs {
 		);
 	}
 
-	/**
-	 * @param string $sFilePath
-	 * @return int|null
-	 */
-	public function getModifiedTime( $sFilePath ) {
-		return $this->getTime( $sFilePath, 'modified' );
+	public function getModifiedTime( string $path ) :int {
+		$FS = $this->getWpfs();
+		return (int)( $FS ? $FS->mtime( $path ) : @filemtime( $path ) );
+	}
+
+	public function getAccessedTime( string $path ) :int {
+		$FS = $this->getWpfs();
+		return (int)( $FS ? $FS->atime( $path ) : @fileatime( $path ) );
 	}
 
 	/**
-	 * @param string $sFilePath
+	 * @param string $path
+	 * @param string $property
 	 * @return int|null
+	 * @deprecated
 	 */
-	public function getAccessedTime( $sFilePath ) {
-		return $this->getTime( $sFilePath, 'accessed' );
-	}
+	public function getTime( $path, $property = 'modified' ) {
 
-	/**
-	 * @param string $sFilePath
-	 * @param string $sProperty
-	 * @return int|null
-	 */
-	public function getTime( $sFilePath, $sProperty = 'modified' ) {
-
-		if ( !$this->exists( $sFilePath ) ) {
+		if ( !$this->exists( $path ) ) {
 			return null;
 		}
 
-		$oFs = $this->getWpfs();
-		switch ( $sProperty ) {
+		$FS = $this->getWpfs();
+		switch ( $property ) {
 
 			case 'modified' :
-				return $oFs ? $oFs->mtime( $sFilePath ) : filemtime( $sFilePath );
-				break;
+				return $FS ? $FS->mtime( $path ) : filemtime( $path );
 			case 'accessed' :
-				return $oFs ? $oFs->atime( $sFilePath ) : fileatime( $sFilePath );
-				break;
+				return $FS ? $FS->atime( $path ) : fileatime( $path );
 			default:
 				return null;
-				break;
 		}
 	}
 
@@ -308,21 +300,21 @@ class Fs {
 	 * @return string|null
 	 */
 	public function getFileContent( $sFilePath, $bIsCompressed = false ) {
-		$sContents = null;
-		$oFs = $this->getWpfs();
-		if ( $oFs ) {
-			$sContents = $oFs->get_contents( $sFilePath );
+		$contents = null;
+		$FS = $this->getWpfs();
+		if ( $FS ) {
+			$contents = $FS->get_contents( $sFilePath );
 		}
 
-		if ( empty( $sContents ) && function_exists( 'file_get_contents' ) ) {
-			$sContents = file_get_contents( $sFilePath );
+		if ( empty( $contents ) && function_exists( 'file_get_contents' ) ) {
+			$contents = file_get_contents( $sFilePath );
 		}
 
-		if ( !empty( $sContents ) && $bIsCompressed && function_exists( 'gzinflate' ) ) {
-			$sContents = gzinflate( $sContents );
+		if ( !empty( $contents ) && $bIsCompressed && function_exists( 'gzinflate' ) ) {
+			$contents = gzinflate( $contents );
 		}
 
-		return $sContents;
+		return $contents;
 	}
 
 	/**
@@ -476,7 +468,7 @@ class Fs {
 
 	public function isFile( $path ) :bool {
 		return ( $this->hasWpfs() && $this->getWpfs()->is_file( $path ) )
-			   || ( function_exists( 'is_file' ) ? is_file( $path ) : false );
+			   || ( function_exists( 'is_file' ) && is_file( $path ) );
 	}
 
 	public function isFilesystemAccessDirect() :bool {
@@ -493,15 +485,18 @@ class Fs {
 
 	/**
 	 * @param string $path
-	 * @param int    $nTime
+	 * @param int    $time
 	 * @return bool|mixed
 	 */
-	public function touch( $path, $nTime = null ) {
-		$oFs = $this->getWpfs();
-		if ( $oFs && $oFs->touch( $path, $nTime ) ) {
+	public function touch( $path, $time = null ) {
+		$FS = $this->getWpfs();
+		if ( empty( $time ) ) {
+			$time = time();
+		}
+		if ( $FS && $FS->touch( $path, $time ) ) {
 			return true;
 		}
-		return function_exists( 'touch' ) ? @touch( $path, $nTime ) : null;
+		return function_exists( 'touch' ) && @touch( $path, $time );
 	}
 
 	/**

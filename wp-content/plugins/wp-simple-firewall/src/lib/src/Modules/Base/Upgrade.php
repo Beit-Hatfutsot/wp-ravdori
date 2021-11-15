@@ -1,13 +1,10 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Base;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 
-class Upgrade {
-
-	use ModConsumer;
-	use \FernleafSystems\Utilities\Logic\OneTimeExecute;
+class Upgrade extends ExecOnceModConsumer {
 
 	protected function run() {
 		$this->upgradeModule();

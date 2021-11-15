@@ -5,7 +5,6 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Utiliti
 use FernleafSystems\Utilities\Logic\ExecOnce;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Controller;
-use FernleafSystems\Wordpress\Services\Core\VOs\WpPluginVo;
 use FernleafSystems\Wordpress\Services\Services;
 
 class PtgAddReinstallLinks {
@@ -13,15 +12,12 @@ class PtgAddReinstallLinks {
 	use Controller\ScanControllerConsumer;
 	use ExecOnce;
 
-	/**
-	 * @var int
-	 */
-	private $nColumnsCount;
-
-	/**
-	 * @var int
-	 */
-	private $vulnCount;
+	protected function canRun() :bool {
+		$scanCon = $this->getScanController();
+		/** @var HackGuard\Options $opts */
+		$opts = $scanCon->getOptions();
+		return $scanCon->isReady() && $opts->isPtgReinstallLinks();
+	}
 
 	protected function run() {
 		add_action( 'plugin_action_links', function ( $links, $file ) {
@@ -58,18 +54,12 @@ class PtgAddReinstallLinks {
 		}, 10, 2 );
 	}
 
-	protected function canRun() :bool {
-		$scanCon = $this->getScanController();
-		/** @var HackGuard\Options $opts */
-		$opts = $scanCon->getOptions();
-		return $scanCon->isReady() && $opts->isPtgReinstallLinks();
-	}
-
 	private function addActionLinkRefresh( array $links, string $file ) :array {
 		$WPP = Services::WpPlugins();
 
 		$plugin = $WPP->getPluginAsVo( $file );
-		if ( $plugin instanceof WpPluginVo && $plugin->isWpOrg() && !$WPP->isUpdateAvailable( $file ) ) {
+		if ( $plugin->asset_type === 'plugin'
+			 && $plugin->isWpOrg() && !$WPP->isUpdateAvailable( $file ) ) {
 			$template = '<a href="javascript:void(0)">%s</a>';
 			$links[ 'icwp-reinstall' ] = sprintf( $template, __( 'Re-Install', 'wp-simple-firewall' ) );
 		}

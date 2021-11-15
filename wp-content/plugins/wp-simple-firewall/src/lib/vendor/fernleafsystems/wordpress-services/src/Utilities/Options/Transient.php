@@ -33,13 +33,13 @@ class Transient {
 	public static function Get( $key, $default = null, $ignoreWPMS = true ) {
 		$mVal = null;
 
-		$oWP = Services::WpGeneral();
+		$WP = Services::WpGeneral();
 
-		if ( $oWP->canUseTransients() ) {
-			$mVal = $oWP->getTransient( $key );
+		if ( $WP->canUseTransients() ) {
+			$mVal = $WP->getTransient( $key );
 		}
 		else {
-			$aData = $oWP->getOption( System::PREFIX.'trans_'.$key, null, $ignoreWPMS );
+			$aData = $WP->getOption( System::PREFIX.'trans_'.$key, null, $ignoreWPMS );
 			if ( !empty( $aData ) && is_array( $aData ) && isset( $aData[ 'data' ] )
 				 && isset( $aData[ 'expires_at' ] ) ) {
 				if ( $aData[ 'expires_at' ] === 0 || Services::Request()->ts() < $aData[ 'expires_at' ] ) {

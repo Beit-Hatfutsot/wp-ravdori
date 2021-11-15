@@ -3,7 +3,10 @@
 namespace FernleafSystems\Wordpress\Services\Utilities;
 
 use FernleafSystems\Wordpress\Services\Services;
-use FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Services\IPs;
+use FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Services\{
+	IPs,
+	ProviderIPs
+};
 use FernleafSystems\Wordpress\Services\Utilities\Options\Transient;
 
 /**
@@ -11,6 +14,66 @@ use FernleafSystems\Wordpress\Services\Utilities\Options\Transient;
  * @package FernleafSystems\Wordpress\Services\Utilities
  */
 class ServiceProviders {
+
+	/**
+	 * @return array[][]
+	 */
+	public static function GetProviderIPs() :array {
+		$IPs = Transient::Get( 'apto_provider_ips' );
+		if ( empty( $IPs ) || !is_array( $IPs ) ) {
+			$IPs = ( new ProviderIPs() )->getIPs();
+			if ( empty( $IPs ) ) { // fallback
+				$raw = Services::Data()->readFileWithInclude( Services::DataDir( 'service_providers.json' ) );
+				if ( !empty( $raw ) ) {
+					$IPs = json_decode( $raw, true );
+				}
+			}
+			Transient::Set( 'apto_provider_ips', $IPs, DAY_IN_SECONDS );
+		}
+		return is_array( $IPs ) ? $IPs : [];
+	}
+
+	public function getProviderInfo( string $providerSlug ) :array {
+		$info = [];
+		foreach ( ServiceProviders::GetProviderIPs() as $category ) {
+			foreach ( $category as $slug => $provider ) {
+				if ( $providerSlug === $slug ) {
+					$info = $provider;
+					break;
+				}
+			}
+		}
+		return $info;
+	}
+
+	public function getProviderName( string $providerSlug ) :string {
+		$info = $this->getProviderInfo( $providerSlug );
+		return empty( $info ) ? 'Unknown' : $info[ 'name' ];
+	}
+
+	public function getProvidersOfType( string $type ) :array {
+		$providers = [];
+		foreach ( ServiceProviders::GetProviderIPs() as $category ) {
+			foreach ( $category as $slug => $provider ) {
+				if ( isset( $provider[ 'type' ] ) && in_array( $type, $provider[ 'type' ] ) ) {
+					$providers[] = $slug;
+				}
+			}
+		}
+		return $providers;
+	}
+
+	public function getSearchProviders() :array {
+		return $this->getProvidersOfType( 'search' );
+	}
+
+	public function getUptimeProviders() :array {
+		return $this->getProvidersOfType( 'uptime' );
+	}
+
+	public function getWpSiteManagementProviders() :array {
+		return $this->getProvidersOfType( 'wp_site_management' );
+	}
 
 	/**
 	 * @return string[]
@@ -258,13 +321,13 @@ class ServiceProviders {
 
 	/**
 	 * @param string     $ip
-	 * @param string[][] $set
+	 * @param string[][] $collection
 	 * @return bool
 	 */
-	public function isIpInCollection( $ip, array $set ) :bool {
+	public function isIpInCollection( $ip, array $collection ) :bool {
 		try {
 			$version = Services::IP()->getIpVersion( $ip );
-			$exists = $version !== false && Services::IP()->checkIp( $ip, $set[ $version ] );
+			$exists = $version !== false && Services::IP()->checkIp( $ip, $collection[ $version ] );
 		}
 		catch ( \Exception $e ) {
 			$exists = false;

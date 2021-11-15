@@ -25,10 +25,7 @@ class WordPress extends Base {
 		return $this->query();
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
+	protected function getApiUrl() :string {
 		return sprintf( '%s/%s', parent::getApiUrl(), $this->getRequestVO()->version );
 	}
 

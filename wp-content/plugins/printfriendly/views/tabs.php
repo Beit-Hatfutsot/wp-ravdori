@@ -1,8 +1,8 @@
 		<div id="pf-tabs">
 			<div class="pf-bu-tabs pf-bu-is-centered">
 				<ul>
-					<li class="pf-bu-is-active"><a href="#tab-standard"><?php _e( 'Standard', 'printfriendly' ); ?></a></li>
-					<li><a href="#tab-advanced"><?php _e( 'Advanced', 'printfriendly' ); ?></a></li>
+					<li class="<?php echo $this->is_tab( 0 ) ? 'pf-bu-is-active' : ''; ?>" data-id="0"><a href="#tab-standard"><?php _e( 'Standard', 'printfriendly' ); ?></a></li>
+					<li class="<?php echo $this->is_tab( 1 ) ? 'pf-bu-is-active' : ''; ?>" data-id="1"><a href="#tab-advanced"><?php _e( 'Advanced', 'printfriendly' ); ?></a></li>
 					<?php if ( WP_DEBUG ) { ?>
 						<li><a href="#tab-debug"><?php _e( 'Debug', 'printfriendly' ); ?></a></li>
 					<?php } ?>
@@ -22,14 +22,85 @@
 						</header>
 
 						<div class="pf-bu-card-content">
-							<?php if ( class_exists( 'WooCommerce' ) ) { ?>
-							<p><?php _e( 'Not available for woocommerce', 'printfriendly' ); ?></p>
-							<?php } else { ?>
-							<select class="pf-bu-select" id="pf-algo-usage" name="<?php echo $this->option_name; ?>[pf_algo]">
-								<option value="wp" <?php $this->selected( 'pf_algo', 'wp' ); ?>> <?php _e( 'WP Template', 'printfriendly' ); ?></option>
-								<option value="pf" <?php $this->selected( 'pf_algo', 'pf' ); ?>> <?php _e( 'Content Algorithm', 'printfriendly' ); ?></option>
-							</select>
-							<?php } ?>
+							<?php
+							$disabled = $message = '';
+							if ( class_exists( 'WooCommerce' ) ) {
+								$disabled = 'disabled';
+								$message = '(' . __( 'Not available for WooCommerce', 'printfriendly' ) . ')';
+							}
+							?>
+
+							<div>
+								<div>
+									<label for="pf-algo-wp">
+										<input id="pf-algo-wp" type="radio" name="<?php echo $this->option_name; ?>[pf_algo]" value="wp" <?php echo $this->options['pf_algo'] === 'wp' ? 'checked' : ''; ?> <?php echo $disabled; ?>>
+										<?php _e( 'WP Template', 'printfriendly' ); ?> <?php echo $message; ?>
+									</label>
+								</div>
+
+								<div>
+									<label for="pf-algo-pf">
+										<input id="pf-algo-pf" type="radio" name="<?php echo $this->option_name; ?>[pf_algo]" value="pf" <?php echo $this->options['pf_algo'] === 'pf' ? 'checked' : ''; ?>>
+										<?php _e( 'Content Algorithm', 'printfriendly' ); ?>
+									</label>
+								</div>
+
+								<div>
+									<label for="pf-algo-css">
+										<input id="pf-algo-css" type="radio" name="<?php echo $this->option_name; ?>[pf_algo]" value="css" <?php echo $this->options['pf_algo'] === 'css' ? 'checked' : ''; ?>>
+										<?php _e( 'Custom CSS Selectors', 'printfriendly' ); ?>
+									</label>
+									<div class="pf-algo-usage pf-algo-usage-css" style="display: none" data-tag-template="<?php echo esc_attr( '<printfriendly-options data-selectors="#1" data-fallback-strategy="#2"></printfriendly-options>' ); ?>">
+										<div class="pf-bu-columns">
+											<div class="pf-bu-column pf-bu-one-sixth pf-algo-usage-css-fields">
+												<div>
+													<label for="pf-algo-usage-css-author"><?php _e( 'Author Selector', 'printfriendly' ); ?></label>
+													<input type="text" id="pf-algo-usage-css-author" name="<?php echo $this->option_name; ?>[css-author]" value="<?php $this->val( 'css-author' ); ?>" data-selector-name="authorSelector">
+												</div>
+												<div>
+													<label for="pf-algo-usage-css-content"><?php _e( 'Content Selector', 'printfriendly' ); ?></label>
+													<input type="text" id="pf-algo-usage-css-content" name="<?php echo $this->option_name; ?>[css-content]" value="<?php $this->val( 'css-content' ); ?>" data-selector-name="contentSelectors">
+												</div>
+												<div>
+													<label for="pf-algo-usage-css-date"><?php _e( 'Date Selector', 'printfriendly' ); ?></label>
+													<input type="text" id="pf-algo-usage-css-date" name="<?php echo $this->option_name; ?>[css-date]" value="<?php $this->val( 'css-date' ); ?>" data-selector-name="dateSelector">
+												</div>
+												<div>
+													<label for="pf-algo-usage-css-title"><?php _e( 'Title Selector', 'printfriendly' ); ?></label>
+													<input type="text" id="pf-algo-usage-css-title" name="<?php echo $this->option_name; ?>[css-title]" value="<?php $this->val( 'css-title' ); ?>" data-selector-name="titleSelector">
+												</div>
+												<div>
+													<label for="pf-algo-usage-css-image"><?php _e( 'Image Selector', 'printfriendly' ); ?></label>
+													<input type="text" id="pf-algo-usage-css-image" name="<?php echo $this->option_name; ?>[css-primaryImage]" value="<?php $this->val( 'css-primaryImage' ); ?>" data-selector-name="primaryImageSelector">
+												</div>
+											</div>
+											<div class="pf-bu-column pf-bu-one-sixth pf-algo-usage-css-strategy">
+												<label><?php _e( 'Content Fallback Strategy', 'printfriendly' ); ?></label>
+												<label>
+													<input type="radio" id="pf_algo_css_fallback_original" name="<?php echo $this->option_name; ?>[pf_algo_css_content]" value="original" <?php echo ( empty( $this->options['pf_algo_css_content'] ) || $this->options['pf_algo_css_content'] === 'original' ) ? 'checked' : ''; ?>>
+													<?php _e( 'Use existing rules to find content', 'printfriendly' ); ?>
+												</label>
+												<label>
+													<input type="radio" id="pf_algo_css_fallback_error" name="<?php echo $this->option_name; ?>[pf_algo_css_content]" value="error-message" <?php echo $this->options['pf_algo_css_content'] === 'error-message' ? 'checked' : ''; ?>>
+													<?php _e( 'Show an error message', 'printfriendly' ); ?>
+												</label>
+												<p class="description">
+												<?php _e( 'This setting can be used to configure the behaviour of the plugin, when content CSS selector does not match any content.', 'printfriendly' ); ?>
+												<br/>
+												<?php _e( 'We recommend setting this to "Use existing rules to find content" in production and to "Show an error message" in development.', 'printfriendly' ); ?></p>
+												<div class="pf-bu-mt-5"></div>
+												<div class="pf-accordion">
+													<label><?php _e( 'Show Options Code', 'printfriendly' ); ?></label>
+													<div>
+														<code class="pf-custom-css-code"><?php echo esc_html( $customCssOptionCode ); ?></code>
+														<a class="pf-clipboard pf-custom-css-code-snippet" href="javascript:;" data-clipboard-text="<?php echo esc_attr( $customCssOptionCode ); ?>"><span class="pf-bu-tag pf-bu-is-info pf-bu-is-light"><?php _e( 'Copy Code', 'printfriendly' ); ?></span></a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 
 						<div class="pf-bu-card-footer">
@@ -163,20 +234,28 @@
 							</p>
 						</header>
 
-						<div class="pf-bu-card-content">
-							<label for="pf_content_position" class="pf-bu-label"><?php _e( 'Alignment', 'printfriendly' ); ?></label>
-							<select class="pf-bu-select" id="pf_content_position" name="<?php echo $this->option_name; ?>[content_position]">
-								<option value="left" <?php selected( $this->options['content_position'], 'left' ); ?>><?php _e( 'Left Align', 'printfriendly' ); ?></option>
-								<option value="right" <?php selected( $this->options['content_position'], 'right' ); ?>><?php _e( 'Right Align', 'printfriendly' ); ?></option>
-								<option value="center" <?php selected( $this->options['content_position'], 'center' ); ?>><?php _e( 'Center', 'printfriendly' ); ?></option>
-								<option value="none" <?php selected( $this->options['content_position'], 'none' ); ?>><?php _e( 'None', 'printfriendly' ); ?></option>
-							</select>
+						<div class="pf-bu-card-content pf-features">
+							<div class="pf-label-inline">
+								<label for="pf_content_position" class="pf-bu-label"><?php _e( 'Alignment', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" id="pf_content_position" name="<?php echo $this->option_name; ?>[content_position]">
+										<option value="left" <?php selected( $this->options['content_position'], 'left' ); ?>><?php _e( 'Left Align', 'printfriendly' ); ?></option>
+										<option value="right" <?php selected( $this->options['content_position'], 'right' ); ?>><?php _e( 'Right Align', 'printfriendly' ); ?></option>
+										<option value="center" <?php selected( $this->options['content_position'], 'center' ); ?>><?php _e( 'Center', 'printfriendly' ); ?></option>
+										<option value="none" <?php selected( $this->options['content_position'], 'none' ); ?>><?php _e( 'None', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 
-							<label for="pf_content_placement" class="pf-bu-label"><?php _e( 'Placement', 'printfriendly' ); ?></label>
-							<select class="pf-bu-select" id="pf_content_placement" name="<?php echo $this->option_name; ?>[content_placement]">
-								<option value="before" <?php selected( $this->options['content_placement'], 'before' ); ?>><?php _e( 'Above Content', 'printfriendly' ); ?></option>
-								<option value="after" <?php selected( $this->options['content_placement'], 'after' ); ?>><?php _e( 'Below Content', 'printfriendly' ); ?></option>
-							</select>
+							<div class="pf-label-inline">
+								<label for="pf_content_placement" class="pf-bu-label"><?php _e( 'Placement', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" id="pf_content_placement" name="<?php echo $this->option_name; ?>[content_placement]">
+										<option value="before" <?php selected( $this->options['content_placement'], 'before' ); ?>><?php _e( 'Above Content', 'printfriendly' ); ?></option>
+										<option value="after" <?php selected( $this->options['content_placement'], 'after' ); ?>><?php _e( 'Below Content', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -211,22 +290,20 @@
 							<hr/>
 							<label for="categories" class="pf-bu-label"><?php _e( 'Specific categories to show on', 'printfriendly' ); ?></label>
 							<?php
-								$select = wp_dropdown_categories(
+								wp_dropdown_categories(
 									apply_filters(
 										'printfriendly_category_args', array(
 											'show_count'       => 0,
 											'orderby'          => 'name',
-											'echo'             => 0,
 											'hide_empty'        => false, // show a category even if it has no posts assigned
 											'class'             => 'pf-select2',
 											'name'              => 'printfriendly_option[show_on_cat]',
 											'id'                => 'show_on_cat',
 											'selected'          => isset( $this->options['show_on_cat'] ) ? $this->options['show_on_cat'] : '',
+											'multiple'          => true,
 										)
 									)
 								);
-								$select = str_replace( '<select ', '<select multiple ', $select );
-								echo $select;
 								?>
 						</div>
 
@@ -234,6 +311,42 @@
 							<p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080457-manual-button-placement-in-wordpress" target="_new"><?php _e( 'Documentation', 'printfriendly' ); ?></a></p>
 						</div>
 
+					</div>
+
+					<div class="pf-bu-block pf-bu-card">
+						<header class="pf-bu-card-header">
+							<p class="pf-bu-card-header-title">
+								<?php _e( 'Pro Exclusive Features', 'printfriendly' ); ?>
+							</p>
+						</header>
+
+						<div class="pf-bu-card-content pf-features">
+							<div class="pf-label-inline">
+								<label for="password_protected" class="pf-bu-label"><?php _e( 'Encode images', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" id="password_protected" name="<?php echo $this->option_name; ?>[password_protected]">
+										<option value="no" <?php selected( $this->val( 'password_protected', false ), 'no' ); ?>><?php _e( 'No', 'printfriendly' ); ?></option>
+										<option value="yes" <?php selected( $this->val( 'password_protected', false ), 'yes' ); ?>><?php _e( 'Yes', 'printfriendly' ); ?></option>
+									</select>
+									<p class="description"><?php _e( 'Select "Yes" if your site is not publicly accessible or if your provider blocks image requests from third parties or if images are not present in PDF', 'printfriendly' ); ?></p>
+								</div>
+							</div>
+
+							<div class="pf-label-inline">
+								<label for="show_hidden_content" class="pf-bu-label"><?php _e( 'Show Hidden Content', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" id="show_hidden_content" name="<?php echo $this->option_name; ?>[show_hidden_content]">
+										<option value="no" <?php selected( $this->val( 'show_hidden_content', false ), 'no' ); ?>><?php _e( 'No', 'printfriendly' ); ?></option>
+										<option value="yes" <?php selected( $this->val( 'show_hidden_content', false ), 'yes' ); ?>><?php _e( 'Yes', 'printfriendly' ); ?></option>
+									</select>
+									<p class="description"><?php _e( 'By default PrintFriendly Pro will only show the visible content on the page. Select "Yes", if you want PrintFriendly to show hidden content. (Ex. Content in hidden tabs)', 'printfriendly' ); ?></p>
+								</div>
+							</div>
+						</div>
+
+						<div class="pf-bu-card-footer">
+							<p class="pf-bu-card-footer-item"><?php _e( 'These features require a Pro subscription.', 'printfriendly' ); ?>&nbsp;<a href="https://www.printfriendly.com/pro" target="_blank"><?php _e( 'Learn More', 'printfriendly' ); ?></a></p>
+						</div>
 					</div>
 
 					<div class="pf-bu-container">
@@ -312,140 +425,92 @@
 						</div>
 					</div>
 
-					<!-- TODO: disable for non pro? -->
 					<div class="pf-bu-block pf-bu-card">
 						<header class="pf-bu-card-header">
 							<p class="pf-bu-card-header-title">
-								<?php _e( 'Password Protected Content', 'printfriendly' ); ?>
+								<?php _e( 'Features', 'printfriendly' ); ?>
 							</p>
 						</header>
 
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" id="password_protected" name="<?php echo $this->option_name; ?>[password_protected]">
-								<option value="no" <?php selected( $this->options['password_protected'], 'no' ); ?>><?php _e( 'No', 'printfriendly' ); ?></option>
-								<option value="yes" <?php selected( $this->options['password_protected'], 'yes' ); ?>><?php _e( 'Yes', 'printfriendly' ); ?></option>
-							</select>
-						</div>
+						<div class="pf-bu-card-content pf-features">
+							<div class="pf-label-inline">
+								<label for="pf-analytics-tracking" class="pf-bu-label"><?php _e( 'Track in Google Analytics', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" id="pf-analytics-tracking" name="<?php echo $this->option_name; ?>[enable_google_analytics]">
+										<option value="yes" <?php $this->selected( 'enable_google_analytics', 'yes' ); ?>> <?php _e( 'Yes', 'printfriendly' ); ?></option>
+										<option value="no" <?php $this->selected( 'enable_google_analytics', 'no' ); ?>> <?php _e( 'No', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 
-						<div class="pf-bu-card-footer">
-							<p class="pf-bu-card-footer-item"><?php _e( 'This feature requires a Pro subscription.', 'printfriendly' ); ?>&nbsp;<a href="https://www.printfriendly.com/pro" target="_blank"><?php _e( 'Learn More', 'printfriendly' ); ?></a></p>
-						</div>
-					</div>
+							<div class="pf-label-inline">
+								<label for="click-to-delete" class="pf-bu-label"><?php _e( 'Click to delete', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[click_to_delete]" id="click-to-delete">
+										<option value="0" <?php selected( $this->options['click_to_delete'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
+										<option value="1" <?php selected( $this->options['click_to_delete'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
+									</select>
+									<p class="description"><?php echo sprintf( __( 'Read documentation about this feature %1$shere%2$s', 'printfriendly' ), '<a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080475-turn-off-the-click-to-delete-option-in-wordpress" target="_new">', '</a>' ); ?></p>
+								</div>
+							</div>
 
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'Track in Google Analytics', 'printfriendly' ); ?>
-							</p>
-						</header>
+							<div class="pf-label-inline">
+								<label for="images-size" class="pf-bu-label"><?php _e( 'Image size', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[images-size]" id="images-size">
+										<option value="full-size" <?php selected( $this->options['images-size'], 'full-size' ); ?>><?php _e( 'Full Size', 'printfriendly' ); ?></option>
+										<option value="large" <?php selected( $this->options['images-size'], 'large' ); ?>><?php _e( 'Large', 'printfriendly' ); ?></option>
+										<option value="medium" <?php selected( $this->options['images-size'], 'medium' ); ?>><?php _e( 'Medium', 'printfriendly' ); ?></option>
+										<option value="small" <?php selected( $this->options['images-size'], 'small' ); ?>><?php _e( 'Small', 'printfriendly' ); ?></option>
+										<option value="remove-images" <?php selected( $this->options['images-size'], 'remove-images' ); ?>><?php _e( 'Remove Images', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" id="pf-analytics-tracking" name="<?php echo $this->option_name; ?>[enable_google_analytics]">
-								<option value="yes" <?php $this->selected( 'enable_google_analytics', 'yes' ); ?>> <?php _e( 'Yes', 'printfriendly' ); ?></option>
-								<option value="no" <?php $this->selected( 'enable_google_analytics', 'no' ); ?>> <?php _e( 'No', 'printfriendly' ); ?></option>
-							</select>
-						</div>
-					</div>
+							<div class="pf-label-inline">
+								<label for="image-style" class="pf-bu-label"><?php _e( 'Image style', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[image-style]" id="image-style">
+										<option value="block" <?php selected( $this->options['image-style'], 'block' ); ?>><?php _e( 'Center/Block', 'printfriendly' ); ?></option>
+										<option value="right" <?php selected( $this->options['image-style'], 'right' ); ?>><?php _e( 'Align Right', 'printfriendly' ); ?></option>
+										<option value="left" <?php selected( $this->options['image-style'], 'left' ); ?>><?php _e( 'Align Left', 'printfriendly' ); ?></option>
+										<option value="none" <?php selected( $this->options['image-style'], 'none' ); ?>><?php _e( 'Align None', 'printfriendly' ); ?></option>
+									</select>
+									<p class="description"><?php echo sprintf( __( 'Read documentation about this feature %1$shere%2$s', 'printfriendly' ), '<a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080507-remove-images-option" target="_new">', '</a>' ); ?></p>
+								</div>
+							</div>
 
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'Click-to-delete', 'printfriendly' ); ?>
-							</p>
-						</header>
+							<div class="pf-label-inline">
+								<label for="email" class="pf-bu-label"><?php _e( 'Email', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[email]" id="email">
+										<option value="0" <?php selected( $this->options['email'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
+										<option value="1" <?php selected( $this->options['email'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[click_to_delete]" id="click-to-delete">
-								<option value="0" <?php selected( $this->options['click_to_delete'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
-								<option value="1" <?php selected( $this->options['click_to_delete'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
-							</select>
-						</div>
+							<div class="pf-label-inline">
+								<label for="pdf" class="pf-bu-label"><?php _e( 'PDF', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[pdf]" id="pdf">
+										<option value="0" <?php selected( $this->options['pdf'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
+										<option value="1" <?php selected( $this->options['pdf'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
+									</select>
+									<p class="description"><strong><?php _e( 'Developer Note', 'printfriendly' ); ?></strong>: <?php _e( 'On localhost the images can not be included in the PDF. Once the website is live/public images will be included in the PDF.', 'printfriendly' ); ?></p>
+								</div>
+							</div>
 
-						<div class="pf-bu-card-footer">
-							<p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080475-turn-off-the-click-to-delete-option-in-wordpress" target="_new"><?php _e( 'Documentation', 'printfriendly' ); ?></a></p>
-						</div>
+							<div class="pf-label-inline">
+								<label for="print" class="pf-bu-label"><?php _e( 'Print', 'printfriendly' ); ?></label>
+								<div>
+									<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[print]" id="print">
+										<option value="0" <?php selected( $this->options['print'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
+										<option value="1" <?php selected( $this->options['print'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
+									</select>
+								</div>
+							</div>
 
-					</div>
-
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'Images', 'printfriendly' ); ?>
-							</p>
-						</header>
-
-						<div class="pf-bu-card-content">
-							<label for="image-size" class="pf-bu-label"><?php _e( 'Image size', 'printfriendly' ); ?></label>
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[images-size]" id="images-size">
-								<option value="full-size" <?php selected( $this->options['images-size'], 'full-size' ); ?>><?php _e( 'Full Size', 'printfriendly' ); ?></option>
-								<option value="large" <?php selected( $this->options['images-size'], 'large' ); ?>><?php _e( 'Large', 'printfriendly' ); ?></option>
-								<option value="medium" <?php selected( $this->options['images-size'], 'medium' ); ?>><?php _e( 'Medium', 'printfriendly' ); ?></option>
-								<option value="small" <?php selected( $this->options['images-size'], 'small' ); ?>><?php _e( 'Small', 'printfriendly' ); ?></option>
-								<option value="remove-images" <?php selected( $this->options['images-size'], 'remove-images' ); ?>><?php _e( 'Remove Images', 'printfriendly' ); ?></option>
-							</select>
-
-							<label for="image-style" class="pf-bu-label"><?php _e( 'Image style', 'printfriendly' ); ?></label>
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[image-style]" id="image-style">
-								<option value="right" <?php selected( $this->options['image-style'], 'right' ); ?>><?php _e( 'Align Right', 'printfriendly' ); ?></option>
-								<option value="left" <?php selected( $this->options['image-style'], 'left' ); ?>><?php _e( 'Align Left', 'printfriendly' ); ?></option>
-								<option value="none" <?php selected( $this->options['image-style'], 'none' ); ?>><?php _e( 'Align None', 'printfriendly' ); ?></option>
-								<option value="block" <?php selected( $this->options['image-style'], 'block' ); ?>><?php _e( 'Center/Block', 'printfriendly' ); ?></option>
-							</select>
-						</div>
-
-						<div class="pf-bu-card-footer">
-							<p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080507-remove-images-option" target="_new"><?php _e( 'Documentation', 'printfriendly' ); ?></a></p>
-						</div>
-
-					</div>
-
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'Email', 'printfriendly' ); ?>
-							</p>
-						</header>
-
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[email]" id="email">
-								<option value="0" <?php selected( $this->options['email'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
-								<option value="1" <?php selected( $this->options['email'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
-							</select>
-						</div>
-					</div>
-
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'PDF', 'printfriendly' ); ?>
-							</p>
-						</header>
-
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[pdf]" id="pdf">
-								<option value="0" <?php selected( $this->options['pdf'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
-								<option value="1" <?php selected( $this->options['pdf'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
-							</select>
-						</div>
-
-						<div class="pf-bu-card-footer">
-							<p class="pf-bu-card-footer-item"><strong><?php _e( 'Developer Note', 'printfriendly' ); ?></strong>: <?php _e( 'On localhost the images can not be included in the PDF. Once the website is live/public images will be included in the PDF.', 'printfriendly' ); ?></p>
-						</div>
-
-					</div>
-
-					<div class="pf-bu-block pf-bu-card">
-						<header class="pf-bu-card-header">
-							<p class="pf-bu-card-header-title">
-								<?php _e( 'Print', 'printfriendly' ); ?>
-							</p>
-						</header>
-
-						<div class="pf-bu-card-content">
-							<select class="pf-bu-select" name="<?php echo $this->option_name; ?>[print]" id="print">
-								<option value="0" <?php selected( $this->options['print'], '0' ); ?>><?php _e( 'Allow', 'printfriendly' ); ?></option>
-								<option value="1" <?php selected( $this->options['print'], '1' ); ?>><?php _e( 'Not Allow', 'printfriendly' ); ?></option>
-							</select>
 						</div>
 					</div>
 
@@ -474,9 +539,9 @@
 							<p class="pf-bu-card-footer-item">
 							<?php
 							if ( ! $this->is_pro( 'custom-css' ) ) {
-								_e( 'Customize the styles of the printed/pdf page using your own CSS. Create your custom CSS, and put the URL to your Custom CSS file in the box below', 'printfriendly' );
+								_e( 'Customize the styles of the printed/pdf page using your own CSS. Create your custom CSS, and put the URL to your Custom CSS file in the box above', 'printfriendly' );
 							} else {
-								echo sprintf( __( 'Customize the styles of the printed/pdf page using your own CSS. Add your custom CSS (without the %s tags) in the box below', 'printfriendly' ), '<code>&lt;style&gt;</code>' );
+								echo sprintf( __( 'Customize the styles of the printed/pdf page using your own CSS. Add your custom CSS (without the %s tags) in the box above', 'printfriendly' ), '<code>&lt;style&gt;</code>' );
 							}
 							?>
 							</p>

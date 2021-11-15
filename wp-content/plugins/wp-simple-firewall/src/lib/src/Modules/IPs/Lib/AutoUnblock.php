@@ -3,7 +3,6 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\Lib;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\ModCon;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
@@ -17,19 +16,19 @@ class AutoUnblock {
 	 */
 	public function run() :bool {
 		try {
-			$bUnblocked = $this->processAutoUnblockRequest();
+			$unblocked = $this->processAutoUnblockRequest();
 		}
 		catch ( \Exception $e ) {
-			$bUnblocked = false;
+			$unblocked = false;
 		}
-		if ( !$bUnblocked ) {
+		if ( !$unblocked ) {
 			try {
-				$bUnblocked = $this->processUserMagicLink();
+				$unblocked = $this->processUserMagicLink();
 			}
 			catch ( \Exception $e ) {
 			}
 		}
-		return $bUnblocked;
+		return $unblocked;
 	}
 
 	/**
@@ -55,37 +54,35 @@ class AutoUnblock {
 				throw new \Exception( 'Email should not be provided in honeypot' );
 			}
 
-			$sIP = Services::IP()->getRequestIp();
-			if ( $req->post( 'ip' ) != $sIP ) {
+			$ip = Services::IP()->getRequestIp();
+			if ( empty( $ip ) || $req->post( 'ip' ) !== Services::IP()->getRequestIp() ) {
 				throw new \Exception( 'IP does not match' );
 			}
 
-			$oLoginMod = $this->getCon()->getModule_LoginGuard();
-			$sGasp = $req->post( $oLoginMod->getGaspKey() );
-			if ( empty( $sGasp ) ) {
-				throw new \Exception( 'GASP failed' );
-			}
-
-			if ( !$opts->getCanIpRequestAutoUnblock( $sIP ) ) {
-				throw new \Exception( 'IP already processed in the last 24hrs' );
+			if ( !$opts->getCanIpRequestAutoUnblock( $ip ) ) {
+				throw new \Exception( 'IP already processed in the last 1hr' );
 			}
 
 			{
-				$aExistingIps = $opts->getAutoUnblockIps();
-				$aExistingIps[ $sIP ] = Services::Request()->ts();
+				$existing = $opts->getAutoUnblockIps();
+				$existing[ $ip ] = Services::Request()->ts();
 				$opts->setOpt( 'autounblock_ips',
-					array_filter( $aExistingIps, function ( $nTS ) {
+					array_filter( $existing, function ( $ts ) {
 						return Services::Request()
 									   ->carbon()
-									   ->subDays( 1 )->timestamp < $nTS;
+									   ->subHours( 1 )->timestamp < $ts;
 					} )
 				);
 			}
 
 			( new IPs\Lib\Ops\DeleteIp() )
-				->setDbHandler( $mod->getDbHandler_IPs() )
-				->setIP( $sIP )
+				->setMod( $mod )
+				->setIP( $ip )
 				->fromBlacklist();
+			( new IPs\Lib\Bots\BotSignalsRecord() )
+				->setMod( $this->getMod() )
+				->setIP( $ip )
+				->delete();
 			$unblocked = true;
 		}
 
@@ -138,10 +135,10 @@ class AutoUnblock {
 					$existing = $opts->getAutoUnblockEmailIDs();
 					$existing[ $user->ID ] = Services::Request()->ts();
 					$opts->setOpt( 'autounblock_emailids',
-						array_filter( $existing, function ( $nTS ) {
+						array_filter( $existing, function ( $ts ) {
 							return Services::Request()
 										   ->carbon()
-										   ->subHours( 1 )->timestamp < $nTS;
+										   ->subHours( 1 )->timestamp < $ts;
 						} )
 					);
 				}
@@ -149,9 +146,13 @@ class AutoUnblock {
 			}
 			elseif ( $linkParts[ 1 ] === 'go' ) {
 				( new IPs\Lib\Ops\DeleteIp() )
-					->setDbHandler( $mod->getDbHandler_IPs() )
+					->setMod( $mod )
 					->setIP( Services::IP()->getRequestIp() )
 					->fromBlacklist();
+				( new IPs\Lib\Bots\BotSignalsRecord() )
+					->setMod( $this->getMod() )
+					->setIP( Services::IP()->getRequestIp() )
+					->delete();
 				$unblocked = true;
 			}
 			else {

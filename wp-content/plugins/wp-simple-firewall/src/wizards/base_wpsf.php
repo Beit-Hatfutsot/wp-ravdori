@@ -31,17 +31,17 @@ abstract class ICWP_WPSF_Wizard_BaseWpsf extends ICWP_WPSF_Wizard_Base {
 	}
 
 	/**
-	 * @param string $sStep
+	 * @param string $step
 	 * @return array
 	 */
-	protected function getRenderData_SlideExtra( $sStep ) {
+	protected function getRenderData_SlideExtra( $step ) {
 
-		switch ( $sStep ) {
+		switch ( $step ) {
 			case 'security_admin_verify':
 				$aAdditional = [ 'current_index' => Services::Request()->post( 'current_index' ) ];
 				break;
 			default:
-				$aAdditional = parent::getRenderData_SlideExtra( $sStep );
+				$aAdditional = parent::getRenderData_SlideExtra( $step );
 				break;
 		}
 
@@ -74,16 +74,16 @@ abstract class ICWP_WPSF_Wizard_BaseWpsf extends ICWP_WPSF_Wizard_Base {
 	}
 
 	/**
-	 * @param string $sStep
+	 * @param string $step
 	 * @return \FernleafSystems\Utilities\Response|null
 	 */
-	protected function processWizardStep( $sStep ) {
-		switch ( $sStep ) {
+	protected function processWizardStep( string $step ) {
+		switch ( $step ) {
 			case 'security_admin_verify':
 				$oResponse = $this->wizardSecurityAdminVerify();
 				break;
 			default:
-				$oResponse = parent::processWizardStep( $sStep );
+				$oResponse = parent::processWizardStep( $step );
 				break;
 		}
 		return $oResponse;
@@ -93,29 +93,26 @@ abstract class ICWP_WPSF_Wizard_BaseWpsf extends ICWP_WPSF_Wizard_Base {
 	 * @return \FernleafSystems\Utilities\Response
 	 */
 	private function wizardSecurityAdminVerify() {
-		$sKey = Services::Request()->post( 'AccessKey' );
+		$pin = Services::Request()->post( 'sec_admin_key' );
 
-		$oResponse = new \FernleafSystems\Utilities\Response();
+		$response = new \FernleafSystems\Utilities\Response();
+		$success = false;
+		$msg = '';
 
-		$bSuccess = false;
-		$mod = $this->getCon()->getModule_SecAdmin();
-
-		$sMessage = '';
-		if ( empty( $sKey ) ) {
-			$sMessage = 'Security Admin PIN was empty.';
+		if ( empty( $pin ) ) {
+			$msg = 'Security Admin PIN was empty.';
 		}
-		elseif ( !$mod->verifyAccessKey( $sKey ) ) {
-			$sMessage = __( 'Security Admin PIN was not correct.', 'wp-simple-firewall' );
+		elseif ( !$this->getCon()->getModule_SecAdmin()->getSecurityAdminController()->verifyPinRequest() ) {
+			$msg = __( 'Security Admin PIN was not correct.', 'wp-simple-firewall' );
 		}
 		else {
-			$bSuccess = $mod->setSecurityAdminStatusOnOff( true );
-			$aData = [
+			$success = true;
+			$response->setData( [
 				'rerender' => true
-			];
-			$oResponse->setData( $aData );
+			] );
 		}
 
-		return $oResponse->setSuccessful( $bSuccess )
-						 ->setMessageText( $sMessage );
+		return $response->setSuccessful( $success )
+						->setMessageText( $msg );
 	}
 }

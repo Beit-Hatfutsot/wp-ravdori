@@ -3,24 +3,16 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Traffic;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\Traffic\Lib;
 
-/**
- * Class Processor
- * @package FernleafSystems\Wordpress\Plugin\Shield\Modules\Traffic
- */
 class Processor extends Modules\BaseShield\Processor {
 
 	protected function run() {
-		/** @var Options $opts */
-		$opts = $this->getOptions();
-		if ( $opts->isTrafficLoggerEnabled() ) {
-			( new Lib\Logger() )
-				->setMod( $this->getMod() )
-				->run();
-			( new Lib\Limit\Limiter() )
-				->setMod( $this->getMod() )
-				->run();
-		}
+		/** @var ModCon $mod */
+		$mod = $this->getMod();
+		$mod->getRequestLogger()->execute();
+
+		( new Lib\Limit\Limiter() )
+			->setMod( $this->getMod() )
+			->execute();
 	}
 }

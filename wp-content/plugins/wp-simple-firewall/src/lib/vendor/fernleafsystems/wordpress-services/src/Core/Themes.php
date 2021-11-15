@@ -3,7 +3,7 @@
 namespace FernleafSystems\Wordpress\Services\Core;
 
 use FernleafSystems\Wordpress\Services\Core\Upgrades;
-use FernleafSystems\Wordpress\Services\Core\VOs\WpThemeVo;
+use FernleafSystems\Wordpress\Services\Core\VOs\Assets;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme\Api;
 
@@ -13,10 +13,12 @@ use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme\Api;
  */
 class Themes {
 
-	/**
-	 * @var WpThemeVo[]
-	 */
 	private $aLoadedVOs;
+
+	/**
+	 * @var Assets\WpThemeVo[]
+	 */
+	private $loadedVOs;
 
 	/**
 	 * @param string $stylesheet
@@ -189,18 +191,18 @@ class Themes {
 
 	/**
 	 * @param string $stylesheet
-	 * @param bool   $bReload
-	 * @return WpThemeVo|null
+	 * @param bool   $reload
+	 * @return Assets\WpThemeVo|null
 	 */
-	public function getThemeAsVo( $stylesheet, $bReload = false ) {
+	public function getThemeAsVo( string $stylesheet, bool $reload = false ) {
 		try {
-			if ( !is_array( $this->aLoadedVOs ) ) {
-				$this->aLoadedVOs = [];
+			if ( !is_array( $this->loadedVOs ) ) {
+				$this->loadedVOs = [];
 			}
-			if ( $bReload || !isset( $this->aLoadedVOs[ $stylesheet ] ) ) {
-				$this->aLoadedVOs[ $stylesheet ] = new WpThemeVo( $stylesheet );
+			if ( $reload || !isset( $this->loadedVOs[ $stylesheet ] ) ) {
+				$this->loadedVOs[ $stylesheet ] = new Assets\WpThemeVo( $stylesheet );
 			}
-			$asset = $this->aLoadedVOs[ $stylesheet ];
+			$asset = $this->loadedVOs[ $stylesheet ];
 		}
 		catch ( \Exception $e ) {
 			$asset = null;
@@ -209,9 +211,9 @@ class Themes {
 	}
 
 	/**
-	 * @return WpThemeVo[]
+	 * @return Assets\WpThemeVo[]
 	 */
-	public function getThemesAsVo() {
+	public function getThemesAsVo() :array {
 		return array_filter(
 			array_map(
 				function ( $stylesheet ) {
@@ -276,11 +278,11 @@ class Themes {
 	/**
 	 * @return array[] - keys are theme stylesheets
 	 */
-	public function getAllExtendedData() {
+	public function getAllExtendedData() :array {
 		$data = Services::WpGeneral()->getTransient( 'update_themes' );
 		return array_merge(
-			$data->no_update ?? [],
-			$data->response ?? []
+			( isset( $data->no_update ) && is_array( $data->no_update ) ) ? $data->no_update : [],
+			( isset( $data->response ) && is_array( $data->response ) ) ? $data->response : []
 		);
 	}
 
@@ -288,9 +290,9 @@ class Themes {
 	 * @param string $slug
 	 * @return array
 	 */
-	public function getExtendedData( $slug ) {
+	public function getExtendedData( $slug ) :array {
 		$data = $this->getAllExtendedData();
-		return $data[ $slug ] ?? [];
+		return ( isset( $data[ $slug ] ) && is_array( $data[ $slug ] ) ) ? $data[ $slug ] : [];
 	}
 
 	/**

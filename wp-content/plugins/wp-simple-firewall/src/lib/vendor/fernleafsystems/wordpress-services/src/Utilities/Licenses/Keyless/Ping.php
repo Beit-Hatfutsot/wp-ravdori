@@ -14,13 +14,13 @@ class Ping extends Base {
 	 * @return bool
 	 */
 	public function ping() {
-		$sPong = '';
+		$pong = '';
 
-		$aRaw = $this->sendReq();
-		if ( is_array( $aRaw ) && !empty( $aRaw[ 'keyless' ] ) && !empty( $aRaw[ 'keyless' ][ self::API_ACTION ] ) ) {
-			$sPong = $aRaw[ 'keyless' ][ self::API_ACTION ];
+		$raw = $this->sendReq();
+		if ( is_array( $raw ) && !empty( $raw[ 'keyless' ] ) && !empty( $raw[ 'keyless' ][ self::API_ACTION ] ) ) {
+			$pong = $raw[ 'keyless' ][ self::API_ACTION ];
 		}
 
-		return $sPong === 'pong';
+		return $pong === 'pong';
 	}
 }

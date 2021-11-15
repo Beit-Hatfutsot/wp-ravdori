@@ -4,10 +4,6 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Base;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class VersionsBase
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Base
- */
 abstract class VersionsBase {
 
 	/**

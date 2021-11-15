@@ -6,105 +6,93 @@ use FernleafSystems\Wordpress\Services\Services;
 
 class Emails extends Base {
 
-	public function run() {
+	protected function run() {
 		add_filter( 'wp_mail', [ $this, 'auditEmailSend' ], PHP_INT_MAX );
 	}
 
 	/**
-	 * @param array $aEmail
+	 * @param array $email
 	 * @return array
 	 */
-	public function auditEmailSend( $aEmail ) {
+	public function auditEmailSend( $email ) {
 
-		if ( is_array( $aEmail ) ) {
+		if ( is_array( $email ) ) {
 
-			$sTo = isset( $aEmail[ 'to' ] ) ? $aEmail[ 'to' ] : __( 'not provided', 'wp-simple-firewall' );
-			if ( is_array( $sTo ) ) {
-				$sTo = implode( ', ', $sTo );
+			$to = $email[ 'to' ] ?? __( 'not provided', 'wp-simple-firewall' );
+			if ( is_array( $to ) ) {
+				$to = implode( ', ', $to );
 			}
 
-			$aData = [
-				'to'      => $sTo,
-				'subject' => $aEmail[ 'subject' ],
+			$auditData = [
+				'to'      => $to,
+				'subject' => $email[ 'subject' ],
 			];
 
 			// Attempt to capture BCC/CC
-			$aCCs = [];
-			if ( !empty( $aEmail[ 'headers' ] ) ) {
-				$aHeaders = $aEmail[ 'headers' ];
-				if ( is_string( $aHeaders ) ) {
-					$aHeaders = explode( "\n", $aHeaders );
+			$CCs = [];
+			if ( !empty( $email[ 'headers' ] ) ) {
+				$headers = $email[ 'headers' ];
+				if ( is_string( $headers ) ) {
+					$headers = explode( "\n", $headers );
 				}
-				if ( is_array( $aHeaders ) ) {
-					$aCCs = $this->extractCcFromHeaders( $aHeaders );
+				if ( is_array( $headers ) ) {
+					$CCs = $this->extractCcFromHeaders( $headers );
 				}
 			}
-			$aData[ 'cc' ] = empty( $aCCs[ 'cc' ] ) ? '-' : implode( ',', $aCCs[ 'cc' ] );
-			$aData[ 'bcc' ] = empty( $aCCs[ 'bcc' ] ) ? '-' : implode( ',', $aCCs[ 'bcc' ] );
+			$auditData[ 'cc' ] = empty( $CCs[ 'cc' ] ) ? '-' : implode( ', ', $CCs[ 'cc' ] );
+			$auditData[ 'bcc' ] = empty( $CCs[ 'bcc' ] ) ? '-' : implode( ', ', $CCs[ 'bcc' ] );
 
 			// Where was the wp_mail function called from
-			$aBacktrace = $this->findEmailSenderBacktrace();
-			$aData[ 'bt_file' ] = empty( $aBacktrace[ 'file' ] ) ? 'unavailable' : str_replace( ABSPATH, '', $aBacktrace[ 'file' ] );
-			$aData[ 'bt_line' ] = empty( $aBacktrace[ 'line' ] ) ? 'unavailable' : $aBacktrace[ 'line' ];
+			$backtrace = $this->findEmailSenderBacktrace();
+			$auditData[ 'bt_file' ] = empty( $backtrace[ 'file' ] ) ? 'unavailable' : str_replace( ABSPATH, '', $backtrace[ 'file' ] );
+			$auditData[ 'bt_line' ] = empty( $backtrace[ 'line' ] ) ? 'unavailable' : $backtrace[ 'line' ];
 
-			$this->getCon()->fireEvent( 'email_attempt_send', [ 'audit' => $aData ] );
-		}
-		else {
-			$this->getCon()->fireEvent(
-				'email_send_invalid',
-				[ 'audit' => [ 'type' => 'array' ] ]
-			);
+			$this->getCon()->fireEvent( 'email_attempt_send', [ 'audit_params' => $auditData ] );
 		}
 
-		return $aEmail;
+		return $email;
 	}
 
-	/**
-	 * @param array $aHeaders
-	 * @return array
-	 */
-	private function extractCcFromHeaders( $aHeaders ) {
-		$aCCs = [
+	private function extractCcFromHeaders( array $headers ) :array {
+		$CCs = [
 			'bcc' => [],
 			'cc'  => []
 		];
 
-		$aHeaders = array_filter( array_map( 'trim', array_map( 'strtolower', $aHeaders ) ) );
-		foreach ( $aHeaders as $sHeader ) {
-			if ( preg_match( '#^\s*b?cc\s*:.+#i', $sHeader ) ) {
-				list( $sHead, $sEmails ) = explode( ':', str_replace( ' ', '', $sHeader ), 2 );
-				if ( strpos( ',', $sEmails ) !== false ) {
-					$aEmails = explode( ',', $sEmails );
-				}
-				else {
-					$aEmails = [ $sEmails ];
-				}
+		$headers = array_filter(
+			array_map( function ( $header ) {
+				return str_replace( ' ', '', trim( strtolower( $header ) ) );
+			}, $headers ),
+			function ( $header ) {
+				return !empty( $header ) && preg_match( '#^\s*b?cc\s*:.+$#i', $header );
+			}
+		);
 
-				if ( isset( $aCCs[ $sHead ] ) ) {
-					$aCCs[ $sHead ][] = array_unique( array_merge(
-						$aCCs[ $sHead ],
-						array_filter( $aEmails,
-							function ( $sEmail ) {
-								return Services::Data()->validEmail( $sEmail );
-							} )
-					) );
+		foreach ( $headers as $header ) {
+			list( $headerKey, $emails ) = explode( ':', $header, 2 );
+
+			$emails = array_filter(
+				array_map( 'trim', explode( ',', $emails ) ),
+				function ( $email ) {
+					return Services::Data()->validEmail( $email );
 				}
+			);
+
+			if ( isset( $CCs[ $headerKey ] ) ) {
+				$CCs[ $headerKey ] = array_unique( array_merge( $CCs[ $headerKey ], $emails ) );
 			}
 		}
-		return $aCCs;
+		return $CCs;
 	}
 
-	/**
-	 * @return array
-	 */
-	private function findEmailSenderBacktrace() {
-		$aBT = [];
-		foreach ( debug_backtrace( false ) as $aItem ) {
-			if ( isset( $aItem[ 'function' ] ) && 'wp_mail' === strtolower( $aItem[ 'function' ] ) ) {
-				$aBT = $aItem;
+	private function findEmailSenderBacktrace() :array {
+		$backtrace = [];
+		foreach ( debug_backtrace( false ) as $item ) {
+			if ( isset( $item[ 'function' ] ) && 'wp_mail' === strtolower( $item[ 'function' ] ) ) {
+				$backtrace = $item;
 				break;
 			}
 		}
-		return $aBT;
+		return $backtrace;
 	}
 }

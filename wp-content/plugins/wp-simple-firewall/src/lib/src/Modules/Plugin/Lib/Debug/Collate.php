@@ -2,6 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin\Lib\Debug;
 
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs\Lib\Bots\NotBot\TestNotBotLoading;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin\Options;
 use FernleafSystems\Wordpress\Plugin\Shield\Utilities\Time\WorldTimeApi;
@@ -32,7 +33,7 @@ class Collate {
 				'Capabilities' => $this->getShieldCapabilities(),
 			],
 			'System Info'    => [
-				'PHP'         => $this->getPHP(),
+				'PHP & MySQL' => $this->getPHP(),
 				'Environment' => $this->getEnv(),
 			],
 			'WordPress Info' => [
@@ -65,7 +66,7 @@ class Collate {
 			$diff = ( new WorldTimeApi() )->diffServerWithReal();
 		}
 		catch ( \Exception $e ) {
-			$diff = 'failed';
+			$diff = 'failed: '.$e->getMessage();
 		}
 
 		return [
@@ -73,15 +74,15 @@ class Collate {
 			'Server Hostname'                   => gethostname(),
 			'Server Time Difference'            => $diff,
 			'Server IPs'                        => implode( ', ', $aIPs ),
-			'CloudFlare'                        => empty( $req->server( 'HTTP_CF_REQUEST_ID' ) ) ? 'No' : 'Yes',
+			'CloudFlare'                        => !empty( $req->server( 'HTTP_CF_REQUEST_ID' ) ) ? 'No' : 'Yes',
 			'rDNS'                              => empty( $rDNS ) ? '-' : $rDNS,
 			'Server Name'                       => $req->server( 'SERVER_NAME' ),
 			'Server Signature'                  => empty( $sig ) ? '-' : $sig,
 			'Server Software'                   => empty( $soft ) ? '-' : $soft,
-			'Disk Space (Used/Available/Total)' => sprintf( '%s / %s / %s',
+			'Disk Space (Used/Available/Total)' => sprintf( '%s used out of %s (%s free)',
 				FormatBytes::Format( $totalDisk - $freeDisk, 2, '' ),
-				FormatBytes::Format( $freeDisk, 2, '' ),
-				FormatBytes::Format( $totalDisk, 2, '' )
+				FormatBytes::Format( $totalDisk, 2, '' ),
+				FormatBytes::Format( $freeDisk, 2, '' )
 			)
 		];
 	}
@@ -101,6 +102,7 @@ class Collate {
 		$root = $req->server( 'DOCUMENT_ROOT' );
 		return [
 			'PHP'           => $phpV,
+			'MySQL'         => Services::WpDb()->getMysqlServerInfo(),
 			'Memory Limit'  => sprintf( '%s (Constant <code>WP_MEMORY_LIMIT: %s</code>)', ini_get( 'memory_limit' ),
 				defined( 'WP_MEMORY_LIMIT' ) ? WP_MEMORY_LIMIT : 'not defined' ),
 			'32/64-bit'     => ( PHP_INT_SIZE === 4 ) ? 32 : 64,
@@ -163,23 +165,33 @@ class Collate {
 			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
 			: 'Missing';
 
-		$dbh = $con->getModule_AuditTrail()->getDbHandler_AuditTrail();
+		$dbh = $con->getModule_AuditTrail()->getDbH_Logs();
 		$data[ 'DB Table: Audit Trail' ] = $dbh->isReady() ?
 			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
 			: 'Missing';
 
+		$dbh = $con->getModule_Data()->getDbH_IPs();
+		$data[ 'DB Table: IPs' ] = $dbh->isReady() ?
+			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
+			: 'Missing';
+
 		$dbh = $con->getModule_IPs()->getDbHandler_IPs();
-		$data[ 'DB Table: IP' ] = $dbh->isReady() ?
+		$data[ 'DB Table: IP Lists' ] = $dbh->isReady() ?
 			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
 			: 'Missing';
 
-		$dbh = $con->getModule_HackGuard()->getDbHandler_ScanResults();
-		$data[ 'DB Table: Scan' ] = $dbh->isReady() ?
+		$dbh = $con->getModule_IPs()->getDbH_BotSignal();
+		$data[ 'DB Table: Bot Signals' ] = $dbh->isReady() ?
 			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
 			: 'Missing';
 
-		$dbh = $con->getModule_Traffic()->getDbHandler_Traffic();
-		$data[ 'DB Table: Traffic' ] = $dbh->isReady() ?
+		$dbh = $con->getModule_HackGuard()->getDbH_ScanResults();
+		$data[ 'DB Table: Scan Results' ] = $dbh->isReady() ?
+			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
+			: 'Missing';
+
+		$dbh = $con->getModule_Data()->getDbH_ReqLogs();
+		$data[ 'DB Table: Traffic/Requests' ] = $dbh->isReady() ?
 			sprintf( '%s (rows: ~%s)', 'Ready', $dbh->getQuerySelector()->count() )
 			: 'Missing';
 
@@ -195,31 +207,39 @@ class Collate {
 		$con = $this->getCon();
 		$modPlug = $con->getModule_Plugin();
 
-		$sHome = Services::WpGeneral()->getHomeUrl();
+		try {
+			$loopback = $modPlug->canSiteLoopback() ? 'Yes' : 'No';
+		}
+		catch ( \Exception $e ) {
+			$loopback = 'Unknown - requires WP v5.4+';
+		}
+
 		$data = [
-			sprintf( 'Loopback To %s', $sHome ) => $modPlug->getCanSiteCallToItself() ? 'Yes' : 'No',
-			'Handshake ShieldNET'               => $modPlug->getShieldNetApiController()
-														   ->canHandshake() ? 'Yes' : 'No',
-			'WP Hashes Ping'                    => ( new ApiPing() )->ping() ? 'Yes' : 'No',
+			'Can Loopback Request'       => $loopback,
+			'NotBot Frontend JS Loading' => ( new TestNotBotLoading() )
+				->setMod( $this->getCon()->getModule_IPs() )
+				->test() ? 'Yes' : 'No',
+			'Handshake ShieldNET'        => $modPlug->getShieldNetApiController()
+													->canHandshake() ? 'Yes' : 'No',
+			'WP Hashes Ping'             => ( new ApiPing() )->ping() ? 'Yes' : 'No',
 		];
 
-		$oPing = new Licenses\Keyless\Ping();
-		$oPing->lookup_url_stub = $this->getOptions()->getDef( 'license_store_url_api' );
-		$data[ 'Ping License Server' ] = $oPing->ping() ? 'Yes' : 'No';
+		$licPing = new Licenses\Keyless\Ping();
+		$licPing->lookup_url_stub = $con->getModule_License()->getOptions()->getDef( 'license_store_url_api' );
+		$data[ 'Ping License Server' ] = $licPing->ping() ? 'Yes' : 'No';
 
-		$sTmpPath = $con->getPluginCachePath();
-		$data[ 'Write TMP DIR' ] = empty( $sTmpPath ) ? 'No' : 'Yes: '.$sTmpPath;
+		$data[ 'Write TMP/Cache DIR' ] = $con->hasCacheDir() ? 'Yes: '.$con->getPluginCachePath() : 'No';
 
 		return $data;
 	}
 
 	private function getShieldSummary() :array {
-		$oCon = $this->getCon();
-		$oModLicense = $oCon->getModule_License();
-		$oModPlugin = $oCon->getModule_Plugin();
-		$oWpHashes = $oModLicense->getWpHashesTokenManager();
+		$con = $this->getCon();
+		$modLicense = $con->getModule_License();
+		$modPlugin = $con->getModule_Plugin();
+		$wpHashes = $modLicense->getWpHashesTokenManager();
 
-		$nPrevAttempt = $oWpHashes->getPreviousAttemptAt();
+		$nPrevAttempt = $wpHashes->getPreviousAttemptAt();
 		if ( empty( $nPrevAttempt ) ) {
 			$sPrev = 'Never';
 		}
@@ -230,19 +250,21 @@ class Collate {
 											  ->diffForHumans();
 		}
 
-		$aD = [
-			'Version'                => $oCon->getVersion(),
-			'PRO'                    => $oCon->isPremiumActive() ? 'Yes' : 'No',
-			'WP Hashes Token'        => ( $oWpHashes->hasToken() ? $oWpHashes->getToken() : '' ).' ('.$sPrev.')',
-			'Security Admin Enabled' => $oCon->getModule_SecAdmin()->isEnabledSecurityAdmin() ? 'Yes' : 'No',
+		$data = [
+			'Version'                => $con->getVersion(),
+			'PRO'                    => $con->isPremiumActive() ? 'Yes' : 'No',
+			'WP Hashes Token'        => ( $wpHashes->hasToken() ? $wpHashes->getToken() : '' ).' ('.$sPrev.')',
+			'Security Admin Enabled' => $con->getModule_SecAdmin()
+											->getSecurityAdminController()
+											->isEnabledSecAdmin() ? 'Yes' : 'No',
 		];
 
 		/** @var Options $oOptsIP */
-		$oOptsPlugin = $oModPlugin->getOptions();
-		$sSource = $oOptsPlugin->getSelectOptionValueText( 'visitor_address_source' );
-		$aD[ 'Visitor IP Source' ] = $sSource.' - '.Services::Request()->server( $sSource );
+		$optsPlugin = $modPlugin->getOptions();
+		$source = $optsPlugin->getSelectOptionValueText( 'visitor_address_source' );
+		$data[ 'Visitor IP Source' ] = $source.': '.var_export( Services::IP()->getRequestIp(), true );
 
-		return $aD;
+		return $data;
 	}
 
 	private function getWordPressSummary() :array {
@@ -256,9 +278,10 @@ class Collate {
 			'ABSPATH'     => ABSPATH,
 			'Debug Is On' => $WP->isDebug() ? 'Yes' : 'No',
 			'Database'    => [
-				sprintf( 'Name: %s', DB_NAME ),
-				sprintf( 'User: %s', DB_USER ),
-				sprintf( 'Prefix: %s', Services::WpDb()->getPrefix() ),
+				sprintf( 'Host: <code>%s</code>', DB_HOST ),
+				sprintf( 'Name: <code>%s</code>', DB_NAME ),
+				sprintf( 'User: <code>%s</code>', DB_USER ),
+				sprintf( 'Prefix: <code>%s</code>', Services::WpDb()->getPrefix() ),
 			],
 		];
 		if ( $WP->isClassicPress() ) {

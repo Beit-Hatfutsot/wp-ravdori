@@ -7,90 +7,115 @@ use FernleafSystems\Wordpress\Services\Services;
 class CompareHash {
 
 	/**
-	 * @param string $sPath
-	 * @param string $sHashToCompare
+	 * @param string $path
+	 * @param string $hashToCompare
 	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function isEqualFileMd5( $sPath, $sHashToCompare ) {
-		if ( !Services::WpFs()->isFile( $sPath ) ) {
+	public function isEqualFileMd5( $path, $hashToCompare ) :bool {
+		if ( !Services::WpFs()->isFile( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist on disk to compare' );
 		}
-		if ( !is_string( $sHashToCompare ) ) {
+		if ( !is_string( $hashToCompare ) ) {
 			throw new \InvalidArgumentException( 'Provided user hash was not a string' );
 		}
-
-		$oDataManip = Services::DataManipulation();
-		return hash_equals( md5_file( $sPath ), $sHashToCompare )
-			   || hash_equals( md5( $oDataManip->convertLineEndingsDosToLinux( $sPath ) ), $sHashToCompare )
-			   || hash_equals( md5( $oDataManip->convertLineEndingsLinuxToDos( $sPath ) ), $sHashToCompare );
+		return $this->isEqualFile( $path, $hashToCompare, 'md5' );
 	}
 
 	/**
-	 * @param string $sPath
-	 * @param string $sHashToCompare
+	 * @param string $path
+	 * @param string $hashToCompare
 	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function isEqualFileSha1( $sPath, $sHashToCompare ) {
-		if ( !Services::WpFs()->isFile( $sPath ) ) {
+	public function isEqualFileSha1( $path, $hashToCompare ) :bool {
+		if ( !Services::WpFs()->isFile( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist on disk to compare' );
 		}
-		if ( !is_string( $sHashToCompare ) ) {
+		if ( !is_string( $hashToCompare ) ) {
 			throw new \InvalidArgumentException( 'Provided user hash was not a string' );
 		}
-
-		$oDataManip = Services::DataManipulation();
-		return hash_equals( sha1_file( $sPath ), $sHashToCompare )
-			   || hash_equals( sha1( $oDataManip->convertLineEndingsDosToLinux( $sPath ) ), $sHashToCompare )
-			   || hash_equals( sha1( $oDataManip->convertLineEndingsLinuxToDos( $sPath ) ), $sHashToCompare );
+		return $this->isEqualFile( $path, $hashToCompare, 'sha1' );
 	}
 
 	/**
-	 * @param string $sPath1
-	 * @param string $sPath2
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function isEqualFilesMd5( $sPath1, $sPath2 ) {
-
-		if ( !Services::WpFs()->isFile( $sPath2 ) ) {
+	public function isEqualFile( string $path, string $hashToCompare, string $algo = null ) :bool {
+		if ( !Services::WpFs()->isFile( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist on disk to compare' );
 		}
 
-		$oDataManip = Services::DataManipulation();
-		return
-			$this->isEqualFileMd5(
-				$sPath1,
-				md5( $oDataManip->convertLineEndingsDosToLinux( $sPath2 ) )
-			)
-			|| $this->isEqualFileMd5(
-				$sPath1,
-				md5( $oDataManip->convertLineEndingsLinuxToDos( $sPath2 ) )
-			);
+		if ( empty( $algo ) ) {
+			$length = strlen( $hashToCompare );
+			if ( $length === 40 ) {
+				$algo = 'sha1';
+			}
+			elseif ( $length === 64 ) {
+				$algo = 'sha256';
+			}
+			elseif ( $length === 32 ) {
+				$algo = 'md5';
+			}
+			else {
+				throw new \Exception( "Algo not provided and couldn't be detected." );
+			}
+		}
+
+		$data = Services::DataManipulation();
+		return hash_equals( hash_file( $algo, $path ), $hashToCompare )
+			   || hash_equals( hash( $algo, $data->convertLineEndingsDosToLinux( $path ) ), $hashToCompare )
+			   || hash_equals( hash( $algo, $data->convertLineEndingsLinuxToDos( $path ) ), $hashToCompare );
 	}
 
 	/**
-	 * @param string $sPath1
-	 * @param string $sPath2
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function isEqualFilesSha1( $sPath1, $sPath2 ) {
-
-		if ( !Services::WpFs()->isFile( $sPath2 ) ) {
+	public function isEqualFiles( string $path1, string $path2, string $algo = 'sha1' ) :bool {
+		if ( !Services::WpFs()->isFile( $path2 ) ) {
 			throw new \InvalidArgumentException( 'File does not exist on disk to compare' );
 		}
 
-		$oDataManip = Services::DataManipulation();
-		return
-			$this->isEqualFileSha1(
-				$sPath1,
-				sha1( $oDataManip->convertLineEndingsDosToLinux( $sPath2 ) )
-			)
-			|| $this->isEqualFileSha1(
-				$sPath1,
-				sha1( $oDataManip->convertLineEndingsLinuxToDos( $sPath2 ) )
-			);
+		$possibleHashes = [
+			function () use ( $path2 ) {
+				return Services::WpFs()->getFileContent( $path2 );
+			},
+			function () use ( $path2 ) {
+				return Services::DataManipulation()->convertLineEndingsDosToLinux( $path2 );
+			},
+			function () use ( $path2 ) {
+				return Services::DataManipulation()->convertLineEndingsDosToLinux( $path2 );
+			},
+		];
+
+		$equals = false;
+		foreach ( $possibleHashes as $possibleHashFunc ) {
+			if ( $this->isEqualFile( $path1, hash( $algo, $possibleHashFunc() ), $algo ) ) {
+				$equals = true;
+				break;
+			}
+		}
+
+		return $equals;
+	}
+
+	/**
+	 * @param string $path1
+	 * @param string $path2
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
+	public function isEqualFilesMd5( $path1, $path2 ) :bool {
+		return $this->isEqualFiles( $path1, $path2, 'md5' );
+	}
+
+	/**
+	 * @param string $path1
+	 * @param string $path2
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
+	public function isEqualFilesSha1( $path1, $path2 ) :bool {
+		return $this->isEqualFiles( $path1, $path2, 'sha1' );
 	}
 }

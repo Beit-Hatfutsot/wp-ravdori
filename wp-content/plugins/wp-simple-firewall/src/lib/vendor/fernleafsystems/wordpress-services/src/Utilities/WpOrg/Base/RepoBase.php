@@ -4,55 +4,73 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Base;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class RepoBase
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Base
- */
 abstract class RepoBase {
 
 	/**
-	 * @param string $sFileFragment
-	 * @param string $sVersion
-	 * @param bool   $bUseSiteLocale
+	 * @param string $fileFragment
+	 * @param string $version
+	 * @param bool   $useSiteLocale
 	 * @return string|null
 	 */
-	public function downloadFromVcs( $sFileFragment, $sVersion = null, $bUseSiteLocale = true ) {
-		$sUrl = $this->getVcsUrlForFileAndVersion( $sFileFragment, $sVersion, $bUseSiteLocale );
+	public function downloadFromVcs( $fileFragment, $version = null, $useSiteLocale = true ) {
+		$url = $this->getVcsUrlForFileAndVersion( $fileFragment, $version, $useSiteLocale );
 		try {
-			$sTmpFile = ( new Services\Utilities\HttpUtil() )
-				->checkUrl( $sUrl )
-				->downloadUrl( $sUrl );
+			$tmpFile = ( new Services\Utilities\HttpUtil() )
+				->checkUrl( $url )
+				->downloadUrl( $url );
 		}
-		catch ( \Exception $oE ) {
-			$sTmpFile = null;
+		catch ( \Exception $e ) {
+			$tmpFile = null;
 		}
-		return $sTmpFile;
+		return $tmpFile;
 	}
 
 	/**
-	 * @param string $sFileFragment - path relative to the root dir of the object being tested. E.g. ABSPATH for
+	 * @param string $fileFragment
+	 * @param string $version
+	 * @param bool   $useSiteLocale
+	 * @return string|null
+	 */
+	public function getContentFromVcs( $fileFragment, $version = null, $useSiteLocale = true ) {
+		$url = $this->getVcsUrlForFileAndVersion( $fileFragment, $version, $useSiteLocale );
+		$content = null;
+		try {
+			$downloadedFile = ( new Services\Utilities\HttpUtil() )
+				->checkUrl( $url )
+				->downloadUrl( $url );
+			if ( is_string( $downloadedFile ) ) {
+				$content = Services\Services::WpFs()->getFileContent( $downloadedFile );
+			}
+		}
+		catch ( \Exception $e ) {
+		}
+		return $content;
+	}
+
+	/**
+	 * @param string $fileFragment  - path relative to the root dir of the object being tested. E.g. ABSPATH for
 	 *                              WordPress or the plugin dir if it's a plugin.
-	 * @param string $sVersion      - leave empty to use the current version
-	 * @param bool   $bUseSiteLocale
+	 * @param string $version       - leave empty to use the current version
+	 * @param bool   $useSiteLocale
 	 * @return bool
 	 */
-	public function existsInVcs( $sFileFragment, $sVersion = null, $bUseSiteLocale = true ) {
-		$sUrl = $this->getVcsUrlForFileAndVersion( $sFileFragment, $sVersion, $bUseSiteLocale );
+	public function existsInVcs( $fileFragment, $version = null, $useSiteLocale = true ) {
+		$url = $this->getVcsUrlForFileAndVersion( $fileFragment, $version, $useSiteLocale );
 		try {
-			( new Services\Utilities\HttpUtil() )->checkUrl( $sUrl );
-			$bExists = true;
+			( new Services\Utilities\HttpUtil() )->checkUrl( $url );
+			$exists = true;
 		}
-		catch ( \Exception $oE ) {
-			$bExists = false;
+		catch ( \Exception $e ) {
+			$exists = false;
 		}
-		return $bExists;
+		return $exists;
 	}
 
 	/**
-	 * @param string $sFileFragment
-	 * @param string $sVersion
-	 * @param bool   $bUseSiteLocale
+	 * @param string $fileFragment
+	 * @param string $version
+	 * @param bool   $useSiteLocale
 	 * @return string
 	 */
-	abstract protected function getVcsUrlForFileAndVersion( $sFileFragment, $sVersion, $bUseSiteLocale = true );
+	abstract public function getVcsUrlForFileAndVersion( $fileFragment, $version, $useSiteLocale = true );
 }

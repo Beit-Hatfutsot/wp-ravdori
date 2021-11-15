@@ -32,10 +32,15 @@ class ToggleDebug extends BaseWpCliCmd {
 		] ) );
 	}
 
-	public function cmdDebugMode( $null, $aA ) {
+	/**
+	 * @param $null
+	 * @param array $args
+	 * @throws WP_CLI\ExitException
+	 */
+	public function cmdDebugMode( $null, $args ) {
 		$debugMode = ( new DebugMode() )->setCon( $this->getCon() );
 
-		switch ( $aA[ 'action' ] ) {
+		switch ( $args[ 'action' ] ) {
 			case 'query':
 				if ( $debugMode->isActiveViaDefine() ) {
 					WP_CLI::log( 'Debug mode is active using PHP constant.' );

@@ -2,18 +2,23 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Modules;
-use FernleafSystems\Wordpress\Plugin\Shield\Scans\Mal\Signatures;
-use FernleafSystems\Wordpress\Services\Utilities\Net\IpIdentify;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Controller\Afs;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Results\Retrieve;
 
-class Debug extends Modules\Base\Debug {
+class Debug extends \FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Debug {
 
 	public function run() {
-		$this->dumpSigs();
-		die();
+		$this->testscans();
+		die( 'finish' );
 	}
 
-	private function dumpSigs() {
-		var_dump(Signatures::getAll());
+	private function testscans() {
+		/** @var ModCon $mod */
+		$mod = $this->getMod();
+		$res = ( new Retrieve() )
+			->setScanController( $mod->getScanCon( Afs::SCAN_SLUG ) )
+			->setMod( $this->getMod() )
+			->retrieveLatest();
+		var_dump( $res );
 	}
 }

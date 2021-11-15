@@ -97,12 +97,14 @@ class IpUtils {
 			}
 
 			$isIP = $netmask >= 0 && $netmask <= 32
+					&& ( false !== ip2long( $address ) )
 					&& filter_var( $address, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 )
-					&& 0 === substr_compare(
-					sprintf( '%032b', ip2long( $requestIp ) ),
-					sprintf( '%032b', ip2long( $address ) ),
-					0, $netmask
-				);
+					&&
+					0 === substr_compare(
+						sprintf( '%032b', ip2long( $requestIp ) ),
+						sprintf( '%032b', ip2long( $address ) ),
+						0, $netmask
+					);
 		}
 		return $isIP;
 	}
@@ -121,8 +123,14 @@ class IpUtils {
 		if ( !( ( extension_loaded( 'sockets' ) && defined( 'AF_INET6' ) ) || @inet_pton( '::1' ) ) ) {
 			throw new \Exception( 'Unable to check Ipv6. Check that PHP was not compiled with option "disable-ipv6".' );
 		}
+
 		if ( false !== strpos( $ip, '/' ) ) {
 			list( $address, $netmask ) = explode( '/', $ip, 2 );
+
+			if ( '0' === $netmask ) {
+				return (bool)unpack( 'n*', @inet_pton( $address ) );
+			}
+
 			if ( $netmask < 1 || $netmask > 128 ) {
 				return false;
 			}
@@ -131,56 +139,63 @@ class IpUtils {
 			$address = $ip;
 			$netmask = 128;
 		}
+
 		$bytesAddr = unpack( 'n*', inet_pton( $address ) );
 		$bytesTest = unpack( 'n*', inet_pton( $requestIp ) );
-		for ( $i = 1, $ceil = ceil( $netmask/16 ) ; $i <= $ceil ; ++$i ) {
-			$left = $netmask - 16*( $i - 1 );
-			$left = ( $left <= 16 ) ? $left : 16;
-			$mask = ~( 0xffff >> $left ) & 0xffff;
-			if ( ( $bytesAddr[ $i ] & $mask ) != ( $bytesTest[ $i ] & $mask ) ) {
-				return false;
+
+		$is = false;
+		if ( !empty( $bytesAddr ) && !empty( $bytesTest ) ) {
+			$is = true;
+			for ( $i = 1, $ceil = ceil( $netmask/16 ) ; $i <= $ceil ; ++$i ) {
+				$left = $netmask - 16*( $i - 1 );
+				$left = ( $left <= 16 ) ? $left : 16;
+				$mask = ~( 0xffff >> $left ) & 0xffff;
+				if ( ( $bytesAddr[ $i ] & $mask ) != ( $bytesTest[ $i ] & $mask ) ) {
+					$is = false;
+					break;
+				}
 			}
 		}
-		return true;
+		return $is;
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool|int
 	 */
-	public function getIpVersion( $sIp ) {
-		if ( filter_var( $sIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+	public function getIpVersion( $ip ) {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 			return 4;
 		}
-		if ( filter_var( $sIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
 			return 6;
 		}
 		return false;
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return string
 	 */
-	public function getIpWhoisLookup( $sIp ) {
-		return sprintf( 'https://apps.db.ripe.net/db-web-ui/#/query?bflag&searchtext=%s#resultsSection', $sIp );
+	public function getIpWhoisLookup( $ip ) {
+		return sprintf( 'https://apps.db.ripe.net/db-web-ui/#/query?bflag&searchtext=%s#resultsSection', $ip );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return string
 	 */
-	public function getIpInfo( $sIp ) {
-		return sprintf( 'https://redirect.li/map/?ip=%s', $sIp );
+	public function getIpInfo( $ip ) {
+		return sprintf( 'https://redirect.li/map/?ip=%s', $ip );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return string
 	 */
-	public function getIpGeoInfo( $sIp = null ) {
+	public function getIpGeoInfo( $ip = null ) {
 		return Services::HttpRequest()->getContent(
-			sprintf( 'http://ip6.me/api/%s', empty( $sIp ) ? '' : '/'.$sIp )
+			sprintf( 'http://ip6.me/api/%s', empty( $ip ) ? '' : '/'.$ip )
 		);
 	}
 
@@ -195,14 +210,14 @@ class IpUtils {
 	}
 
 	/**
-	 * @param bool $bAsHuman
+	 * @param bool $asHuman
 	 * @return int|string|bool - visitor IP Address as IP2Long
 	 */
-	public function getRequestIp( $bAsHuman = true ) {
+	public function getRequestIp( $asHuman = true ) {
 		$sIP = empty( $this->sIp ) ? $this->getIpDetector()->getIP() : $this->sIp;
 
 		// If it's IPv6 we never return as long (we can't!)
-		if ( !empty( $sIP ) || $bAsHuman || $this->getIpVersion( $sIP ) == 6 ) {
+		if ( !empty( $sIP ) || $asHuman || $this->getIpVersion( $sIP ) == 6 ) {
 			return $sIP;
 		}
 
@@ -233,86 +248,80 @@ class IpUtils {
 		return $bLB;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isLoopback() {
+	public function isLoopback() :bool {
 		return in_array( $this->getRequestIp(), $this->getServerPublicIPs() );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSupportedIpv6() {
+	public function isSupportedIpv6() :bool {
 		return ( extension_loaded( 'sockets' ) && defined( 'AF_INET6' ) ) || @inet_pton( '::1' );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @param bool   $flags
 	 * @return bool
 	 */
-	public function isValidIp( $sIp, $flags = null ) {
-		return filter_var( trim( $sIp ), FILTER_VALIDATE_IP, $flags );
+	public function isValidIp( $ip, $flags = null ) {
+		return filter_var( trim( $ip ), FILTER_VALIDATE_IP, $flags );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool
 	 */
-	public function isValidIp4Range( $sIp ) {
+	public function isValidIp4Range( $ip ) {
+		$range = false;
+		if ( strpos( $ip, '/' ) ) {
+			list( $ip, $CIDR ) = explode( '/', $ip );
+			$range = $this->isValidIp( $ip ) && ( (int)$CIDR >= 0 && (int)$CIDR <= 32 );
+		}
+		return $range;
+	}
+
+	/**
+	 * @param string $ip
+	 * @return bool
+	 */
+	public function isValidIp6Range( $ip ) {
 		$bIsRange = false;
-		if ( strpos( $sIp, '/' ) ) {
-			list( $sIp, $sCIDR ) = explode( '/', $sIp );
-			$bIsRange = $this->isValidIp( $sIp ) && ( (int)$sCIDR >= 0 && (int)$sCIDR <= 32 );
+		if ( strpos( $ip, '/' ) ) {
+			list( $ip, $CIDR ) = explode( '/', $ip );
+			$bIsRange = $this->isValidIp( $ip ) && ( (int)$CIDR >= 0 && (int)$CIDR <= 128 );
 		}
 		return $bIsRange;
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool
 	 */
-	public function isValidIp6Range( $sIp ) {
-		$bIsRange = false;
-		if ( strpos( $sIp, '/' ) ) {
-			list( $sIp, $sCIDR ) = explode( '/', $sIp );
-			$bIsRange = $this->isValidIp( $sIp ) && ( (int)$sCIDR >= 0 && (int)$sCIDR <= 128 );
-		}
-		return $bIsRange;
-	}
-
-	/**
-	 * @param string $sIp
-	 * @return bool
-	 */
-	public function isValidIpOrRange( $sIp ) {
-		return $this->isValidIp_PublicRemote( $sIp ) || $this->isValidIpRange( $sIp );
+	public function isValidIpOrRange( $ip ) {
+		return $this->isValidIp_PublicRemote( $ip ) || $this->isValidIpRange( $ip );
 	}
 
 	/**
 	 * Assumes a valid IPv4 address is provided as we're only testing for a whether the IP is public or not.
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool
 	 */
-	public function isValidIp_PublicRange( $sIp ) {
-		return $this->isValidIp( $sIp, FILTER_FLAG_NO_PRIV_RANGE );
+	public function isValidIp_PublicRange( $ip ) {
+		return $this->isValidIp( $ip, FILTER_FLAG_NO_PRIV_RANGE );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool
 	 */
-	public function isValidIp_PublicRemote( $sIp ) {
-		return $this->isValidIp( $sIp, ( FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) );
+	public function isValidIp_PublicRemote( $ip ) {
+		return $this->isValidIp( $ip, ( FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) );
 	}
 
 	/**
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return bool
 	 */
-	public function isValidIpRange( $sIp ) {
-		return $this->isValidIp4Range( $sIp ) || $this->isValidIp6Range( $sIp );
+	public function isValidIpRange( $ip ) {
+		return $this->isValidIp4Range( $ip ) || $this->isValidIp6Range( $ip );
 	}
 
 	/**
@@ -354,29 +363,29 @@ class IpUtils {
 	}
 
 	/**
-	 * @param $sIP
+	 * @param $ip
 	 * @return string|null
 	 */
-	public function determineSourceFromIp( $sIP ) {
-		return ( new FindSourceFromIp() )->run( $sIP );
+	public function determineSourceFromIp( $ip ) {
+		return ( new FindSourceFromIp() )->run( $ip );
 	}
 
 	/**
-	 * @param Net\VisitorIpDetection $oDetector
+	 * @param Net\VisitorIpDetection $detector
 	 * @return $this
 	 */
-	public function setIpDetector( Utilities\Net\VisitorIpDetection $oDetector ) {
-		$this->oIpDetector = $oDetector;
+	public function setIpDetector( Utilities\Net\VisitorIpDetection $detector ) {
+		$this->oIpDetector = $detector;
 		return $this;
 	}
 
 	/**
 	 * Override the Detector with this IP.
-	 * @param string $sIp
+	 * @param string $ip
 	 * @return $this
 	 */
-	public function setRequestIpAddress( $sIp ) {
-		$this->sIp = $sIp;
+	public function setRequestIpAddress( $ip ) {
+		$this->sIp = $ip;
 		return $this;
 	}
 }

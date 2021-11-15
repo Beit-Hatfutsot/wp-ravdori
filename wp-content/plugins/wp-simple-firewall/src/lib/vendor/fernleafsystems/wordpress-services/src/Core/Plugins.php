@@ -3,73 +3,71 @@
 namespace FernleafSystems\Wordpress\Services\Core;
 
 use FernleafSystems\Wordpress\Services\Core\Upgrades;
-use FernleafSystems\Wordpress\Services\Core\VOs\WpPluginVo;
+use FernleafSystems\Wordpress\Services\Core\VOs\Assets;
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Class Plugins
- * @package FernleafSystems\Wordpress\Services\Core
- */
 class Plugins {
 
-	/**
-	 * @var WpPluginVo[]
-	 */
 	private $aLoadedVOs;
 
 	/**
-	 * @param string $sPluginFile
+	 * @var Assets\WpPluginVo[]
+	 */
+	private $loadedVOs;
+
+	/**
+	 * @param string $file
 	 * @param bool   $bNetworkWide
 	 * @return null|\WP_Error
 	 */
-	public function activate( $sPluginFile, $bNetworkWide = false ) {
-		return activate_plugin( $sPluginFile, '', $bNetworkWide );
+	public function activate( $file, $bNetworkWide = false ) {
+		return activate_plugin( $file, '', $bNetworkWide );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @param bool   $bNetworkWide
 	 * @return null|\WP_Error
 	 */
-	protected function activateQuietly( $sPluginFile, $bNetworkWide = false ) {
-		return activate_plugin( $sPluginFile, '', $bNetworkWide, true );
+	protected function activateQuietly( $file, $bNetworkWide = false ) {
+		return activate_plugin( $file, '', $bNetworkWide, true );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @param bool   $bNetworkWide
 	 */
-	public function deactivate( $sPluginFile, $bNetworkWide = false ) {
-		deactivate_plugins( $sPluginFile, '', $bNetworkWide );
+	public function deactivate( $file, $bNetworkWide = false ) {
+		deactivate_plugins( $file, '', $bNetworkWide );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @param bool   $bNetworkWide
 	 */
-	protected function deactivateQuietly( $sPluginFile, $bNetworkWide = false ) {
-		deactivate_plugins( $sPluginFile, true, $bNetworkWide );
+	protected function deactivateQuietly( $file, $bNetworkWide = false ) {
+		deactivate_plugins( $file, true, $bNetworkWide );
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @param bool   $bNetworkWide
 	 * @return bool
 	 */
-	public function delete( $sFile, $bNetworkWide = false ) {
-		if ( !$this->isInstalled( $sFile ) ) {
+	public function delete( $file, $bNetworkWide = false ) {
+		if ( !$this->isInstalled( $file ) ) {
 			return false;
 		}
 
-		if ( $this->isActive( $sFile ) ) {
-			$this->deactivate( $sFile, $bNetworkWide );
+		if ( $this->isActive( $file ) ) {
+			$this->deactivate( $file, $bNetworkWide );
 		}
-		$this->uninstall( $sFile );
+		$this->uninstall( $file );
 
 		// delete the folder
-		$sPluginDir = dirname( $sFile );
+		$sPluginDir = dirname( $file );
 		if ( $sPluginDir == '.' ) { //it's not within a sub-folder
-			$sPluginDir = $sFile;
+			$sPluginDir = $file;
 		}
 		$sPath = path_join( WP_PLUGIN_DIR, $sPluginDir );
 		return Services::WpFs()->deleteDir( $sPath );
@@ -102,14 +100,14 @@ class Plugins {
 	}
 
 	/**
-	 * @param $sSlug
+	 * @param $slug
 	 * @return array|bool
 	 */
-	public function installFromWpOrg( $sSlug ) {
+	public function installFromWpOrg( $slug ) {
 		include_once( ABSPATH.'wp-admin/includes/plugin-install.php' );
 
 		$api = plugins_api( 'plugin_information', [
-			'slug'   => $sSlug,
+			'slug'   => $slug,
 			'fields' => [
 				'sections' => false,
 			],
@@ -122,23 +120,23 @@ class Plugins {
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @param bool   $bUseBackup
 	 * @return bool
 	 */
-	public function reinstall( $sFile, $bUseBackup = false ) {
+	public function reinstall( $file, $bUseBackup = false ) {
 		$bSuccess = false;
 
-		if ( $this->isInstalled( $sFile ) ) {
+		if ( $this->isInstalled( $file ) ) {
 
-			$sSlug = $this->getSlug( $sFile );
+			$sSlug = $this->getSlug( $file );
 			if ( !empty( $sSlug ) ) {
 				$oFS = Services::WpFs();
 
-				$sDir = dirname( path_join( WP_PLUGIN_DIR, $sFile ) );
-				$sBackupDir = WP_PLUGIN_DIR.'/../'.basename( $sDir ).'bak'.time();
+				$dir = dirname( path_join( WP_PLUGIN_DIR, $file ) );
+				$sBackupDir = WP_PLUGIN_DIR.'/../'.basename( $dir ).'bak'.time();
 				if ( $bUseBackup ) {
-					rename( $sDir, $sBackupDir );
+					rename( $dir, $sBackupDir );
 				}
 
 				$aResult = $this->installFromWpOrg( $sSlug );
@@ -150,8 +148,8 @@ class Plugins {
 					}
 				}
 				elseif ( $bUseBackup ) {
-					$oFS->deleteDir( $sDir );
-					rename( $sBackupDir, $sDir );
+					$oFS->deleteDir( $dir );
+					rename( $sBackupDir, $dir );
 				}
 			}
 		}
@@ -159,40 +157,40 @@ class Plugins {
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @return array
 	 */
-	public function update( $sFile ) {
+	public function update( $file ) {
 		require_once( ABSPATH.'wp-admin/includes/class-wp-upgrader.php' );
 
-		$bWasActive = $this->isActive( $sFile );
+		$wasActive = $this->isActive( $file );
 
-		$oSkin = new \Automatic_Upgrader_Skin();
-		$mResult = ( new \Plugin_Upgrader( $oSkin ) )->bulk_upgrade( [ $sFile ] );
+		$upgraderSkin = new \Automatic_Upgrader_Skin();
+		$mResult = ( new \Plugin_Upgrader( $upgraderSkin ) )->bulk_upgrade( [ $file ] );
 
 		$bSuccess = false;
-		if ( is_array( $mResult ) && isset( $mResult[ $sFile ] ) ) {
+		if ( is_array( $mResult ) && isset( $mResult[ $file ] ) ) {
 			$mResult = array_shift( $mResult );
 			$bSuccess = !empty( $mResult ) && is_array( $mResult );
 		}
 
-		if ( $bWasActive && !$this->isActive( $sFile ) ) {
-			$this->activate( $sFile );
+		if ( $wasActive && !$this->isActive( $file ) ) {
+			$this->activate( $file );
 		}
 
 		return [
 			'successful' => $bSuccess,
-			'feedback'   => $oSkin->get_upgrade_messages(),
+			'feedback'   => $upgraderSkin->get_upgrade_messages(),
 			'errors'     => is_wp_error( $mResult ) ? $mResult->get_error_messages() : [ 'no errors' ]
 		];
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return true
 	 */
-	public function uninstall( $sPluginFile ) {
-		return uninstall_plugin( $sPluginFile );
+	public function uninstall( $file ) {
+		return uninstall_plugin( $file );
 	}
 
 	/**
@@ -210,8 +208,6 @@ class Plugins {
 		return null;
 	}
 
-	/**
-	 */
 	protected function clearUpdates() {
 		$oWp = Services::WpGeneral();
 		$sKey = 'update_plugins';
@@ -243,14 +239,14 @@ class Plugins {
 	}
 
 	/**
-	 * @param string $sDirName
+	 * @param string $dirName
 	 * @return string|null
 	 */
-	public function findPluginFileFromDirName( $sDirName ) {
+	public function findPluginFileFromDirName( $dirName ) {
 		$sFile = null;
-		if ( !empty( $sDirName ) ) {
-			foreach ( $this->getInstalledBaseFiles() as $sF ) {
-				if ( strpos( $sF, $sDirName.'/' ) === 0 ) {
+		if ( !empty( $dirName ) ) {
+			foreach ( $this->getInstalledPluginFiles() as $sF ) {
+				if ( strpos( $sF, $dirName.'/' ) === 0 ) {
 					$sFile = $sF;
 					break;
 				}
@@ -260,122 +256,113 @@ class Plugins {
 	}
 
 	/**
-	 * @param string $sFile - plugin base file, e.g. wp-folder/wp-plugin.php
+	 * @param string $file - plugin base file, e.g. wp-folder/wp-plugin.php
 	 * @return string
 	 */
-	public function getInstallationDir( $sFile ) {
-		return wp_normalize_path( dirname( path_join( WP_PLUGIN_DIR, $sFile ) ) );
+	public function getInstallationDir( $file ) {
+		return wp_normalize_path( dirname( path_join( WP_PLUGIN_DIR, $file ) ) );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getLinkPluginActivate( $sPluginFile ) {
-		$sUrl = self_admin_url( 'plugins.php' );
-		$aQueryArgs = [
+	public function getLinkPluginActivate( $file ) {
+		return add_query_arg( [
 			'action'   => 'activate',
-			'plugin'   => urlencode( $sPluginFile ),
-			'_wpnonce' => wp_create_nonce( 'activate-plugin_'.$sPluginFile )
-		];
-		return add_query_arg( $aQueryArgs, $sUrl );
+			'plugin'   => urlencode( $file ),
+			'_wpnonce' => wp_create_nonce( 'activate-plugin_'.$file )
+		], self_admin_url( 'plugins.php' ) );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getLinkPluginDeactivate( $sPluginFile ) {
-		$sUrl = self_admin_url( 'plugins.php' );
-		$aQueryArgs = [
+	public function getLinkPluginDeactivate( $file ) {
+		return add_query_arg( [
 			'action'   => 'deactivate',
-			'plugin'   => urlencode( $sPluginFile ),
-			'_wpnonce' => wp_create_nonce( 'deactivate-plugin_'.$sPluginFile )
-		];
-		return add_query_arg( $aQueryArgs, $sUrl );
+			'plugin'   => urlencode( $file ),
+			'_wpnonce' => wp_create_nonce( 'deactivate-plugin_'.$file )
+		], self_admin_url( 'plugins.php' ) );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getLinkPluginUpgrade( $sPluginFile ) {
-		$sUrl = self_admin_url( 'update.php' );
-		$aQueryArgs = [
+	public function getLinkPluginUpgrade( $file ) {
+		return add_query_arg( [
 			'action'   => 'upgrade-plugin',
-			'plugin'   => urlencode( $sPluginFile ),
-			'_wpnonce' => wp_create_nonce( 'upgrade-plugin_'.$sPluginFile )
-		];
-		return add_query_arg( $aQueryArgs, $sUrl );
+			'plugin'   => urlencode( $file ),
+			'_wpnonce' => wp_create_nonce( 'upgrade-plugin_'.$file )
+		], self_admin_url( 'update.php' ) );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return array|null
 	 */
-	public function getPlugin( $sPluginFile ) {
-		return $this->isInstalled( $sPluginFile ) ? $this->getPlugins()[ $sPluginFile ] : null;
+	public function getPlugin( $file ) {
+		return $this->isInstalled( $file ) ? $this->getPlugins()[ $file ] : null;
 	}
 
 	/**
-	 * @param string $sPluginFile
-	 * @param bool   $bReload
-	 * @return WpPluginVo|null
+	 * @param string $file
+	 * @param bool   $reload
+	 * @return Assets\WpPluginVo|null
 	 */
-	public function getPluginAsVo( $sPluginFile, $bReload = false ) {
+	public function getPluginAsVo( string $file, bool $reload = false ) {
 		try {
-			if ( !is_array( $this->aLoadedVOs ) ) {
-				$this->aLoadedVOs = [];
+			if ( !is_array( $this->loadedVOs ) ) {
+				$this->loadedVOs = [];
 			}
-			if ( $bReload || !isset( $this->aLoadedVOs[ $sPluginFile ] ) ) {
-				$this->aLoadedVOs[ $sPluginFile ] = new WpPluginVo( $sPluginFile );
+			if ( $reload || !isset( $this->loadedVOs[ $file ] ) ) {
+				$this->loadedVOs[ $file ] = new Assets\WpPluginVo( $file );
 			}
-			$oAsset = $this->aLoadedVOs[ $sPluginFile ];
+			$asset = $this->loadedVOs[ $file ];
 		}
-		catch ( \Exception $oE ) {
-			$oAsset = null;
+		catch ( \Exception $e ) {
+			$asset = null;
 		}
-		return $oAsset;
+		return $asset;
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return null|\stdClass
 	 */
-	public function getPluginDataAsObject( $sPluginFile ) {
-		$aPlugin = $this->getPlugin( $sPluginFile );
-		return is_null( $aPlugin ) ? null : Services::DataManipulation()->convertArrayToStdClass( $aPlugin );
+	public function getPluginDataAsObject( $file ) {
+		$plugin = $this->getPlugin( $file );
+		return is_null( $plugin ) ? null : Services::DataManipulation()->convertArrayToStdClass( $plugin );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return int
 	 */
-	public function getActivePluginLoadPosition( $sPluginFile ) {
-		$nPosition = array_search( $sPluginFile, $this->getActivePlugins() );
-		return ( $nPosition === false ) ? -1 : $nPosition;
+	public function getActivePluginLoadPosition( $file ) {
+		$position = array_search( $file, $this->getActivePlugins() );
+		return ( $position === false ) ? -1 : $position;
 	}
 
 	/**
 	 * @return array
 	 */
 	public function getActivePlugins() {
-		$oWp = Services::WpGeneral();
-		$sOptionKey = $oWp->isMultisite() ? 'active_sitewide_plugins' : 'active_plugins';
-		return $oWp->getOption( $sOptionKey );
+		return Services::WpGeneral()->getOption(
+			Services::WpGeneral()->isMultisite() ? 'active_sitewide_plugins' : 'active_plugins'
+		);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getInstalledBaseFiles() {
+	public function getInstalledBaseFiles() :array {
 		return array_keys( $this->getPlugins() );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getInstalledPluginFiles() {
+	public function getInstalledPluginFiles() :array {
 		return array_keys( $this->getPlugins() );
 	}
 
@@ -383,10 +370,10 @@ class Plugins {
 	 * @return string[]
 	 */
 	public function getInstalledWpOrgPluginFiles() {
-		return array_values( array_filter(
-			$this->getInstalledPluginFiles(),
-			function ( $sFile ) {
-				return $this->isWpOrg( $sFile );
+		return array_keys( array_filter(
+			$this->getPluginsAsVo(),
+			function ( $plugin ) {
+				return $plugin->isWpOrg();
 			}
 		) );
 	}
@@ -394,7 +381,7 @@ class Plugins {
 	/**
 	 * @return array[]
 	 */
-	public function getPlugins() {
+	public function getPlugins() :array {
 		if ( !function_exists( 'get_plugins' ) ) {
 			require_once( ABSPATH.'wp-admin/includes/plugin.php' );
 		}
@@ -402,90 +389,86 @@ class Plugins {
 	}
 
 	/**
-	 * @return WpPluginVo[]
+	 * @return Assets\WpPluginVo[]
 	 */
-	public function getPluginsAsVo() {
-		return array_filter(
-			array_map(
-				function ( $sPluginFile ) {
-					return $this->getPluginAsVo( $sPluginFile );
-				},
-				$this->getInstalledPluginFiles()
-			)
-		);
+	public function getPluginsAsVo() :array {
+		$plugins = [];
+		foreach ( $this->getInstalledPluginFiles() as $pluginFile ) {
+			$plugins[ $pluginFile ] = $this->getPluginAsVo( $pluginFile );
+		}
+		return $plugins;
 	}
 
 	/**
 	 * @return \stdClass[] - keys are plugin base files
 	 */
 	public function getAllExtendedData() {
-		$oData = Services::WpGeneral()->getTransient( 'update_plugins' );
+		$data = Services::WpGeneral()->getTransient( 'update_plugins' );
 		return array_merge(
-			isset( $oData->no_update ) ? $oData->no_update : [],
-			isset( $oData->response ) ? $oData->response : []
+			( isset( $data->no_update ) && is_array( $data->no_update ) ) ? $data->no_update : [],
+			( isset( $data->response ) && is_array( $data->response ) ) ? $data->response : []
 		);
 	}
 
 	/**
-	 * @param string $sBaseFile
+	 * @param string $baseFile
 	 * @return array
 	 */
-	public function getExtendedData( $sBaseFile ) {
-		$aData = $this->getAllExtendedData();
-		return isset( $aData[ $sBaseFile ] ) ?
-			Services::DataManipulation()->convertStdClassToArray( $aData[ $sBaseFile ] )
-			: [];
+	public function getExtendedData( $baseFile ) :array {
+		$ext = [];
+		$data = $this->getAllExtendedData();
+		if ( !empty( $data[ $baseFile ] ) ) {
+			$ext = is_array( $data[ $baseFile ] ) ? $data[ $baseFile ]
+				: Services::DataManipulation()->convertStdClassToArray( $data[ $baseFile ] );
+		}
+		return is_array( $ext ) ? $ext : [];
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getAllSlugs() {
-		$aSlugs = [];
+	public function getAllSlugs() :array {
+		$slugs = [];
 
-		foreach ( $this->getAllExtendedData() as $sBaseName => $oPlugData ) {
-			if ( isset( $oPlugData->slug ) ) {
-				$aSlugs[ $sBaseName ] = $oPlugData->slug;
+		foreach ( $this->getAllExtendedData() as $basename => $data ) {
+			if ( isset( $data->slug ) ) {
+				$slugs[ $basename ] = $data->slug;
 			}
 		}
 
-		return $aSlugs;
+		return $slugs;
 	}
 
 	/**
-	 * @param $sBaseName
+	 * @param $baseName
 	 * @return string
 	 */
-	public function getSlug( $sBaseName ) {
-		$aInfo = $this->getExtendedData( $sBaseName );
-		return isset( $aInfo[ 'slug' ] ) ? $aInfo[ 'slug' ] : '';
+	public function getSlug( $baseName ) {
+		$info = $this->getExtendedData( $baseName );
+		return $info[ 'slug' ] ?? '';
 	}
 
 	/**
-	 * @param string $sBaseName
+	 * @param string $baseName
 	 * @return bool
 	 * @deprecated 1.1.17
 	 */
-	public function isWpOrg( $sBaseName ) {
-		return $this->getPluginAsVo( $sBaseName )->isWpOrg();
+	public function isWpOrg( $baseName ) {
+		return $this->getPluginAsVo( $baseName )->isWpOrg();
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @return \stdClass|null
 	 */
-	public function getUpdateInfo( $sFile ) {
-		$aU = $this->getUpdates();
-		return isset( $aU[ $sFile ] ) ? $aU[ $sFile ] : null;
+	public function getUpdateInfo( $file ) {
+		return $this->getUpdates()[ $file ] ?? null;
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getUpdateNewVersion( $sFile ) {
-		$oInfo = $this->getUpdateInfo( $sFile );
-		return ( !is_null( $oInfo ) && isset( $oInfo->new_version ) ) ? $oInfo->new_version : '';
+	public function getUpdateNewVersion( $file ) {
+		$info = $this->getUpdateInfo( $file );
+		return ( !is_null( $info ) && isset( $info->new_version ) ) ? $info->new_version : '';
 	}
 
 	/**
@@ -502,129 +485,125 @@ class Plugins {
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getUrl_Activate( $sPluginFile ) {
-		return $this->getUrl_Action( $sPluginFile, 'activate' );
+	public function getUrl_Activate( $file ) :string {
+		return $this->getUrl_Action( $file, 'activate' );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getUrl_Deactivate( $sPluginFile ) {
-		return $this->getUrl_Action( $sPluginFile, 'deactivate' );
+	public function getUrl_Deactivate( $file ) :string {
+		return $this->getUrl_Action( $file, 'deactivate' );
 	}
 
 	/**
-	 * @param string $sPluginFile
+	 * @param string $file
 	 * @return string
 	 */
-	public function getUrl_Upgrade( $sPluginFile ) {
-		$aQueryArgs = [
+	public function getUrl_Upgrade( $file ) :string {
+		return add_query_arg( [
 			'action'   => 'upgrade-plugin',
-			'plugin'   => urlencode( $sPluginFile ),
-			'_wpnonce' => wp_create_nonce( 'upgrade-plugin_'.$sPluginFile )
-		];
-		return add_query_arg( $aQueryArgs, self_admin_url( 'update.php' ) );
+			'plugin'   => urlencode( $file ),
+			'_wpnonce' => wp_create_nonce( 'upgrade-plugin_'.$file )
+		], self_admin_url( 'update.php' ) );
 	}
 
 	/**
-	 * @param string $sPluginFile
-	 * @param string $sAction
+	 * @param string $file
+	 * @param string $action
 	 * @return string
 	 */
-	protected function getUrl_Action( $sPluginFile, $sAction ) {
-		return add_query_arg(
-			[
-				'action'   => $sAction,
-				'plugin'   => urlencode( $sPluginFile ),
-				'_wpnonce' => wp_create_nonce( $sAction.'-plugin_'.$sPluginFile )
-			],
-			self_admin_url( 'plugins.php' )
-		);
+	protected function getUrl_Action( $file, $action ) :string {
+		return add_query_arg( [
+			'action'   => $action,
+			'plugin'   => urlencode( $file ),
+			'_wpnonce' => wp_create_nonce( $action.'-plugin_'.$file )
+		], self_admin_url( 'plugins.php' ) );
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @return bool
 	 */
-	public function isActive( $sFile ) {
-		return $this->isInstalled( $sFile ) && is_plugin_active( $sFile );
+	public function isActive( $file ) :bool {
+		return $this->isInstalled( $file ) && is_plugin_active( $file );
 	}
 
 	/**
-	 * @param string $sFile The full plugin file.
+	 * @param string $file The full plugin file.
 	 * @return bool
 	 */
-	public function isInstalled( $sFile ) {
-		return !empty( $sFile ) && in_array( $sFile, $this->getInstalledBaseFiles() );
+	public function isInstalled( $file ) :bool {
+		return in_array( $file, $this->getInstalledPluginFiles() );
 	}
 
 	/**
-	 * @param string $sBaseFile
+	 * @param string $file
 	 * @return bool
 	 */
-	public function isPluginAutomaticallyUpdated( $sBaseFile ) {
-		$oUpdater = Services::WpGeneral()->getWpAutomaticUpdater();
-		if ( !$oUpdater ) {
+	public function isPluginAutomaticallyUpdated( $file ) {
+		$updater = Services::WpGeneral()->getWpAutomaticUpdater();
+		if ( !$updater ) {
 			return false;
 		}
 
 		// Due to a change in the filter introduced in version 3.8.2
 		if ( Services::WpGeneral()->getWordpressIsAtLeastVersion( '3.8.2' ) ) {
 			$mPluginItem = new \stdClass();
-			$mPluginItem->plugin = $sBaseFile;
+			$mPluginItem->plugin = $file;
 		}
 		else {
-			$mPluginItem = $sBaseFile;
+			$mPluginItem = $file;
 		}
 
-		return $oUpdater->should_update( 'plugin', $mPluginItem, WP_PLUGIN_DIR );
+		return $updater->should_update( 'plugin', $mPluginItem, WP_PLUGIN_DIR );
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @return bool
 	 */
-	public function isUpdateAvailable( $sFile ) {
-		return !is_null( $this->getUpdateInfo( $sFile ) );
+	public function isUpdateAvailable( $file ) :bool {
+		return !is_null( $this->getUpdateInfo( $file ) );
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 * @param int    $nDesiredPosition
 	 */
-	public function setActivePluginLoadPosition( $sFile, $nDesiredPosition = 0 ) {
-		$oWp = Services::WpGeneral();
+	public function setActivePluginLoadPosition( $file, $nDesiredPosition = 0 ) {
+		$WP = Services::WpGeneral();
 		$oData = Services::DataManipulation();
 
 		$aActive = $oData->setArrayValueToPosition(
-			$oWp->getOption( 'active_plugins' ),
-			$sFile,
+			$WP->getOption( 'active_plugins' ),
+			$file,
 			$nDesiredPosition
 		);
-		$oWp->updateOption( 'active_plugins', $aActive );
+		$WP->updateOption( 'active_plugins', $aActive );
 
-		if ( $oWp->isMultisite() ) {
+		if ( $WP->isMultisite() ) {
 			$aActive = $oData
-				->setArrayValueToPosition( $oWp->getOption( 'active_sitewide_plugins' ), $sFile, $nDesiredPosition );
-			$oWp->updateOption( 'active_sitewide_plugins', $aActive );
+				->setArrayValueToPosition( $WP->getOption( 'active_sitewide_plugins' ), $file, $nDesiredPosition );
+			$WP->updateOption( 'active_sitewide_plugins', $aActive );
 		}
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 */
-	public function setActivePluginLoadFirst( $sFile ) {
-		$this->setActivePluginLoadPosition( $sFile, 0 );
+	public function setActivePluginLoadFirst( $file ) {
+		$this->setActivePluginLoadPosition( $file, 0 );
 	}
 
 	/**
-	 * @param string $sFile
+	 * @param string $file
 	 */
-	public function setActivePluginLoadLast( $sFile ) {
-		$this->setActivePluginLoadPosition( $sFile, 1000 );
+	public function setActivePluginLoadLast( $file ) {
+		$this->setActivePluginLoadPosition( $file, 1000 );
 	}
 }

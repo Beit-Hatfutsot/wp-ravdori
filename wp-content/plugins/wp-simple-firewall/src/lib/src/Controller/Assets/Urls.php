@@ -22,26 +22,19 @@ class Urls {
 
 	public function forJs( string $asset ) :string {
 		$url = $this->lookupAssetUrlInSpec( $asset, 'js' );
-		return empty( $url ) ?
-			$this->forAsset( 'js/'.Services::Data()->addExtensionToFilePath( $asset, 'js' ) )
-			: $url;
+		if ( empty( $url ) ) {
+			$url = $this->forAsset( 'js/'.Services::Data()->addExtensionToFilePath( $asset, 'js' ) );
+		}
+		return $url;
 	}
 
 	public function forAsset( string $asset ) :string {
 		$con = $this->getCon();
-
-		$path = $con->getPath_Assets( $asset );
-		if ( Services::WpFs()->exists( $path ) ) {
-			$url = Services::Includes()->addIncludeModifiedParam(
-				$this->forPluginItem( $con->getPluginSpec_Path( 'assets' ).'/'.$asset ),
-				$path
-			);
-		}
-		else {
-			$url = '';
-		}
-
-		return $url;
+		$path = $con->paths->forAsset( $asset );
+		return Services::Includes()->addIncludeModifiedParam(
+			$this->forPluginItem( $con->cfg->paths[ 'assets' ].'/'.$asset ),
+			$path
+		);
 	}
 
 	public function forPluginItem( string $path = '' ) :string {
@@ -55,10 +48,11 @@ class Urls {
 	 * @return mixed|null
 	 */
 	protected function lookupAssetUrlInSpec( string $asset, string $type ) {
-		$registrations = $this->getCon()->cfg->includes[ 'register' ][ $type ];
-		if ( isset( $registrations[ $asset ] ) && !empty( $registrations[ $asset ][ 'url' ] ) ) {
-			return $registrations[ $asset ][ 'url' ];
-		}
-		return null;
+		$asset = $this->lookupAssetInSpec( $asset, $type );
+		return empty( $asset[ 'url' ] ) ? null : $asset[ 'url' ];
+	}
+
+	protected function lookupAssetInSpec( string $asset, string $type ) :array {
+		return $this->getCon()->cfg->includes[ 'register' ][ $type ][ $asset ] ?? [];
 	}
 }

@@ -7,7 +7,6 @@ use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities;
-use FernleafSystems\Wordpress\Services\Utilities\Net\IpIdentify;
 
 class ModCon extends Base\ModCon {
 
@@ -21,20 +20,7 @@ class ModCon extends Base\ModCon {
 	 */
 	private static $bVisitorIsWhitelisted;
 
-	/**
-	 * @return bool
-	 * @deprecated 10.2
-	 */
-	public function canCacheDirWrite() :bool {
-		return ( new Shield\Modules\Plugin\Lib\TestCacheDirWrite() )
-			->setMod( $this->getCon()->getModule_Plugin() )
-			->canWrite();
-	}
-
-	/**
-	 * @return Shield\Databases\Session\Handler
-	 */
-	public function getDbHandler_Sessions() {
+	public function getDbHandler_Sessions() :Shield\Databases\Session\Handler {
 		return $this->getCon()
 					->getModule_Sessions()
 					->getDbHandler_Sessions();
@@ -48,13 +34,6 @@ class ModCon extends Base\ModCon {
 					->getModule_Sessions()
 					->getSessionCon()
 					->getCurrent();
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasValidRequestIP() {
-		return Services::IP()->isValidIp( Services::IP()->getRequestIp() );
 	}
 
 	public function onWpInit() {
@@ -97,20 +76,6 @@ class ModCon extends Base\ModCon {
 		return $cfg;
 	}
 
-	public function getSecAdminLoginAjaxData() :array {
-		// We set a custom mod_slug so that this module handles the ajax request
-		$dat = $this->getAjaxActionData( 'sec_admin_login' );
-		$dat[ 'mod_slug' ] = $this->prefix( 'admin_access_restriction' );
-		return $dat;
-	}
-
-	protected function getSecAdminCheckAjaxData() :array {
-		// We set a custom mod_slug so that this module handles the ajax request
-		$dat = $this->getAjaxActionData( 'sec_admin_check' );
-		$dat[ 'mod_slug' ] = $this->prefix( 'admin_access_restriction' );
-		return $dat;
-	}
-
 	public function getPluginReportEmail() :string {
 		return $this->getCon()
 					->getModule_Plugin()
@@ -129,37 +94,37 @@ class ModCon extends Base\ModCon {
 		}
 	}
 
-	protected function renderRestrictedPage() :string {
+	public function renderRestrictedPage() :string {
 		/** @var Shield\Modules\SecurityAdmin\Options $secOpts */
 		$secOpts = $this->getCon()
 						->getModule_SecAdmin()
 						->getOptions();
-		$aData = Services::DataManipulation()
-						 ->mergeArraysRecursive(
-							 $this->getUIHandler()->getBaseDisplayData(),
-							 [
-								 'ajax'    => [
-									 'restricted_access' => $this->getAjaxActionData( 'restricted_access' ),
-								 ],
-								 'strings' => [
-									 'force_remove_email' => __( "If you've forgotten your PIN, a link can be sent to the plugin administrator email address to remove this restriction.", 'wp-simple-firewall' ),
-									 'click_email'        => __( "Click here to send the verification email.", 'wp-simple-firewall' ),
-									 'send_to_email'      => sprintf( __( "Email will be sent to %s", 'wp-simple-firewall' ),
-										 Utilities\Obfuscate::Email( $this->getPluginReportEmail() ) ),
-									 'no_email_override'  => __( "The Security Administrator has restricted the use of the email override feature.", 'wp-simple-firewall' ),
-								 ],
-								 'flags'   => [
-									 'allow_email_override' => $secOpts->isEmailOverridePermitted()
-								 ]
-							 ]
-						 );
-		return $this->renderTemplate( '/wpadmin_pages/security_admin/index.twig', $aData, true );
+
+		return $this->renderTemplate(
+			'/wpadmin_pages/security_admin/index.twig',
+			Services::DataManipulation()
+					->mergeArraysRecursive(
+						$this->getUIHandler()->getBaseDisplayData(),
+						[
+							'ajax'    => [
+								'restricted_access' => $this->getAjaxActionData( 'restricted_access' ),
+							],
+							'strings' => [
+								'force_remove_email' => __( "If you've forgotten your PIN, a link can be sent to the plugin administrator email address to remove this restriction.", 'wp-simple-firewall' ),
+								'click_email'        => __( "Click here to send the verification email.", 'wp-simple-firewall' ),
+								'send_to_email'      => sprintf( __( "Email will be sent to %s", 'wp-simple-firewall' ),
+									Utilities\Obfuscate::Email( $this->getPluginReportEmail() ) ),
+								'no_email_override'  => __( "The Security Administrator has restricted the use of the email override feature.", 'wp-simple-firewall' ),
+							],
+							'flags'   => [
+								'allow_email_override' => $secOpts->isEmailOverridePermitted()
+							]
+						]
+					),
+			true );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function getIfSupport3rdParty() {
+	public function getIfSupport3rdParty() :bool {
 		return $this->isPremium();
 	}
 
@@ -177,37 +142,45 @@ class ModCon extends Base\ModCon {
 
 	public function isVisitorWhitelisted() :bool {
 		if ( !isset( self::$bVisitorIsWhitelisted ) ) {
-			try {
-				$ipID = ( new IpIdentify(
-					(string)Services::IP()->getRequestIp(),
-					(string)Services::Request()->getUserAgent()
-				) )->run();
-				$ipID = key( $ipID );
-			}
-			catch ( \Exception $e ) {
-				$ipID = IpIdentify::UNKNOWN;
-			}
 
-			self::$bVisitorIsWhitelisted =
-				in_array( $ipID, [ IpIdentify::ICONTROLWP, IpIdentify::MANAGEWP ] )
-				|| ( new Shield\Modules\IPs\Lib\Ops\LookupIpOnList() )
-					   ->setDbHandler( $this->getCon()->getModule_IPs()->getDbHandler_IPs() )
-					   ->setIP( Services::IP()->getRequestIp() )
-					   ->setListTypeWhite()
-					   ->lookup()
-				   instanceof Shield\Databases\IPs\EntryVO;
+			$ipID = Services::IP()->getIpDetector()->getIPIdentity();
+
+			if ( in_array( $ipID, $this->getUntrustedProviders() ) ) {
+				self::$bVisitorIsWhitelisted = false;
+			}
+			elseif ( in_array( $ipID, Services::ServiceProviders()->getWpSiteManagementProviders() ) ) {
+				self::$bVisitorIsWhitelisted = true; // iControlWP / ManageWP
+			}
+			else {
+				self::$bVisitorIsWhitelisted =
+					( new Shield\Modules\IPs\Lib\Ops\LookupIpOnList() )
+						->setDbHandler( $this->getCon()->getModule_IPs()->getDbHandler_IPs() )
+						->setIP( Services::IP()->getRequestIp() )
+						->setListTypeBypass()
+						->lookup() instanceof Shield\Databases\IPs\EntryVO;
+			}
 		}
 		return self::$bVisitorIsWhitelisted;
 	}
 
+	public function isTrustedVerifiedBot() :bool {
+		return $this->isVerifiedBot()
+			   && !in_array( Services::IP()->getIpDetector()->getIPIdentity(), $this->getUntrustedProviders() );
+	}
+
+	protected function getUntrustedProviders() :array {
+		$untrustedProviders = apply_filters( 'shield/untrusted_service_providers', [] );
+		return is_array( $untrustedProviders ) ? $untrustedProviders : [];
+	}
+
 	public function isVerifiedBot() :bool {
 		if ( !isset( self::$bIsVerifiedBot ) ) {
-			$srvIP = Services::IP();
-			self::$bIsVerifiedBot = !$srvIP->isLoopback() &&
-									!in_array( $srvIP->getIpDetector()->getIPIdentity(), [
-										IpIdentify::UNKNOWN,
-										IpIdentify::THIS_SERVER,
-										IpIdentify::VISITOR,
+			$ipID = Services::IP()->getIpDetector()->getIPIdentity();
+			self::$bIsVerifiedBot = !Services::IP()->isLoopback() &&
+									!in_array( $ipID, [
+										Utilities\Net\IpID::UNKNOWN,
+										Utilities\Net\IpID::THIS_SERVER,
+										Utilities\Net\IpID::VISITOR,
 									] );
 		}
 		return self::$bIsVerifiedBot;

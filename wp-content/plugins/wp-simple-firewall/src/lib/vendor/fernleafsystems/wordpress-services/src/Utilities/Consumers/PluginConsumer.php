@@ -1,13 +1,9 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Consumers;
 
-use FernleafSystems\Wordpress\Services\Core\VOs\WpPluginVo;
+use FernleafSystems\Wordpress\Services\Core\VOs\Assets\WpPluginVo;
 
-/**
- * Trait PluginConsumer
- * @package FernleafSystems\Wordpress\Services\Utilities\Consumers
- */
 trait PluginConsumer {
 
 	/**
@@ -22,19 +18,16 @@ trait PluginConsumer {
 		return $this->oWorkingPlugin;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function hasWorkingPlugin() {
+	public function hasWorkingPlugin() :bool {
 		return $this->oWorkingPlugin instanceof WpPluginVo;
 	}
 
 	/**
-	 * @param WpPluginVo $oPlugin
+	 * @param WpPluginVo $plugin
 	 * @return $this
 	 */
-	public function setWorkingPlugin( $oPlugin ) {
-		$this->oWorkingPlugin = $oPlugin;
+	public function setWorkingPlugin( $plugin ) {
+		$this->oWorkingPlugin = $plugin;
 		return $this;
 	}
 }

@@ -3,29 +3,42 @@ Contributors: UserWay.org
 Tags: userway, accessibility, a11y, WCAG, Section 508, web accessibility, handicap, disabled, blind, visually impaired,
 accessibility widget, accessibility plugin, contrast, text size, cursor, keyboard navigation, color saturation, legible fonts
 Requires at least: 4.7.2
-Tested up to: 5.6
-Stable tag: 5.6
+Tested up to: 5.8
+Stable tag: 5.7.2
 == Description ==
-UserWay is a pioneer in innovative website accessibility technologies
+**About UserWay’s Widget**
+UserWay’s AI-Powered Accessibility Widget (SaaS) remediates accessibility violations on your website using advanced artificial intelligence and an automatically updated underlying rule engine.
+The widget takes minutes to install, and no coding experience is required. This powerful plugin ensures a comprehensive legal & regulatory compliance framework covering ADA, Section 508, and WCAG 2.1 AA.
 
-We provide helpful accessibility plugins that work without refactoring your website's existing code and will increase compliance with WCAG 2.1, ATAG 2.0, ADA, & Section 508 requirements.
+**Seamless Digital Accessibility with UserWay**
+UserWay's AI-Powered Accessibility Widget is trusted by millions of websites around the world. The widget was developed specifically to provide business owners of any size an affordable yet comprehensive accessibility solution while also making the web barrier-free for users regardless of ability.
 
-WCAG 2.1 AA Compliance is Within Reach
-Our Approach: start small, one step at a time
-<Without changes to your website's existing code>
+Allow your website visitors to tailor their browsing experience to match their needs and preferences and show your commitment to digital accessibility with UserWay.
 
-Web accessibility can seem complex and overwhelming if you don't know where to start.
+**Start a 10-day free trial today. No credit card is required.**
+**To learn more, visit us at [www.userway.org](https://www.userway.org/)**
 
-UserWay's plugin will instantly strengthen any weak spots that might cause issues.
-We are proud to say that tens of millions of pages are more accessible today thanks to UserWay.
+**How will UserWay help you and your site visitors?**
+Automatic Remediations Include:
 
-Try abandoning your mouse for a couple of days and see what the experience is like navigating your company's site.
+- Automatically generated alt text
+- Color contrast correction
+- Page structure and organization resolutions
+- Undefined and broken link remediation
+- ...and many more!
 
-UserWay creates a simpler and more accessible browsing experience for users with mobility issues as well. Millions of people cannot use a mouse or other pointing device and rely solely on their keyboard to navigate websites. Your site should be fully navigable using a keyboard's tab key, arrow keys, the enter key and the spacebar.
+Customization Tools Include:
 
-The UserWay widget will make smart modifications to elements on your site that we identify as potentially non-compliant or that may prevent keyboard-only navigation. And we do it all without requiring you or your developers to make costly adjustments to your website's existing codebase.
+- Screen reader
+- Enlarged cursor
+- Highlighted links
+- Dyslexia-friendly font
+- ...and many more!
 
-Failure to comply with Section 508 of the Department of Justice's ADA (American with Disabilities Act) Standards for Accessible Design could expose your company to hefty fines, the risk of expensive criminal and civil litigation as well as a reputation for being unfriendly to the disabled.
+**Accessibility does not have to be complicated. With UserWay, making your website accessible is simple and affordable. Start your free trial today to experience true accessibility for yourself.**
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/UBlRDfv4kUo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 == Installation ==
 1. Install the plugin into your WordPress project
 2. Go to website control panel
@@ -37,15 +50,38 @@ For more details please visit [https://userway.org/wp](https://userway.org/wp)
 == Screenshots ==
 1. Plugin Check
 2. Plugin page on the site.
-== Changelog ==
-= 2.0 =
-Optimized format of embed script
+= 1.1 =
+Fixed loading of styles for the plugin
 = 1.2.1 =
 Fixed display of errors in plugin settings
 = 1.2 =
-Fixed loading of styles for the plugin
-= 1.1 =
-*Release Date March 2017
+= 2.0 =
+Optimized format of embed script
+= 2.1 =
+Update configuration flow
+= 2.2 =
+fix register_rest_route issue
+= 2.3.0 =
+add debug endpoint
+= 2.3.1 =
+fix activation/deactivation flow
+= 2.3.3 =
+fix remove debug sensitive data
+= 2.3.4 =
+fix enable widget endpoint
+= 2.3.8 =
+fix change Iframe Widget Url
+= 2.4.1 =
+fix debug rest endpoint permission_callback function
+= 2.4.2 =
+fix blog url in AJAX requests
+= 2.4.3 =
+update assets
+= 2.4.4 =
+update screenshot images
+= 2.4.5 =
+update screenshot images
+
 *
 *Added translations for the plugin:
 *Arabic [ar];

@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Licenses\Keyless;
 
-use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+use FernleafSystems\Utilities\Data\Adapter\DynPropertiesClass;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\HttpRequest;
 
@@ -14,97 +14,92 @@ use FernleafSystems\Wordpress\Services\Utilities\HttpRequest;
  * @property int         $timeout
  * @property HttpRequest $last_http_req
  */
-abstract class Base {
+abstract class Base extends DynPropertiesClass {
 
-	use StdClassAdapter {
-		__get as __adapterGet;
-	}
-	const DEFAULT_URL_STUB = 'https://www.shieldsecurity.io/wp-json/odp-eddkeyless/v1';
+	const DEFAULT_URL_STUB = 'https://api.getshieldsecurity.com/wp-json/odp-eddkeyless/v1';
 	const API_ACTION = '';
 
 	/**
 	 * @return array|null
 	 */
 	protected function sendReq() {
-		$oHttpReq = Services::HttpRequest();
+		$req = Services::HttpRequest();
 
-		$aBodyParams = array_intersect_key(
-			$this->getRawDataAsArray(),
+		$bodyParams = array_intersect_key(
+			$this->getRawData(),
 			array_flip( $this->getRequestBodyParamKeys() )
 		);
 
-		$aReqParams = [
+		$reqParams = [
 			'timeout' => $this->timeout,
 		];
 
 		switch ( $this->request_method ) {
+
 			case 'post':
-				$aReqParams[ 'body' ] = $aBodyParams;
-				$bReqSuccess = $oHttpReq->post( $this->getApiRequestUrl(), $aReqParams );
+				$reqParams[ 'body' ] = $bodyParams;
+				$reqSuccess = $req->post( $this->getApiRequestUrl(), $reqParams );
 				break;
+
 			case 'get':
 			default:
 				// Doing it in the ['body'] on some sites fails with the params not passed through to query string.
 				// if they're not using the newer WP Request() class. WP 4.6+
-				$bReqSuccess = $oHttpReq->get(
-					add_query_arg( $aBodyParams, $this->getApiRequestUrl() ),
-					$aReqParams
+				$reqSuccess = $req->get(
+					add_query_arg( $bodyParams, $this->getApiRequestUrl() ),
+					$reqParams
 				);
 				break;
 		}
 
-		if ( $bReqSuccess ) {
-			$aResponse = empty( $oHttpReq->lastResponse->body ) ? [] : @json_decode( $oHttpReq->lastResponse->body, true );
+		if ( $reqSuccess ) {
+			$response = empty( $req->lastResponse->body ) ? [] : @json_decode( $req->lastResponse->body, true );
 		}
 		else {
-			$aResponse = null;
+			$response = null;
 		}
 
-		$this->last_http_req = $oHttpReq;
-		return $aResponse;
+		$this->last_http_req = $req;
+		return $response;
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiRequestUrl() {
+	protected function getApiRequestUrl() :string {
 		return sprintf( '%s/%s', $this->lookup_url_stub, static::API_ACTION );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	protected function getRequestBodyParamKeys() {
+	protected function getRequestBodyParamKeys() :array {
 		return [];
 	}
 
 	/**
-	 * @param string $sProperty
-	 * @return mixed
+	 * @inheritDoc
 	 */
-	public function __get( $sProperty ) {
+	public function __get( string $key ) {
 
-		$mValue = $this->__adapterGet( $sProperty );
+		$value = parent::__get( $key );
 
-		switch ( $sProperty ) {
+		switch ( $key ) {
 
 			case 'request_method':
-				if ( empty( $mValue ) ) {
-					$mValue = 'get';
+				if ( empty( $value ) ) {
+					$value = 'get';
 				}
-				$mValue = strtolower( $mValue );
+				$value = strtolower( $value );
 				break;
 
 			case 'lookup_url_stub':
-				if ( empty( $mValue ) ) {
-					$mValue = static::DEFAULT_URL_STUB;
+				if ( empty( $value ) ) {
+					$value = static::DEFAULT_URL_STUB;
 				}
-				$mValue = rtrim( $mValue, '/' );
+				$value = rtrim( $value, '/' );
 				break;
 
 			case 'timeout':
-				if ( empty( $mValue ) || !is_numeric( $mValue ) ) {
-					$mValue = 60;
+				if ( empty( $value ) || !is_numeric( $value ) ) {
+					$value = 60;
 				}
 				break;
 
@@ -112,6 +107,6 @@ abstract class Base {
 				break;
 		}
 
-		return $mValue;
+		return $value;
 	}
 }

@@ -10,6 +10,7 @@ use FernleafSystems\Wordpress\Services\Services;
  * @property string $prefix
  * @property int    $user_id
  * @property array  $flash_msg
+ * @deprecated
  */
 class PluginUserMeta {
 

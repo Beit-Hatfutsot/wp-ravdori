@@ -13,15 +13,15 @@ class ClassicPress extends AssetHashesBase {
 	const TYPE = 'classicpress';
 
 	/**
-	 * @param string $sVersion
-	 * @param string $sHashAlgo
+	 * @param string $version
+	 * @param string $hashAlgo
 	 * @return string[]|null
 	 */
-	public function getHashes( $sVersion, $sHashAlgo = null ) {
+	public function getHashes( $version, $hashAlgo = null ) {
 		/** @var RequestVO $oReq */
 		$oReq = $this->getRequestVO();
-		$oReq->version = $sVersion;
-		$oReq->hash = $sHashAlgo;
+		$oReq->version = $version;
+		$oReq->hash = $hashAlgo;
 		return $this->query();
 	}
 

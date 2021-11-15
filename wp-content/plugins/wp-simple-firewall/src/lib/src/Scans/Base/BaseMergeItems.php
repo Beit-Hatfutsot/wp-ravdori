@@ -10,12 +10,12 @@ class BaseMergeItems {
 
 	/**
 	 * Merges any data from $oMergeItem into $oBaseItem, overwriting Base Item data
-	 * @param BaseResultItem $oBaseItem
-	 * @param BaseResultItem $oMergeItem
-	 * @return BaseResultItem
+	 * @param ResultItem $oBaseItem
+	 * @param ResultItem $oMergeItem
+	 * @return ResultItem
 	 */
 	public function mergeItemTo( $oBaseItem, $oMergeItem ) {
-		foreach ( $oMergeItem->getRawDataAsArray() as $sKey => $mVal ) {
+		foreach ( $oMergeItem->getRawData() as $sKey => $mVal ) {
 			$oBaseItem->{$sKey} = $mVal;
 		}
 		return $oBaseItem;

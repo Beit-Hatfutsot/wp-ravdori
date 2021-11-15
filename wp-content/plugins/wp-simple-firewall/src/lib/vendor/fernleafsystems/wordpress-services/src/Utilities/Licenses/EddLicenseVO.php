@@ -1,7 +1,8 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Licenses;
 
+use FernleafSystems\Utilities\Data\Adapter\DynPropertiesClass;
 use FernleafSystems\Wordpress\Services\Services;
 
 /**
@@ -21,61 +22,64 @@ use FernleafSystems\Wordpress\Services\Services;
  * @property string $license
  * @property string $payment_id
  * @property bool   $success
+ * @property bool   $is_staging
+ * @property bool   $has_support
  * @property string $error
  */
-class EddLicenseVO {
+class EddLicenseVO extends DynPropertiesClass {
 
-	use \FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+	public function __get( string $key ) {
+		$value = parent::__get( $key );
+		switch ( $key ) {
 
-	/**
-	 * @return int
-	 */
-	public function getExpiresAt() {
-		return ( $this->expires == 'lifetime' ) ? PHP_INT_MAX : strtotime( $this->expires );
+			case 'expires_at':
+				$value = is_numeric( $value ) ? (int)$value : $this->getExpiresAt();
+				break;
+
+			case 'success':
+			case 'has_support':
+			case 'is_staging':
+				$value = (bool)$value;
+				break;
+
+			default:
+				break;
+		}
+		return $value;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isExpired() {
-		return ( $this->getExpiresAt() < Services::Request()->ts() );
+	public function getExpiresAt() :int {
+		return ( $this->expires == 'lifetime' ) ?
+			PHP_INT_MAX : (int)strtotime( (string)$this->expires );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isValid() {
-		return ( $this->isReady() && $this->success && !$this->isExpired() && $this->license == 'valid' );
+	public function isExpired() :bool {
+		return $this->getExpiresAt() < Services::Request()->ts();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function hasError() {
+	public function isValid() :bool {
+		return $this->isReady() && $this->success && !$this->isExpired() && $this->license == 'valid';
+	}
+
+	public function hasError() :bool {
 		return !empty( $this->error );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function hasChecksum() {
+	public function hasChecksum() :bool {
 		return !empty( $this->checksum );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isReady() {
+	public function isReady() :bool {
 		return $this->hasChecksum();
 	}
 
 	/**
-	 * @param bool $bAddRandom
+	 * @param bool $addRandom
 	 * @return $this
 	 */
-	public function updateLastVerifiedAt( $bAddRandom = false ) {
+	public function updateLastVerifiedAt( bool $addRandom = false ) {
 		$this->last_verified_at = (int)$this->last_request_at +
-								  ( $bAddRandom ? rand( -6, 18 )*HOUR_IN_SECONDS : 0 );
+								  ( $addRandom ? rand( -6, 18 )*HOUR_IN_SECONDS : 0 );
 		return $this;
 	}
 }

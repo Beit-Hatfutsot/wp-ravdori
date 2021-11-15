@@ -6,38 +6,37 @@ jQuery.fn.icwpWpsfScansStart = function ( aOptions ) {
 		return false;
 	};
 
-	let sendReq = function ( aParams ) {
+	let loadResultsPage = function ( evt ) {
+		window.location.href = aOpts[ 'href_scans_results' ];
+	};
+
+	let sendReq = function ( param ) {
 		iCWP_WPSF_BodyOverlay.show();
 
-		let aReqData = aOpts[ 'ajax_scans_start' ];
-		jQuery.post( ajaxurl, jQuery.extend( aReqData, aParams ),
-			function ( oResponse ) {
+		jQuery.post( ajaxurl, jQuery.extend( aOpts[ 'ajax_scans_start' ], param ),
+			function ( response ) {
 
-				if ( oResponse.success ) {
-					iCWP_WPSF_Toaster.showMessage( oResponse.data.message, oResponse.success );
-					if ( oResponse.data.page_reload ) {
-						location.reload();
+				if ( response.success ) {
+					iCWP_WPSF_Toaster.showMessage( response.data.message, response.success );
+					if ( response.data.page_reload ) {
+						loadResultsPage();
 					}
-					else if ( oResponse.data.scans_running ) {
+					else if ( response.data.scans_running ) {
 						setTimeout( function () {
-							jQuery( document ).icwpWpsfScansCheck(
-								{
-									'ajax_scans_check': aOpts[ 'ajax_scans_check' ]
-								}
-							);
+							jQuery( document ).icwpWpsfScansCheck( aOpts );
 						}, 1000 );
 					}
 					else {
 						plugin.options[ 'table' ].reloadTable();
-						iCWP_WPSF_Toaster.showMessage( oResponse.data.message, oResponse.success );
+						iCWP_WPSF_Toaster.showMessage( response.data.message, response.success );
 					}
 				}
 				else {
-					let sMessage = 'Communications error with site.';
-					if ( oResponse.data.message !== undefined ) {
-						sMessage = oResponse.data.message;
+					let msg = 'Communications error with site.';
+					if ( response.data.message !== undefined ) {
+						msg = response.data.message;
 					}
-					alert( sMessage );
+					alert( msg );
 					iCWP_WPSF_BodyOverlay.hide();
 				}
 
@@ -65,45 +64,47 @@ jQuery.fn.icwpWpsfScansStart = function ( aOptions ) {
 	return this;
 };
 
-/**
- */
 jQuery.fn.icwpWpsfScansCheck = function ( aOptions ) {
 
 	let bFoundRunning = false;
 	let bCurrentlyRunning = false;
 	let nRunningCount = 0;
 
+	let loadResultsPage = function ( evt ) {
+		window.location.href = aOpts[ 'href_scans_results' ];
+	};
+
 	let sendReq = function ( aParams ) {
 		iCWP_WPSF_BodyOverlay.show();
 
 		let aReqData = aOpts[ 'ajax_scans_check' ];
 		jQuery.post( ajaxurl, jQuery.extend( aReqData, aParams ),
-			function ( oResp ) {
+			function ( response ) {
 
 				bCurrentlyRunning = false;
 				nRunningCount = 0;
-				if ( oResp.data.running !== undefined ) {
-					for ( const scankey of Object.keys( oResp.data.running ) ) {
-						if ( oResp.data.running[ scankey ] ) {
+				if ( response.data.running !== undefined ) {
+					for ( const scankey of Object.keys( response.data.running ) ) {
+						if ( response.data.running[ scankey ] ) {
 							nRunningCount++;
 							bFoundRunning = true;
 							bCurrentlyRunning = true;
 						}
 					}
 				}
-				let $oModal = jQuery( '#ScanProgressModal' );
-				jQuery( '.modal-body', $oModal ).html( oResp.data.vars.progress_html );
-				$oModal.modal( 'show' );
+				let modal = jQuery( '#ScanProgressModal' );
+				jQuery( '.modal-body', modal ).html( response.data.vars.progress_html );
+				modal.modal( 'show' );
 			}
 		).always( function () {
 				if ( bCurrentlyRunning ) {
 					setTimeout( function () {
 						sendReq();
-					}, 5000 );
+					}, 3000 );
 				}
 				else {
 					setTimeout( function () {
-						location.reload();
+						loadResultsPage();
 					}, 1000 );
 				}
 			}

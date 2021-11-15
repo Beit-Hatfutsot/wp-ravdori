@@ -47,18 +47,18 @@ class Cron {
 		return $this;
 	}
 
-	/**
-	 * @return array
-	 * @deprecated uses undocumented private WP function
-	 */
-	public function getCrons() {
-		return function_exists( '_get_cron_array' ) && is_array( _get_cron_array() ) ? _get_cron_array() : [];
+	public function getCrons( bool $onlyReadyToRunNow = false ) :array {
+		$crons = [];
+		if ( $onlyReadyToRunNow && function_exists( 'wp_get_ready_cron_jobs' ) ) {
+			$crons = wp_get_ready_cron_jobs();
+		}
+		elseif ( function_exists( '_get_cron_array' ) ) {
+			$crons = _get_cron_array();
+		}
+		return is_array( $crons ) ? $crons : [];
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getSchedules() {
+	protected function getSchedules() :array {
 		if ( !is_array( $this->aSchedules ) ) {
 			$this->aSchedules = [];
 		}

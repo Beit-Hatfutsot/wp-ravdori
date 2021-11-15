@@ -1,36 +1,34 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\AuditTrail\Auditors;
 
+use FernleafSystems\Wordpress\Services\Services;
+
 class Themes extends Base {
 
-	public function run() {
+	protected function run() {
 		add_action( 'switch_theme', [ $this, 'auditSwitchTheme' ] );
-		add_action( 'check_admin_referer', [ $this, 'auditEditedThemeFile' ], 10, 2 );
+		add_action( 'wp_ajax_edit-theme-plugin-file', [ $this, 'auditEditedFile' ], -1 ); // they hook on 1
 	}
 
 	/**
-	 * @param string $sThemeName
+	 * @param string $themeName
 	 */
-	public function auditSwitchTheme( $sThemeName ) {
-		if ( !empty( $sThemeName ) ) {
+	public function auditSwitchTheme( $themeName ) {
+		if ( !empty( $themeName ) ) {
 			$this->getCon()->fireEvent(
 				'theme_activated',
-				[ 'audit' => [ 'theme' => $sThemeName ] ]
+				[ 'audit_params' => [ 'theme' => $themeName ] ]
 			);
 		}
 	}
 
-	/**
-	 * @param string $sAction
-	 * @param bool   $bResult
-	 */
-	public function auditEditedThemeFile( $sAction, $bResult ) {
-		$sStub = 'edit-theme_';
-		if ( strpos( $sAction, $sStub ) === 0 ) {
+	public function auditEditedFile() {
+		$req = Services::Request();
+		if ( !empty( $req->post( 'theme' ) ) ) {
 			$this->getCon()->fireEvent(
 				'theme_file_edited',
-				[ 'audit' => [ 'file' => str_replace( $sStub, '', $sAction ) ] ]
+				[ 'audit_params' => [ 'file' => sanitize_text_field( $req->post( 'file' ) ) ] ]
 			);
 		}
 	}

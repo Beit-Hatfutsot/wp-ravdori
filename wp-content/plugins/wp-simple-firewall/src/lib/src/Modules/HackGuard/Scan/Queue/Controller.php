@@ -2,15 +2,10 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Queue;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Databases\ScanQueue;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\DB\ScanItems as ScanItemsDB;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
-use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Class Controller
- * @package FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Queue
- */
 class Controller {
 
 	use ModConsumer;
@@ -37,45 +32,21 @@ class Controller {
 	/**
 	 * @return bool[]
 	 */
-	public function getScansRunningStates() {
-		/** @var HackGuard\ModCon $mod */
-		$mod = $this->getMod();
+	public function getScansRunningStates() :array {
 		/** @var HackGuard\Options $opts */
 		$opts = $this->getOptions();
-		/** @var ScanQueue\Select $sel */
-		$sel = $mod->getDbHandler_ScanQueue()->getQuerySelector();
 
-		// First clean the queue:
-		$this->cleanExpiredFromQueue();
-
-		$aScans = array_fill_keys( $opts->getScanSlugs(), false );
-		foreach ( $sel->getInitiatedScans() as $sInitScan ) {
-			$aScans[ $sInitScan ] = true;
+		$scans = array_fill_keys( $opts->getScanSlugs(), false );
+		foreach ( ( new HackGuard\Scan\Init\ScansStatus() )->setMod( $this->getMod() )->enqueued() as $enqueued ) {
+			$scans[ $enqueued ] = true;
 		}
-		return $aScans;
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected function cleanExpiredFromQueue() {
-		/** @var HackGuard\ModCon $mod */
-		$mod = $this->getMod();
-		/** @var HackGuard\Options $opts */
-		$opts = $this->getOptions();
-		$nExpiredBoundary = Services::Request()
-									->carbon()
-									->subSeconds( $opts->getMalQueueExpirationInterval() )->timestamp;
-		/** @var ScanQueue\Delete $oDel */
-		$oDel = $mod->getDbHandler_ScanQueue()->getQueryDeleter();
-		return $oDel->addWhereOlderThan( $nExpiredBoundary )
-					->query();
+		return $scans;
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getRunningScans() {
+	public function getRunningScans() :array {
 		return array_keys( array_filter( $this->getScansRunningStates() ) );
 	}
 
@@ -85,72 +56,52 @@ class Controller {
 	public function getScanJobProgress() {
 		/** @var HackGuard\ModCon $mod */
 		$mod = $this->getMod();
-		/** @var ScanQueue\Select $sel */
-		$sel = $mod->getDbHandler_ScanQueue()->getQuerySelector();
+		/** @var ScanItemsDB\Ops\Select $selector */
+		$selector = $mod->getDbH_ScanItems()->getQuerySelector();
 
-		$aUnfinished = $sel->getUnfinishedScans();
-		$nProgress = 1;
-		if ( $sel->getUnfinishedScans() > 0 ) {
-			$nInitiated = count( $sel->getInitiatedScans() );
-			if ( $nInitiated > 0 ) {
-				$nProgress = 1 - ( count( $aUnfinished )/count( $sel->getInitiatedScans() ) );
-			}
+		$countsAll = $selector->countAllForEachScan();
+		$countsUnfinished = $selector->countUnfinishedForEachScan();
+
+		if ( empty( $countsAll ) || empty( $countsUnfinished ) ) {
+			$progress = 1;
 		}
 		else {
-			$nProgress = 1;
-		}
-		return $nProgress;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasRunningScans() {
-		/** @var HackGuard\Options $oOpts */
-		$oOpts = $this->getOptions();
-		return count( $this->getRunningScans() ) > 0 || count( $oOpts->getScansToBuild() ) > 0;
-	}
-
-	/**
-	 * @param string|string[] $aScanSlugs
-	 */
-	public function startScans( $aScanSlugs ) {
-		if ( !is_array( $aScanSlugs ) ) {
-			$aScanSlugs = [ $aScanSlugs ];
-		}
-		if ( !empty( $aScanSlugs ) ) {
-			/** @var HackGuard\Options $oOpts */
-			$oOpts = $this->getOptions();
-			foreach ( $aScanSlugs as $sSlug ) {
-				$oOpts->addRemoveScanToBuild( $sSlug );
+			$progress = 0;
+			$eachScanWeight = 1/count( $countsAll );
+			foreach ( array_keys( $countsAll ) as $scan ) {
+				$progress += $eachScanWeight*( 1 - ( ( $countsUnfinished[ $scan ] ?? 0 )/$countsAll[ $scan ] ) );
 			}
-			$this->getQueueBuilder()->dispatch();
 		}
+
+		return $progress;
 	}
 
-	/**
-	 * @return Build\QueueBuilder
-	 */
-	public function getQueueBuilder() {
+	public function hasRunningScans() :bool {
+		/** @var HackGuard\Options $opts */
+		$opts = $this->getOptions();
+		return count( $this->getRunningScans() ) > 0 || count( $opts->getScansToBuild() ) > 0;
+	}
+
+	public function getQueueBuilder() :Build\QueueBuilder {
 		if ( empty( $this->oQueueBuilder ) ) {
 			$this->oQueueBuilder = ( new Build\QueueBuilder( 'shield_scanqbuild' ) )
-				->setMod( $this->getMod() )
-				->setQueueProcessor( $this->getQueueProcessor() );
+				->setMod( $this->getMod() );
 		}
 		return $this->oQueueBuilder;
 	}
 
-	/**
-	 * @return QueueProcessor
-	 */
-	public function getQueueProcessor() {
+	public function getQueueProcessor() :QueueProcessor {
 		if ( empty( $this->oQueueProcessor ) ) {
-			/** @var HackGuard\Options $oOpts */
-			$oOpts = $this->getOptions();
 			$this->oQueueProcessor = ( new QueueProcessor( 'shield_scanq' ) )
 				->setMod( $this->getMod() )
-				->setExpirationInterval( $oOpts->getMalQueueExpirationInterval() );
+				->setExpirationInterval( MINUTE_IN_SECONDS*10 );
 		}
 		return $this->oQueueProcessor;
+	}
+
+	/**
+	 * @deprecated 13.0
+	 */
+	public function startScans( $scanSlugs ) {
 	}
 }

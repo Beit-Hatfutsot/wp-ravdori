@@ -23,129 +23,127 @@ class UI {
 		$bShowAdvanced = $con->getModule_Plugin()->isShowAdvanced();
 
 		$opts = $this->getOptions();
-		$aOptions = $opts->getOptionsForPluginUse();
+		$options = $opts->getOptionsForPluginUse();
 
-		foreach ( $aOptions as $nSectionKey => $aSection ) {
+		foreach ( $options as $sectionKey => $sect ) {
 
-			if ( !empty( $aSection[ 'options' ] ) ) {
+			if ( !empty( $sect[ 'options' ] ) ) {
 
-				foreach ( $aSection[ 'options' ] as $nKey => $aOption ) {
-					$aOption[ 'is_value_default' ] = ( $aOption[ 'value' ] === $aOption[ 'default' ] );
-					$bIsPrem = isset( $aOption[ 'premium' ] ) && $aOption[ 'premium' ];
-					$bIsAdv = isset( $aOption[ 'advanced' ] ) && $aOption[ 'advanced' ];
+				foreach ( $sect[ 'options' ] as $optKey => $option ) {
+					$option[ 'is_value_default' ] = ( $option[ 'value' ] === $option[ 'default' ] );
+					$bIsPrem = $option[ 'premium' ] ?? false;
+					$bIsAdv = $option[ 'advanced' ] ?? false;
 					if ( ( !$bIsPrem || $bPremiumEnabled ) && ( !$bIsAdv || $bShowAdvanced ) ) {
-						$aSection[ 'options' ][ $nKey ] = $this->buildOptionForUi( $aOption );
+						$sect[ 'options' ][ $optKey ] = $this->buildOptionForUi( $option );
 					}
 					else {
-						unset( $aSection[ 'options' ][ $nKey ] );
+						unset( $sect[ 'options' ][ $optKey ] );
 					}
 				}
 
-				if ( empty( $aSection[ 'options' ] ) ) {
-					unset( $aOptions[ $nSectionKey ] );
+				if ( empty( $sect[ 'options' ] ) ) {
+					unset( $options[ $sectionKey ] );
 				}
 				else {
 					try {
-						$aSection = array_merge(
-							$aSection,
+						$sect = array_merge(
+							$sect,
 							$this->getMod()
 								 ->getStrings()
-								 ->getSectionStrings( $aSection[ 'slug' ] )
+								 ->getSectionStrings( $sect[ 'slug' ] )
 						);
 					}
 					catch ( \Exception $e ) {
 					}
-					$aOptions[ $nSectionKey ] = $aSection;
+					$options[ $sectionKey ] = $sect;
 				}
 
-				if ( isset( $aOptions[ $nSectionKey ] ) ) {
-					$aWarnings = [];
-					if ( !$opts->isSectionReqsMet( $aSection[ 'slug' ] ) ) {
-						$aWarnings[] = __( 'Unfortunately your WordPress and/or PHP versions are too old to support this feature.', 'wp-simple-firewall' );
+				if ( isset( $options[ $sectionKey ] ) ) {
+					$warning = [];
+					if ( !$opts->isSectionReqsMet( $sect[ 'slug' ] ) ) {
+						$warning[] = __( 'Unfortunately your WordPress and/or PHP versions are too old to support this feature.', 'wp-simple-firewall' );
 					}
-					$aOptions[ $nSectionKey ][ 'warnings' ] = array_merge(
-						$aWarnings,
-						$this->getSectionWarnings( $aSection[ 'slug' ] )
+					$options[ $sectionKey ][ 'warnings' ] = array_merge(
+						$warning,
+						$this->getSectionWarnings( $sect[ 'slug' ] )
 					);
-					$aOptions[ $nSectionKey ][ 'notices' ] = $this->getSectionNotices( $aSection[ 'slug' ] );
+					$options[ $sectionKey ][ 'notices' ] = $this->getSectionNotices( $sect[ 'slug' ] );
 				}
 			}
 		}
 
-		return $aOptions;
+		return $options;
 	}
 
 	/**
-	 * @param array $aOptParams
+	 * @param array $option
 	 * @return array
 	 */
-	protected function buildOptionForUi( $aOptParams ) {
+	protected function buildOptionForUi( $option ) {
 
-		$mCurrent = $aOptParams[ 'value' ];
+		$value = $option[ 'value' ];
 
-		switch ( $aOptParams[ 'type' ] ) {
+		switch ( $option[ 'type' ] ) {
 
 			case 'password':
-				if ( !empty( $mCurrent ) ) {
-					$mCurrent = '';
+				if ( !empty( $value ) ) {
+					$value = '';
 				}
 				break;
 
 			case 'array':
-
-				if ( empty( $mCurrent ) || !is_array( $mCurrent ) ) {
-					$mCurrent = [];
+				if ( empty( $value ) || !is_array( $value ) ) {
+					$value = [];
 				}
 
-				$aOptParams[ 'rows' ] = count( $mCurrent ) + 2;
-				$mCurrent = stripslashes( implode( "\n", $mCurrent ) );
+				$option[ 'rows' ] = count( $value ) + 2;
+				$value = stripslashes( implode( "\n", $value ) );
 
 				break;
 
 			case 'comma_separated_lists':
 
-				$aNewValues = [];
-				if ( !empty( $mCurrent ) && is_array( $mCurrent ) ) {
-
-					foreach ( $mCurrent as $sPage => $aParams ) {
-						$aNewValues[] = $sPage.', '.implode( ", ", $aParams );
+				$converted = [];
+				if ( !empty( $value ) && is_array( $value ) ) {
+					foreach ( $value as $page => $params ) {
+						$converted[] = $page.', '.implode( ", ", $params );
 					}
 				}
-				$aOptParams[ 'rows' ] = count( $aNewValues ) + 1;
-				$mCurrent = implode( "\n", $aNewValues );
+				$option[ 'rows' ] = count( $converted ) + 1;
+				$value = implode( "\n", $converted );
 
 				break;
 
 			case 'multiple_select':
-				if ( !is_array( $mCurrent ) ) {
-					$mCurrent = [];
+				if ( !is_array( $value ) ) {
+					$value = [];
 				}
 				break;
 
 			case 'text':
-				$mCurrent = stripslashes( $this->getMod()->getTextOpt( $aOptParams[ 'key' ] ) );
+				$value = stripslashes( $this->getMod()->getTextOpt( $option[ 'key' ] ) );
 				break;
 		}
 
-		$aParams = [
-			'value'    => is_scalar( $mCurrent ) ? esc_attr( $mCurrent ) : $mCurrent,
+		$params = [
+			'value'    => is_scalar( $value ) ? esc_attr( $value ) : $value,
 			'disabled' => !$this->getCon()
-								->isPremiumActive() && ( isset( $aOptParams[ 'premium' ] ) && $aOptParams[ 'premium' ] ),
+								->isPremiumActive() && ( isset( $option[ 'premium' ] ) && $option[ 'premium' ] ),
 		];
-		$aParams[ 'enabled' ] = !$aParams[ 'disabled' ];
-		$aOptParams = array_merge( [ 'rows' => 2 ], $aOptParams, $aParams );
+		$params[ 'enabled' ] = !$params[ 'disabled' ];
+		$option = array_merge( [ 'rows' => 2 ], $option, $params );
 
 		// add strings
 		try {
-			$aOptStrings = $this->getMod()->getStrings()->getOptionStrings( $aOptParams[ 'key' ] );
+			$aOptStrings = $this->getMod()->getStrings()->getOptionStrings( $option[ 'key' ] );
 			if ( !is_array( $aOptStrings[ 'description' ] ) ) {
 				$aOptStrings[ 'description' ] = [ $aOptStrings[ 'description' ] ];
 			}
-			$aOptParams = Services::DataManipulation()->mergeArraysRecursive( $aOptParams, $aOptStrings );
+			$option = Services::DataManipulation()->mergeArraysRecursive( $option, $aOptStrings );
 		}
 		catch ( \Exception $e ) {
 		}
-		return $aOptParams;
+		return $option;
 	}
 
 	public function buildSelectData_ModuleSettings() :array {
@@ -171,8 +169,8 @@ class UI {
 		$con = $this->getCon();
 		$urlBuilder = $con->urls;
 
-		/** @var Shield\Modules\Plugin\Options $oPluginOptions */
-		$oPluginOptions = $con->getModule_Plugin()->getOptions();
+		/** @var Shield\Modules\Plugin\Options $pluginOptions */
+		$pluginOptions = $con->getModule_Plugin()->getOptions();
 
 		return [
 			'sPluginName'   => $con->getHumanName(),
@@ -207,10 +205,12 @@ class UI {
 					->build(),
 				'hidden_options' => $this->getOptions()->getHiddenOptions()
 			],
+			'vars'       => [
+				'mod_slug' => $mod->getModSlug( true ),
+			],
 			'ajax'       => [
 				'mod_options'          => $mod->getAjaxActionData( 'mod_options', true ),
 				'mod_opts_form_render' => $mod->getAjaxActionData( 'mod_opts_form_render', true ),
-				//				'mod_options' => $mod->getAjaxActionData( 'mod_options' ),
 			],
 			'vendors'    => [
 				'widget_freshdesk' => '3000000081' /* TODO: plugin spec config */
@@ -226,7 +226,7 @@ class UI {
 				'has_wizard'            => $mod->hasWizard(),
 				'is_premium'            => $con->isPremiumActive(),
 				'show_transfer_switch'  => $con->isPremiumActive(),
-				'is_wpcli'              => $oPluginOptions->isEnabledWpcli()
+				'is_wpcli'              => $pluginOptions->isEnabledWpcli(),
 			],
 			'hrefs'      => [
 				'go_pro'         => 'https://shsec.io/shieldgoprofeature',
@@ -235,20 +235,23 @@ class UI {
 				'wizard_landing' => $mod->getUrl_WizardLanding(),
 
 				'form_action'      => Services::Request()->getUri(),
-				'css_bootstrap'    => $urlBuilder->forCss( 'bootstrap4.min' ),
+				'css_bootstrap'    => $urlBuilder->forCss( 'bootstrap' ),
 				'css_pages'        => $urlBuilder->forCss( 'pages' ),
 				'css_steps'        => $urlBuilder->forCss( 'jquery.steps' ),
 				'css_fancybox'     => $urlBuilder->forCss( 'jquery.fancybox.min' ),
 				'css_globalplugin' => $urlBuilder->forCss( 'global-plugin' ),
 				'css_wizard'       => $urlBuilder->forCss( 'wizard' ),
 				'js_jquery'        => Services::Includes()->getUrl_Jquery(),
-				'js_bootstrap'     => $urlBuilder->forJs( 'bootstrap4.bundle.min' ),
+				'js_bootstrap'     => $urlBuilder->forJs( 'bootstrap' ),
 				'js_fancybox'      => $urlBuilder->forJs( 'jquery.fancybox.min' ),
 				'js_globalplugin'  => $urlBuilder->forJs( 'global-plugin' ),
-				'js_steps'         => $urlBuilder->forJs( 'jquery.steps.min' ),
-				'js_wizard'        => $urlBuilder->forJs( 'wizard' ),
+				'js_steps'         => 'https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js',
 			],
 			'imgs'       => [
+				'svgs'           => [
+					'ignore'   => $con->svgs->raw( 'bootstrap/eye-slash-fill.svg' ),
+					'triangle' => $con->svgs->raw( 'bootstrap/triangle-fill.svg' ),
+				],
 				'favicon'        => $urlBuilder->forImage( 'pluginlogo_24x24.png' ),
 				'plugin_banner'  => $urlBuilder->forImage( 'banner-1500x500-transparent.png' ),
 				'background_svg' => $urlBuilder->forImage( 'shield/background-blob.svg' )

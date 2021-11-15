@@ -3,6 +3,7 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\BaseShield;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Options\WildCardOptions;
 use FernleafSystems\Wordpress\Services\Services;
 
 class Options extends BaseShield\Options {
@@ -14,153 +15,110 @@ class Options extends BaseShield\Options {
 		return constant( strtoupper( $this->getOpt( 'auto_expire' ).'_IN_SECONDS' ) );
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getAutoUnblockIps() {
-		$aIps = $this->getOpt( 'autounblock_ips', [] );
-		return is_array( $aIps ) ? $aIps : [];
+	public function getAutoUnblockIps() :array {
+		$ips = $this->getOpt( 'autounblock_ips', [] );
+		return is_array( $ips ) ? $ips : [];
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getAutoUnblockEmailIDs() {
-		$aIps = $this->getOpt( 'autounblock_emailids', [] );
-		return is_array( $aIps ) ? $aIps : [];
+	public function getAutoUnblockEmailIDs() :array {
+		$ips = $this->getOpt( 'autounblock_emailids', [] );
+		return is_array( $ips ) ? $ips : [];
 	}
 
-	/**
-	 * @param string $ip
-	 * @return bool
-	 */
-	public function getCanIpRequestAutoUnblock( $ip ) {
+	public function getCanIpRequestAutoUnblock( string $ip ) :bool {
 		$existing = $this->getAutoUnblockIps();
 		return !array_key_exists( $ip, $existing )
-			   || ( Services::Request()->carbon()->subDay( 1 )->timestamp > $existing[ $ip ] );
+			   || ( Services::Request()->carbon()->subHours( 1 )->timestamp > $existing[ $ip ] );
 	}
 
-	/**
-	 * @param \WP_User $user
-	 * @return bool
-	 */
-	public function getCanRequestAutoUnblockEmailLink( \WP_User $user ) {
+	public function getCanRequestAutoUnblockEmailLink( \WP_User $user ) :bool {
 		$existing = $this->getAutoUnblockEmailIDs();
 		return !array_key_exists( $user->ID, $existing )
-			   || ( Services::Request()->carbon()->subHour( 1 )->timestamp > $existing[ $user->ID ] );
+			   || ( Services::Request()->carbon()->subHours( 1 )->timestamp > $existing[ $user->ID ] );
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getOffenseLimit() {
+	public function getOffenseLimit() :int {
 		return (int)$this->getOpt( 'transgression_limit' );
 	}
 
 	/**
 	 * @return string[] - precise REGEX patterns to match against PATH.
 	 */
-	public function getRequestWhitelistAsRegex() {
+	public function getRequestWhitelistAsRegex() :array {
+		$paths = $this->isPremium() ? $this->getOpt( 'request_whitelist', [] ) : [];
 		return array_map(
-			function ( $sRule ) {
-				return sprintf( '#^%s$#i', str_replace( 'STAR', '.*', preg_quote( str_replace( '*', 'STAR', $sRule ), '#' ) ) );
+			function ( $value ) {
+				return ( new WildCardOptions() )->buildFullRegexValue( $value, WildCardOptions::URL_PATH );
 			},
-			$this->isPremium() ? $this->getOpt( 'request_whitelist', [] ) : []
+			is_array( $paths ) ? $paths : []
 		);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledAutoBlackList() {
+	public function getAntiBotMinimum() :int {
+		return (int)$this->getOpt( 'antibot_minimum', 50 );
+	}
+
+	public function getAntiBotHighReputationMinimum() :int {
+		return (int)$this->getOpt( 'antibot_high_reputation_minimum', 200 );
+	}
+
+	public function isEnabledAntiBotEngine() :bool {
+		return $this->getAntiBotMinimum() > 0;
+	}
+
+	public function isEnabledAutoBlackList() :bool {
 		return $this->getOffenseLimit() > 0;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledAutoVisitorRecover() {
+	public function isEnabledAutoVisitorRecover() :bool {
 		return in_array( 'gasp', (array)$this->getOpt( 'user_auto_recover', [] ) );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledMagicEmailLinkRecover() {
+	public function isEnabledMagicEmailLinkRecover() :bool {
 		return in_array( 'email', (array)$this->getOpt( 'user_auto_recover', [] ) );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrack404() {
+	public function isEnabledTrack404() :bool {
 		return $this->isSelectOptionEnabled( 'track_404' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrackFakeWebCrawler() {
+	public function isEnabledTrackFakeWebCrawler() :bool {
 		return $this->isSelectOptionEnabled( 'track_fakewebcrawler' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrackLoginInvalid() {
+	public function isEnabledTrackInvalidScript() :bool {
+		return $this->isSelectOptionEnabled( 'track_invalidscript' );
+	}
+
+	public function isEnabledTrackLoginInvalid() :bool {
 		return $this->isSelectOptionEnabled( 'track_logininvalid' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrackLoginFailed() {
+	public function isEnabledTrackLoginFailed() :bool {
 		return $this->isSelectOptionEnabled( 'track_loginfailed' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrackLinkCheese() {
+	public function isEnabledTrackLinkCheese() :bool {
 		return $this->isSelectOptionEnabled( 'track_linkcheese' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledTrackXmlRpc() {
+	public function isEnabledTrackXmlRpc() :bool {
 		return $this->isSelectOptionEnabled( 'track_xmlrpc' );
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	public function isTrackOptTransgression( $key ) {
+	public function isTrackOptTransgression( string $key ) :bool {
 		return strpos( $this->getOpt( $key ), 'transgression' ) !== false;
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	public function isTrackOptDoubleTransgression( $key ) {
+	public function isTrackOptDoubleTransgression( string $key ) :bool {
 		return $this->isOpt( $key, 'transgression-double' );
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	public function isTrackOptImmediateBlock( $key ) {
+	public function isTrackOptImmediateBlock( string $key ) :bool {
 		return $this->isOpt( $key, 'block' );
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	protected function isSelectOptionEnabled( $key ) {
+	protected function isSelectOptionEnabled( string $key ) :bool {
 		return !$this->isOpt( $key, 'disabled' );
 	}
 }

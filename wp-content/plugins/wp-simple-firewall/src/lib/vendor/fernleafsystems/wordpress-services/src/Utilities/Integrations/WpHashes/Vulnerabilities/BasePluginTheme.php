@@ -9,22 +9,19 @@ namespace FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Vul
 abstract class BasePluginTheme extends Base {
 
 	/**
-	 * @param string $sSlug
-	 * @param string $sVersion
+	 * @param string $slug
+	 * @param string $version
 	 * @return array[]|null
 	 */
-	public function getVulnerabilities( $sSlug, $sVersion ) {
-		$oReq = $this->getRequestVO();
-		$oReq->slug = strtolower( $sSlug );
-		$oReq->version = $sVersion;
+	public function getVulnerabilities( $slug, $version ) {
+		$req = $this->getRequestVO();
+		$req->slug = trim( trim( strtolower( $slug ), '-_.' ) );
+		$req->version = $version;
 		return $this->query();
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
-		$oReq = $this->getRequestVO();
-		return sprintf( '%s/%s/%s', parent::getApiUrl(), $oReq->slug, $oReq->version );
+	protected function getApiUrl() :string {
+		$req = $this->getRequestVO();
+		return sprintf( '%s/%s/%s', parent::getApiUrl(), $req->slug, $req->version );
 	}
 }

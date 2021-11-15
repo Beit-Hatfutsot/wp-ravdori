@@ -5,10 +5,6 @@ namespace FernleafSystems\Wordpress\Services\Core;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\File\Compare\CompareHash;
 
-/**
- * Class CoreFileHashes
- * @package FernleafSystems\Wordpress\Services\Core
- */
 class CoreFileHashes {
 
 	/**
@@ -42,8 +38,8 @@ class CoreFileHashes {
 	 * @return string|null
 	 */
 	public function getFileHash( $file ) {
-		$sNorm = $this->getFileFragment( $file );
-		return $this->isCoreFile( $sNorm ) ? $this->getHashes()[ $sNorm ] : null;
+		$normalised = $this->getFileFragment( $file );
+		return $this->isCoreFile( $normalised ) ? $this->getHashes()[ $normalised ] : null;
 	}
 
 	/**
@@ -77,7 +73,7 @@ class CoreFileHashes {
 	public function isCoreFileHashValid( $fullPath ) :bool {
 		try {
 			$valid = $this->isCoreFile( $fullPath )
-					 && ( new CompareHash() )->isEqualFileMd5( $fullPath, $this->getFileHash( $fullPath ) );
+					 && ( new CompareHash() )->isEqualFile( $fullPath, $this->getFileHash( $fullPath ) );
 		}
 		catch ( \Exception $oE ) {
 			$valid = false;

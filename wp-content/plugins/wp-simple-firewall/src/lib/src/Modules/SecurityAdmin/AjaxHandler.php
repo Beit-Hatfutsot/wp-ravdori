@@ -11,118 +11,76 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 
 		switch ( $action ) {
 			case 'sec_admin_check':
-				$aResponse = $this->ajaxExec_SecAdminCheck();
+				$response = $this->ajaxExec_SecAdminCheck();
 				break;
 
 			case 'sec_admin_login':
 			case 'restricted_access':
-				$aResponse = $this->ajaxExec_SecAdminLogin();
-				break;
-
-			case 'sec_admin_login_box':
-				$aResponse = $this->ajaxExec_SecAdminLoginBox();
+				$response = $this->ajaxExec_SecAdminLogin();
 				break;
 
 			case 'req_email_remove':
-				$aResponse = $this->ajaxExec_SendEmailRemove();
+				$response = $this->ajaxExec_SendEmailRemove();
 				break;
 
 			default:
-				$aResponse = parent::processAjaxAction( $action );
+				$response = parent::processAjaxAction( $action );
 		}
 
-		return $aResponse;
+		return $response;
 	}
 
-	/**
-	 * @return array
-	 */
-	private function ajaxExec_SecAdminCheck() {
+	private function ajaxExec_SecAdminCheck() :array {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
+		$secAdminCon = $mod->getSecurityAdminController();
 		return [
-			'timeleft' => $mod->getSecAdminTimeLeft(),
-			'success'  => $mod->isSecAdminSessionValid()
+			'time_remaining' => $secAdminCon->getSecAdminTimeRemaining(),
+			'success'        => $secAdminCon->isCurrentlySecAdmin()
 		];
 	}
 
 	private function ajaxExec_SecAdminLogin() :array {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
-		$bSuccess = false;
-		$sHtml = '';
 
-		if ( $mod->testSecAccessKeyRequest() ) {
+		$success = $mod->getSecurityAdminController()->verifyPinRequest();
+		$html = '';
 
-			if ( $mod->setSecurityAdminStatusOnOff( true ) ) {
-				$bSuccess = true;
-				$sMsg = __( 'Security Admin PIN Accepted.', 'wp-simple-firewall' )
-						.' '.__( 'Please wait', 'wp-simple-firewall' ).' ...';
-			}
-			else {
-				$sMsg = __( 'Failed to process key - you may need to re-login to WordPress.', 'wp-simple-firewall' );
-			}
+		if ( $success ) {
+			$msg = __( 'Security Admin PIN Accepted.', 'wp-simple-firewall' )
+				   .' '.__( 'Please wait', 'wp-simple-firewall' ).' ...';
 		}
 		else {
-			$nRemaining = ( new Shield\Modules\IPs\Components\QueryRemainingOffenses() )
+			$remaining = ( new Shield\Modules\IPs\Components\QueryRemainingOffenses() )
 				->setMod( $this->getCon()->getModule_IPs() )
 				->setIP( Services::IP()->getRequestIp() )
 				->run();
-			$sMsg = __( 'Security Admin PIN incorrect.', 'wp-simple-firewall' ).' ';
-			if ( $nRemaining > 0 ) {
-				$sMsg .= sprintf( __( 'Attempts remaining: %s.', 'wp-simple-firewall' ), $nRemaining );
+			$msg = __( 'Security Admin PIN incorrect.', 'wp-simple-firewall' ).' ';
+			if ( $remaining > 0 ) {
+				$msg .= sprintf( __( 'Attempts remaining: %s.', 'wp-simple-firewall' ), $remaining );
 			}
 			else {
-				$sMsg .= __( "No attempts remaining.", 'wp-simple-firewall' );
+				$msg .= __( "No attempts remaining.", 'wp-simple-firewall' );
 			}
-			$sHtml = $this->renderAdminAccessAjaxLoginForm( $sMsg );
+			$html = $mod->getSecurityAdminController()->renderPinLoginForm();
 		}
 
 		return [
-			'success'     => $bSuccess,
+			'success'     => $success,
 			'page_reload' => true,
-			'message'     => $sMsg,
-			'html'        => $sHtml,
+			'message'     => $msg,
+			'html'        => $html,
 		];
 	}
 
-	/**
-	 * @return array
-	 */
-	private function ajaxExec_SecAdminLoginBox() {
-		return [
-			'success' => 'true',
-			'html'    => $this->renderAdminAccessAjaxLoginForm()
-		];
-	}
-
-	/**
-	 * @return array
-	 */
-	private function ajaxExec_SendEmailRemove() {
-		( new Shield\Modules\SecurityAdmin\Lib\Actions\RemoveSecAdmin() )
+	private function ajaxExec_SendEmailRemove() :array {
+		( new Lib\SecurityAdmin\Ops\RemoveSecAdmin() )
 			->setMod( $this->getMod() )
 			->sendConfirmationEmail();
 		return [
-			'success' => 'true',
+			'success' => true,
 			'message' => __( 'Email sent. Please ensure the confirmation link opens in THIS browser window.' ),
 		];
-	}
-
-	/**
-	 * @param string $sMessage
-	 * @return string
-	 */
-	private function renderAdminAccessAjaxLoginForm( $sMessage = '' ) {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-		return $mod->renderTemplate( 'snippets/admin_access_login', [
-			'ajax'    => [
-				'sec_admin_login' => json_encode( $mod->getSecAdminLoginAjaxData() )
-			],
-			'strings' => [
-				'access_message' => empty( $sMessage ) ? __( 'Enter your Security Admin PIN', 'wp-simple-firewall' ) : $sMessage
-			]
-		] );
 	}
 }

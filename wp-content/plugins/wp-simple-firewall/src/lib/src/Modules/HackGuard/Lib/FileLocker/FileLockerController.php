@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Lib\FileLocker;
 
-use FernleafSystems\Utilities\Logic\OneTimeExecute;
+use FernleafSystems\Utilities\Logic\ExecOnce;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\FileLocker;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
@@ -12,12 +12,15 @@ use FernleafSystems\Wordpress\Services\Services;
 class FileLockerController {
 
 	use Modules\ModConsumer;
-	use OneTimeExecute;
+	use ExecOnce;
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabled() {
+	protected function canRun() :bool {
+		/** @var HackGuard\ModCon $mod */
+		$mod = $this->getMod();
+		return $this->isEnabled() && $mod->getDbHandler_FileLocker()->isReady();
+	}
+
+	public function isEnabled() :bool {
 		/** @var HackGuard\Options $opts */
 		$opts = $this->getOptions();
 		return ( count( $opts->getFilesToLock() ) > 0 )
@@ -27,99 +30,90 @@ class FileLockerController {
 					   ->canHandshake();
 	}
 
-	/**
-	 * @return bool
-	 */
-	protected function canRun() {
-		/** @var HackGuard\ModCon $mod */
-		$mod = $this->getMod();
-		return $this->isEnabled() && $mod->getDbHandler_FileLocker()->isReady();
-	}
-
 	protected function run() {
-		add_filter( $this->getCon()->prefix( 'admin_bar_menu_items' ), [ $this, 'addAdminMenuBarItem' ], 100 );
-
-		add_action( $this->getCon()->prefix( 'plugin_shutdown' ), function () {
-			if ( !$this->getCon()->plugin_deactivating ) {
-				if ( $this->getOptions()->isOptChanged( 'file_locker' ) ) {
-					$this->deleteAllLocks();
-				}
-				else {
-					$this->runAnalysis();
-				}
-			}
-		} );
+		$con = $this->getCon();
+		add_action( 'wp_loaded', [ $this, 'runAnalysis' ] );
+		add_action( $con->prefix( 'pre_plugin_shutdown' ), [ $this, 'checkLockConfig' ] );
+		add_filter( $con->prefix( 'admin_bar_menu_items' ), [ $this, 'addAdminMenuBarItem' ], 100 );
 	}
 
-	/**
-	 * @param array $aItems
-	 * @return array
-	 */
-	public function addAdminMenuBarItem( array $aItems ) {
-		$nCountFL = $this->countProblems();
-		if ( $nCountFL > 0 ) {
-			$aItems[] = [
+	public function checkLockConfig() {
+		if ( !$this->getCon()->plugin_deactivating && $this->isFileLockerStateChanged() ) {
+			$this->deleteAllLocks();
+			$this->setState( [] );
+		}
+	}
+
+	private function isFileLockerStateChanged() :bool {
+		return $this->getOptions()->isOptChanged( 'file_locker' ) || $this->getState()[ 'abspath' ] !== ABSPATH;
+	}
+
+	public function addAdminMenuBarItem( array $items ) :array {
+		$problems = $this->countProblems();
+		if ( $problems > 0 ) {
+			$items[] = [
 				'id'       => $this->getCon()->prefix( 'filelocker_problems' ),
 				'title'    => __( 'File Locker', 'wp-simple-firewall' )
-							  .sprintf( '<div class="wp-core-ui wp-ui-notification shield-counter"><span aria-hidden="true">%s</span></div>', $nCountFL ),
-				'href'     => $this->getCon()->getModule_Insights()->getUrl_SubInsightsPage( 'scans' ),
-				'warnings' => $nCountFL
+							  .sprintf( '<div class="wp-core-ui wp-ui-notification shield-counter"><span aria-hidden="true">%s</span></div>', $problems ),
+				'href'     => $this->getCon()->getModule_Insights()->getUrl_ScansResults(),
+				'warnings' => $problems
 			];
 		}
-		return $aItems;
+		return $items;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function countProblems() {
+	public function countProblems() :int {
 		return count( ( new Ops\LoadFileLocks() )
 			->setMod( $this->getMod() )
 			->withProblems() );
 	}
 
-	/**
-	 * @param FileLocker\EntryVO $VO
-	 * @return string[]
-	 */
-	public function createFileDownloadLinks( $VO ) {
+	public function createFileDownloadLinks( FileLocker\EntryVO $lock ) :array {
 		/** @var HackGuard\ModCon $mod */
 		$mod = $this->getMod();
-		$aLinks = [];
-		foreach ( [ 'original', 'current' ] as $sType ) {
-			$aActionNonce = $mod->getNonceActionData( 'filelocker_download_'.$sType );
-			$aActionNonce[ 'rid' ] = $VO->id;
-			$aActionNonce[ 'rand' ] = rand();
-			$aLinks[ $sType ] = add_query_arg( $aActionNonce, $mod->getUrl_AdminPage() );
+		$links = [];
+		foreach ( [ 'original', 'current' ] as $type ) {
+			$links[ $type ] = $mod->createFileDownloadLink( 'filelocker', [
+				'type' => $type,
+				'rid'  => $lock->id,
+				'rand' => uniqid(),
+			] );
 		}
-		return $aLinks;
+		return $links;
 	}
 
 	public function handleFileDownloadRequest() {
-		$oReq = Services::Request();
-		$oLock = $this->getFileLock( (int)$oReq->query( 'rid', 0 ) );
+		$req = Services::Request();
 
-		if ( $oLock instanceof FileLocker\EntryVO ) {
-			$sType = str_replace( 'filelocker_download_', '', $oReq->query( 'exec' ) );
+		$dieMsg = "Something about this request wasn't right";
+		try {
+			$lock = $this->getFileLock( (int)$req->query( 'rid', 0 ) );
+			$type = $req->query( 'type' );
 
 			// Note: Download what's on the disk if nothing is changed.
-			if ( $sType == 'current' ) {
-				$sContent = Services::WpFs()->getFileContent( $oLock->file );
+			if ( $type == 'current' ) {
+				$content = Services::WpFs()->getFileContent( $lock->file );
 			}
-			elseif ( $sType == 'original' ) {
-				$sContent = ( new Lib\FileLocker\Ops\ReadOriginalFileContent() )
+			elseif ( $type == 'original' ) {
+				$content = ( new Lib\FileLocker\Ops\ReadOriginalFileContent() )
 					->setMod( $this->getMod() )
-					->run( $oLock );
+					->run( $lock );
+			}
+			else {
+				throw new \Exception( 'Invalid file locker type download' );
 			}
 
-			if ( !empty( $sContent ) ) {
+			if ( !empty( $content ) ) {
 				header( 'Set-Cookie: fileDownload=true; path=/' );
 				Services::Response()
-						->downloadStringAsFile( $sContent, strtoupper( $sType ).'-'.basename( $oLock->file ) );
+						->downloadStringAsFile( $content, strtoupper( $type ).'-'.basename( $lock->file ) );
 			}
 		}
+		catch ( \Exception $e ) {
+			$dieMsg = $e->getMessage();
+		}
 
-		wp_die( "Something about this request wasn't right" );
+		wp_die( $dieMsg );
 	}
 
 	public function deleteAllLocks() {
@@ -135,89 +129,107 @@ class FileLockerController {
 	}
 
 	/**
-	 * @param int $nID
-	 * @return FileLocker\EntryVO|null
+	 * @throws \Exception
 	 */
-	public function getFileLock( $nID ) {
-		$aLocks = ( new Lib\FileLocker\Ops\LoadFileLocks() )
-			->setMod( $this->getMod() )
-			->loadLocks();
-		return isset( $aLocks[ $nID ] ) ? $aLocks[ $nID ] : null;
+	public function getFileLock( int $ID ) :FileLocker\EntryVO {
+		$lock = ( new Lib\FileLocker\Ops\LoadFileLocks() )
+					->setMod( $this->getMod() )
+					->loadLocks()[ $ID ] ?? null;
+		if ( empty( $lock ) ) {
+			throw new \Exception( 'Not a valid Lock File record' );
+		}
+		return $lock;
 	}
 
-	private function runAnalysis() {
-		/** @var Modules\HackGuard\Options $oOpts */
-		$oOpts = $this->getOptions();
-
+	public function runAnalysis() {
 		// 1. First assess the existing locks for changes.
 		( new Ops\AssessLocks() )
 			->setMod( $this->getMod() )
 			->run();
 
-		// 2. Create new file locks as required
-		foreach ( $oOpts->getFilesToLock() as $sFileKey ) {
-			try {
-				( new Ops\CreateFileLocks() )
-					->setMod( $this->getMod() )
-					->setWorkingFile( $this->getFile( $sFileKey ) )
-					->create();
+		// 2. Create any outstanding locks.
+		if ( is_main_network() ) {
+			$this->maybeRunLocksCreation();
+		}
+	}
+
+	private function maybeRunLocksCreation() {
+		if ( ( new Lib\FileLocker\Ops\HasFileLocksToCreate() )->setMod( $this->getMod() )->run() ) {
+			$con = $this->getCon();
+
+			if ( !Services::WpGeneral()->isCron() ) {
+				if ( !wp_next_scheduled( $con->prefix( 'create_file_locks' ) ) ) {
+					wp_schedule_single_event(
+						Services::Request()->ts() + 60,
+						$con->prefix( 'create_file_locks' )
+					);
+				}
 			}
-			catch ( \Exception $e ) {
-				error_log( $e->getMessage() );
-			}
+
+			add_action( $this->getCon()->prefix( 'create_file_locks' ), function () {
+				$this->runLocksCreation();
+			} );
 		}
 	}
 
 	/**
-	 * @param string $sFileKey
-	 * @return File|null
-	 * @throws \Exception
+	 * There's at least 15 seconds between each attempt to create a file lock.
+	 * This ensures our API isn't bombarded by sites that, for some reason, fail to store the lock in the DB.
 	 */
-	private function getFile( $sFileKey ) {
-		$oFile = null;
+	private function runLocksCreation() {
+		/** @var HackGuard\Options $opts */
+		$opts = $this->getOptions();
+		$filesToLock = $opts->getFilesToLock();
 
-		$bIsSplitWp = false;
-		$nMaxPaths = 0;
-		switch ( $sFileKey ) {
-			case 'wpconfig':
-				$sFileKey = 'wp-config.php';
-				$nMaxPaths = 1;
-				$nLevels = $bIsSplitWp ? 3 : 2;
+		$state = $this->getState();
+		if ( !empty( $filesToLock ) && Services::Request()->ts() - $state[ 'last_locks_created_at' ] > 60 ) {
 
-				$openBaseDir = ini_get( 'open_basedir' );
-				if ( !empty( $openBaseDir ) ) {
-					$nLevels--;
+			$lockCreated = false;
+			foreach ( $opts->getFilesToLock() as $fileKey ) {
+				try {
+					$lockCreated = ( new Ops\CreateFileLocks() )
+						->setMod( $this->getMod() )
+						->setWorkingFile(
+							( new Lib\FileLocker\Ops\BuildFileFromFileKey() )->build( $fileKey )
+						)
+						->create();
 				}
-				// TODO: is split URL?
-				break;
-
-			case 'root_htaccess':
-				$sFileKey = '.htaccess';
-				$nLevels = $bIsSplitWp ? 2 : 1;
-				break;
-
-			case 'root_webconfig':
-				$sFileKey = 'Web.Config';
-				$nLevels = $bIsSplitWp ? 2 : 1;
-				break;
-
-			case 'root_index':
-				$sFileKey = 'index.php';
-				$nLevels = $bIsSplitWp ? 2 : 1;
-				break;
-			default:
-				if ( Services::WpFs()->isAbsPath( $sFileKey ) && Services::WpFs()->isFile( $sFileKey ) ) {
-					$nLevels = 1;
-					$nMaxPaths = 1;
+				catch ( \Exception $e ) {
+					error_log( $e->getMessage() );
 				}
-				else {
-					throw new \Exception( 'Not a supported file lock type' );
-				}
-				break;
+			}
+			if ( $lockCreated ) {
+				$state[ 'last_locks_created_at' ] = Services::Request()->ts();
+			}
+
+			$state[ 'abspath' ] = ABSPATH;
+			$this->setState( $state );
 		}
-		$oFile = new File( $sFileKey );
-		$oFile->max_levels = $nLevels;
-		$oFile->max_paths = $nMaxPaths;
-		return $oFile;
+	}
+
+	/**
+	 * @param string $fileKey
+	 * @return File
+	 * @throws \Exception
+	 * @deprecated 12.0.10
+	 */
+	private function getFile( string $fileKey ) :File {
+		return ( new Lib\FileLocker\Ops\BuildFileFromFileKey() )->build( $fileKey );
+	}
+
+	protected function getState() :array {
+		/** @var HackGuard\Options $opts */
+		$opts = $this->getOptions();
+		return array_merge(
+			[
+				'abspath'               => ABSPATH,
+				'last_locks_created_at' => 0,
+			],
+			is_array( $opts->getOpt( 'filelocker_state' ) ) ? $opts->getOpt( 'filelocker_state' ) : []
+		);
+	}
+
+	protected function setState( array $state ) {
+		$this->getOptions()->setOpt( 'filelocker_state', $state );
 	}
 }

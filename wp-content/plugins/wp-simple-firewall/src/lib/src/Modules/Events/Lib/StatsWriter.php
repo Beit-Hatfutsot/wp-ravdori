@@ -4,7 +4,6 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Events\Lib;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\Base\HandlerConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\Events\Handler;
-use FernleafSystems\Wordpress\Services\Services;
 
 class StatsWriter extends EventsListener {
 
@@ -15,21 +14,22 @@ class StatsWriter extends EventsListener {
 	 */
 	private $aEventStats;
 
-	/**
-	 * @param string $evt
-	 * @param array  $aMeta
-	 */
-	protected function captureEvent( $evt, $aMeta = [] ) {
-		$aStats = $this->getEventStats();
-		$aStats[ $evt ] = isset( $aMeta[ 'ts' ] ) ? $aMeta[ 'ts' ] : Services::Request()->ts();
-		$this->setEventStats( $aStats );
+	protected function captureEvent( string $evt, array $meta = [], array $def = [] ) {
+		if ( !empty( $def[ 'stat' ] ) ) {
+			$stats = $this->getEventStats();
+			if ( !isset( $stats[ $evt ] ) ) {
+				$stats[ $evt ] = 0;
+			}
+			$stats[ $evt ]++;
+			$this->setEventStats( $stats );
+		}
 	}
 
 	protected function onShutdown() {
 		if ( !$this->getCon()->plugin_deleting ) {
-			/** @var Handler $oDbH */
-			$oDbH = $this->getDbHandler();
-			$oDbH->commitEvents( $this->getEventStats() );
+			/** @var Handler $dbh */
+			$dbh = $this->getDbHandler();
+			$dbh->commitEvents( $this->getEventStats() );
 			$this->setEventStats();
 		}
 	}
@@ -37,16 +37,16 @@ class StatsWriter extends EventsListener {
 	/**
 	 * @return int[]
 	 */
-	public function getEventStats() {
+	public function getEventStats() :array {
 		return is_array( $this->aEventStats ) ? $this->aEventStats : [];
 	}
 
 	/**
-	 * @param int[] $aStats
+	 * @param int[] $stats
 	 * @return $this
 	 */
-	public function setEventStats( $aStats = [] ) {
-		$this->aEventStats = $aStats;
+	public function setEventStats( array $stats = [] ) {
+		$this->aEventStats = $stats;
 		return $this;
 	}
 }

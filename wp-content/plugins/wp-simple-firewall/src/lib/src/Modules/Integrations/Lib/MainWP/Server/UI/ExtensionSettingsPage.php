@@ -2,17 +2,13 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Integrations\Lib\MainWP\Server\UI;
 
-use FernleafSystems\Utilities\Logic\OneTimeExecute;
 use FernleafSystems\Wordpress\Plugin\Shield\Controller\Assets\Enqueue;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Integrations\Lib\MainWP\Controller;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Integrations\Lib\MainWP\Server\UI\PageRender;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
-class ExtensionSettingsPage {
-
-	use ModConsumer;
-	use OneTimeExecute;
+class ExtensionSettingsPage extends ExecOnceModConsumer {
 
 	protected function run() {
 
@@ -20,8 +16,8 @@ class ExtensionSettingsPage {
 
 			if ( 'mainwp_page_'.$this->getCon()->mwpVO->extension->page === $hook ) {
 
-				$enqueues[ Enqueue::JS ][] = 'shield/mainwp-extension';
-				$enqueues[ Enqueue::CSS ][] = 'mainwp-extension';
+				$enqueues[ Enqueue::JS ][] = 'shield/mainwp';
+				$enqueues[ Enqueue::CSS ][] = 'shield/mainwp';
 
 //				$handle = 'semantic-ui-datatables-select';
 //				wp_register_script(
@@ -41,7 +37,7 @@ class ExtensionSettingsPage {
 //				wp_enqueue_style( 'semantic-ui-datatables-select' );
 			}
 			return $enqueues;
-		}, 10,2 );
+		}, 10, 2 );
 	}
 
 	/**

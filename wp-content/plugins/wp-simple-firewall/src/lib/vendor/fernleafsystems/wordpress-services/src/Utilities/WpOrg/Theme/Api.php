@@ -2,19 +2,17 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme;
 
-use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+use FernleafSystems\Utilities\Data\Adapter\DynProperties;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme\VOs\ThemeInfoVO;
 
 /**
- * Class Api
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme
  * @property array $fields
  */
 class Api {
 
 	use Base;
-	use StdClassAdapter;
+	use DynProperties;
 
 	/**
 	 * @return ThemeInfoVO
@@ -34,26 +32,27 @@ class Api {
 	}
 
 	/**
-	 * @param string $sCmd
+	 * @param string $cmd
 	 * @return ThemeInfoVO
 	 * @throws \Exception
 	 */
-	public function run( $sCmd ) {
+	public function run( $cmd ) {
 		include_once( ABSPATH.'wp-admin/includes/theme.php' );
 
-		$aParams = $this->getRawDataAsArray();
-		$aParams[ 'slug' ] = $this->getWorkingSlug();
-		$oResponse = \themes_api( $sCmd,
-			Services::DataManipulation()->mergeArraysRecursive( $this->defaultParams(), $aParams ) );
+		$params = $this->getRawData();
+		$params[ 'slug' ] = $this->getWorkingSlug();
 
-		if ( \is_wp_error( $oResponse ) ) {
-			throw new \Exception( sprintf( '[ThemesApi Error] %s', $oResponse->get_error_message() ) );
+		$response = \themes_api( $cmd,
+			Services::DataManipulation()->mergeArraysRecursive( $this->defaultParams(), $params ) );
+
+		if ( \is_wp_error( $response ) ) {
+			throw new \Exception( sprintf( '[ThemesApi Error] %s', $response->get_error_message() ) );
 		}
-		elseif ( !\is_object( $oResponse ) ) {
+		elseif ( !\is_object( $response ) ) {
 			throw new \Exception( sprintf( '[ThemesApi Error] %s', 'Did not return an expected Object' ) );
 		}
 
-		return ( new ThemeInfoVO() )->applyFromArray( (array)$oResponse );
+		return ( new ThemeInfoVO() )->applyFromArray( (array)$response );
 	}
 
 	/**

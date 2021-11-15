@@ -2,75 +2,73 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities;
 
-/**
- * Class DataManipulation
- * @package FernleafSystems\Wordpress\Services\Utilities
- */
+use FernleafSystems\Wordpress\Services\Utilities\File\ConvertLineEndings;
+
 class DataManipulation {
 
 	/**
-	 * @param string $sFullFilePath
+	 * @param string $path
 	 * @return string
 	 */
-	public function convertLineEndingsDosToLinux( $sFullFilePath ) {
-		return str_replace( [ "\r\n", "\r" ], "\n", file_get_contents( $sFullFilePath ) );
+	public function convertLineEndingsDosToLinux( $path ) :string {
+		return ( new ConvertLineEndings() )->fileDosToLinux( $path );
 	}
 
 	/**
-	 * @param string $sFullFilePath
+	 * @param string $path
 	 * @return string
 	 */
-	public function convertLineEndingsLinuxToDos( $sFullFilePath ) {
-		return str_replace( "\n", "\r\n", $this->convertLineEndingsDosToLinux( $sFullFilePath ) );
+	public function convertLineEndingsLinuxToDos( $path ) :string {
+		return ( new ConvertLineEndings() )->fileLinuxToDos( $path );
 	}
 
 	/**
-	 * @param array $aArrayToConvert
+	 * @param array $toConvert
 	 * @return string
 	 */
-	public function convertArrayToJavascriptDataString( $aArrayToConvert ) {
-		$sParamsAsJs = '';
-		foreach ( $aArrayToConvert as $sKey => $sValue ) {
-			$sParamsAsJs .= sprintf( "'%s':'%s',", $sKey, $sValue );
+	public function convertArrayToJavascriptDataString( $toConvert ) {
+		$asJS = '';
+		foreach ( $toConvert as $key => $value ) {
+			$asJS .= sprintf( "'%s':'%s',", $key, $value );
 		}
-		return trim( $sParamsAsJs, ',' );
+		return trim( $asJS, ',' );
 	}
 
 	/**
-	 * @param array $aArray
+	 * @param array $array
 	 * @return \stdClass
 	 */
-	public function convertArrayToStdClass( $aArray ) {
-		$oObject = new \stdClass();
-		if ( !empty( $aArray ) && is_array( $aArray ) ) {
-			foreach ( $aArray as $sKey => $mValue ) {
-				$oObject->{$sKey} = $mValue;
+	public function convertArrayToStdClass( $array ) :\stdClass {
+		$object = new \stdClass();
+		if ( !empty( $array ) && is_array( $array ) ) {
+			foreach ( $array as $key => $mValue ) {
+				$object->{$key} = $mValue;
 			}
 		}
-		return $oObject;
+		return $object;
 	}
 
 	/**
-	 * @param \stdClass $oStdClass
+	 * @param \stdClass $stdClass
 	 * @return array
 	 */
-	public function convertStdClassToArray( $oStdClass ) {
-		return json_decode( json_encode( $oStdClass ), true );
+	public function convertStdClassToArray( $stdClass ) {
+		return json_decode( json_encode( $stdClass ), true );
 	}
 
 	/**
-	 * @param array    $aArray
-	 * @param callable $cCallable
+	 * @param array    $array
+	 * @param callable $callable
 	 * @return array
 	 */
-	public function arrayMapRecursive( $aArray, $cCallable ) {
+	public function arrayMapRecursive( $array, $callable ) {
 		$aMapped = [];
-		foreach ( $aArray as $mKey => $mValue ) {
-			if ( is_array( $mValue ) ) {
-				$aMapped[ $mKey ] = $this->arrayMapRecursive( $mValue, $cCallable );
+		foreach ( $array as $key => $value ) {
+			if ( is_array( $value ) ) {
+				$aMapped[ $key ] = $this->arrayMapRecursive( $value, $callable );
 			}
 			else {
-				$aMapped[ $mKey ] = call_user_func( $cCallable, $mValue );
+				$aMapped[ $key ] = call_user_func( $callable, $value );
 			}
 		}
 		return $aMapped;

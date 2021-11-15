@@ -7,8 +7,9 @@ use FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes;
 abstract class Base extends WpHashes\ApiBase {
 
 	const API_ENDPOINT = 'vulnerabilities';
+	const API_VERSION = 2;
+	const RESPONSE_DATA_KEY = 'data';
 	const ASSET_TYPE = '';
-	const RESPONSE_DATA_KEY = 'vulnerabilities';
 
 	/**
 	 * @return array[]|null
@@ -17,20 +18,18 @@ abstract class Base extends WpHashes\ApiBase {
 		return parent::query();
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
-		return parent::getApiUrl().'/'.$this->getRequestVO()->type;
+	protected function getApiUrl() :string {
+		return sprintf( '%s/%s', parent::getApiUrl(), $this->getRequestVO()->type );
 	}
 
 	/**
 	 * @return RequestVO
 	 */
 	protected function getRequestVO() {
-		$oReq = parent::getRequestVO();
-		$oReq->type = static::ASSET_TYPE;
-		return $oReq;
+		/** @var RequestVO $req */
+		$req = parent::getRequestVO();
+		$req->type = static::ASSET_TYPE;
+		return $req;
 	}
 
 	/**

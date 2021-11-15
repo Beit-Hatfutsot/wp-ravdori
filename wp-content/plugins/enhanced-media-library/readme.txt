@@ -2,9 +2,9 @@
 Contributors: webbistro
 Tags: media library, media category, media categories, media gallery, gallery shortcode, media tag, media tags, media taxonomy, media taxonomies, media uploader, mime type, mime, mime types, file types, media types, media filter, attachment, gallery, image, images, media, ux, user experience, wp-admin, admin, taxonomy, taxonomies
 Requires at least: 5.0
-Tested up to: 5.7
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 2.8.3
+Stable tag: 2.8.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Description ##
 
-The plugin will be handy for those who need to manage a lot of media files.
+**The plugin will be handy for those who need to manage a lot of media files.**
+
+[SUPPORT](https://wpuxsolutions.com/support) | [DOCUMENTATION](https://wpuxsolutions.com/documents/enhanced-media-library) | [FAQs](https://wpuxsolutions.com/documents/enhanced-media-library/faqs) | [PREMIUM FEATURES](https://wpuxsolutions.com/plugins/enhanced-media-library-pro)
 
 
 ### Categorize by Anything! ###
@@ -105,6 +107,7 @@ Assistance with translating is highly appreciated! If you'd like to be a transla
 
 * [Advanced Custom Fields](https://wordpress.org/plugins/advanced-custom-fields/)
 * [WooCommerce](https://wordpress.org/plugins/woocommerce/)
+* [FooGallery](https://wordpress.org/plugins/foogallery/) - [How to use?](https://wpuxsolutions.com/documents/enhanced-media-library/how-to-create-a-dynamic-foogallery)
 * [Anything Order by Terms](https://wordpress.org/plugins/anything-order-by-terms/)
 * [Search & Filter](https://wordpress.org/plugins/search-filter/)
 * [Document Gallery](https://wordpress.org/plugins/document-gallery/)
@@ -184,11 +187,59 @@ Please notice that you use Enhanced Media Library with other plugins that add me
 
 ## Changelog ##
 
+### 2.8.8 ###
+*Release Date - August 26, 2021*
+
+= Improvements =
+* Media Library Grid Mode: "More Details" / "Less Details" button improved to remember the latest choice after page reload
+* Better third-party admin menu compatibility
+* Compatibility for Impreza theme categories added
+
+
+### 2.8.7 ###
+*Release Date - August 8, 2021*
+
+= Compatibility =
+* Enfold theme masonry gallery (latest version) compatibility ensured
+
+= Bugfixes =
+* Edit image wrong link fixed for the Grid mode
+
+
+### 2.8.6 ###
+*Release Date - August 5, 2021*
+
+= Compatibility =
+* WordPress 5.8 compatibility ensured
+
+= Bugfixes =
+* A minor ACF-related bug fixed
+
+
+### 2.8.5 ###
+*Release Date - April 10, 2021*
+
+= Bugfixes =
+* A critical bug of v2.8.4 fixed (FooGallery related)
+* A few minor bugs fixed
+
+
+### 2.8.4 ###
+*Release Date - April 9, 2021*
+
+= Bugfixes =
+* A bug with a category checkbox not showing unchecked after deselecting a category fixed
+* A bug with taxonomy archive pages are being actually empty instead of 404 fixed
+
+= Compatibility =
+* FooGallery compatibility with EML dynamic galleries added, see [how to use Dynamic FooGalleries](https://wpuxsolutions.com/documents/enhanced-media-library/how-to-create-a-dynamic-foogallery)
+
+
 ### 2.8.3 ###
 *Release Date - March 9, 2021*
 
 = Improvements =
-* Taxonomy archive pages mechanism improved. When the pages are disabled (404) they are no more accessible by friendly URLs.
+* Taxonomy archive pages mechanism improved. When the pages are disabled (404) they are no more accessible by friendly URLs
 
 = Compatibility =
 * WordPress 5.7 compatibility ensured

@@ -1,20 +1,13 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes;
 
-/**
- * Class ApiPing
- * @package FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes
- */
 class ApiPing extends ApiBase {
 
 	const API_ENDPOINT = 'ping';
 
-	/**
-	 * @return bool
-	 */
-	public function ping() {
-		$aR = $this->query();
-		return ( is_array( $aR ) && isset( $aR[ 'pong' ] ) ) ? ( $aR[ 'pong' ] == 'ping' ) : false;
+	public function ping() :bool {
+		$r = $this->query();
+		return is_array( $r ) && isset( $r[ 'pong' ] ) && $r[ 'pong' ] == 'ping';
 	}
 }

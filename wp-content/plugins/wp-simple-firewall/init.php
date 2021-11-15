@@ -17,10 +17,10 @@ class ICWP_WPSF_Shield_Security {
 	private static $oInstance = null;
 
 	/**
-	 * @param Shield\Controller\Controller $oController
+	 * @param Shield\Controller\Controller $controller
 	 */
-	private function __construct( Shield\Controller\Controller $oController ) {
-		$oController->loadAllFeatures();
+	private function __construct( Shield\Controller\Controller $controller ) {
+		$controller->loadAllFeatures();
 	}
 
 	/**
@@ -55,15 +55,5 @@ catch ( \Exception $e ) {
 	if ( is_admin() ) {
 		error_log( 'Perhaps due to a failed upgrade, the Shield plugin failed to load certain component(s) - you should remove the plugin and reinstall.' );
 		error_log( $e->getMessage() );
-	}
-}
-
-if ( !function_exists( 'shield_security_get_plugin' ) ) {
-	/**
-	 * @return ICWP_WPSF_Shield_Security|null
-	 */
-	function shield_security_get_plugin() {
-		global $oICWP_Wpsf;
-		return ( $oICWP_Wpsf instanceof \ICWP_WPSF_Shield_Security ) ? $oICWP_Wpsf : null;
 	}
 }

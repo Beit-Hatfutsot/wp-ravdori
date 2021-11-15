@@ -135,7 +135,7 @@ if ( ! function_exists( 'wpuxss_eml_post_mime_types' ) ) {
  *  @created  03/08/13
  */
 
-add_filter('upload_mimes', 'wpuxss_eml_upload_mimes');
+add_filter( 'upload_mimes', 'wpuxss_eml_upload_mimes' );
 
 if ( ! function_exists( 'wpuxss_eml_upload_mimes' ) ) {
 

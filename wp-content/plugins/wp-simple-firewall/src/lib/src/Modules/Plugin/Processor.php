@@ -21,18 +21,19 @@ class Processor extends BaseShield\Processor {
 			->setMod( $this->getMod() )
 			->run();
 
-		$mod->getPluginBadgeCon()->run();
+		$mod->getShieldNetApiController()->execute();
+		$mod->getPluginBadgeCon()->execute();
 
 		( new PluginTelemetry() )
-			->setMod( $mod )
+			->setMod( $this->getMod() )
 			->execute();
 
-		if ( $opts->isImportExportPermitted() ) {
-			$mod->getImpExpController()->run();
+		if ( $opts->isOpt( 'importexport_enable', 'Y' ) ) {
+			$mod->getImpExpController()->execute();
 		}
 
-		add_filter( $con->prefix( 'delete_on_deactivate' ), function ( $isDelete ) use ( $opts ) {
-			return $isDelete || $opts->isOpt( 'delete_on_deactivate', 'Y' );
+		add_filter( $con->prefix( 'delete_on_deactivate' ), function ( $isDelete ) {
+			return $isDelete || $this->getOptions()->isOpt( 'delete_on_deactivate', 'Y' );
 		} );
 
 		add_action( $con->prefix( 'dashboard_widget_content' ), function () {
@@ -61,19 +62,6 @@ class Processor extends BaseShield\Processor {
 
 	public function runDailyCron() {
 		$this->getCon()->fireEvent( 'test_cron_run' );
-
-		/** @var Options $oOpts */
-		$oOpts = $this->getOptions();
-		if ( $oOpts->isImportExportPermitted() ) {
-			try {
-				( new Lib\ImportExport\Import() )
-					->setMod( $this->getMod() )
-					->fromSite( $oOpts->getImportExportMasterImportUrl() );
-			}
-			catch ( \Exception $e ) {
-			}
-		}
-
 		( new CleanStorage() )
 			->setCon( $this->getCon() )
 			->run();

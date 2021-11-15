@@ -1,9 +1,10 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
 
 use FernleafSystems\Wordpress\Plugin\Shield;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Lib\Request\FormParams;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Lib\FileLocker;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan;
 use FernleafSystems\Wordpress\Services\Services;
@@ -12,8 +13,11 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 
 	protected function processAjaxAction( string $action ) :array {
 
-		$req = Services::Request();
 		switch ( $action ) {
+
+			case 'scanresults_action':
+				$response = $this->ajaxExec_ScanTableAction();
+				break;
 
 			case 'scans_start':
 				$response = $this->ajaxExec_StartScans();
@@ -21,26 +25,6 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 
 			case 'scans_check':
 				$response = $this->ajaxExec_CheckScans();
-				break;
-
-			case 'item_action':
-				$response = $this->ajaxExec_ScanItemAction( $req->post( 'item_action' ), false );
-				break;
-
-			case 'bulk_action':
-				$response = $this->ajaxExec_ScanItemAction( $req->post( 'bulk_action' ), true );
-				break;
-
-			case 'item_asset_deactivate':
-			case 'item_asset_reinstall':
-			case 'item_delete':
-			case 'item_ignore':
-			case 'item_repair':
-				$response = $this->ajaxExec_ScanItemAction( str_replace( 'item_', '', $action ) );
-				break;
-
-			case 'render_table_scan':
-				$response = $this->ajaxExec_BuildTableScan();
 				break;
 
 			case 'plugin_reinstall':
@@ -62,69 +46,15 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 		return $response;
 	}
 
-	private function ajaxExec_BuildTableScan() :array {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-
-		$sScanSlug = Services::Request()->post( 'fScan' );
-		switch ( $sScanSlug ) {
-
-			case 'aggregate':
-				$oTableBuilder = new Shield\Tables\Build\ScanAggregate();
-				break;
-
-			case 'apc':
-				$oTableBuilder = new Shield\Tables\Build\ScanApc();
-				break;
-
-			case 'mal':
-				$oTableBuilder = new Shield\Tables\Build\ScanMal();
-				break;
-
-			case 'wcf':
-				$oTableBuilder = new Shield\Tables\Build\ScanWcf();
-				break;
-
-			case 'ptg':
-				$oTableBuilder = new Shield\Tables\Build\ScanPtg();
-				break;
-
-			case 'ufc':
-				$oTableBuilder = new Shield\Tables\Build\ScanUfc();
-				break;
-
-			case 'wpv':
-				$oTableBuilder = new Shield\Tables\Build\ScanWpv();
-				break;
-
-			default:
-				break;
-		}
-
-		if ( empty( $oTableBuilder ) ) {
-			$sHtml = '<div class="alert alert-danger m-0">SCAN SLUG NOT SUPPORTED</div>';
-		}
-		else {
-			$sHtml = $oTableBuilder
-				->setMod( $mod )
-				->setDbHandler( $mod->getDbHandler_ScanResults() )
-				->render();
-		}
-
-		return [
-			'success' => !empty( $oTableBuilder ),
-			'html'    => $sHtml
-		];
-	}
-
 	private function ajaxExec_FileLockerShowDiff() :array {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
-		$oFLCon = $mod->getFileLocker();
+		$FLCon = $mod->getFileLocker();
 		$FS = Services::WpFs();
 
-		$nRID = Services::Request()->post( 'rid' );
-		$aData = [
+		$nRID = (int)Services::Request()->post( 'rid' );
+
+		$data = [
 			'error'   => '',
 			'success' => false,
 			'flags'   => [
@@ -147,6 +77,8 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 				'modified_file'         => __( 'Modified File' ),
 				'locked'                => __( 'Locked' ),
 				'modified_timestamp'    => __( 'File Modified Timestamp' ),
+				'file_modified'         => __( 'File Modified' ),
+				'relative_path'         => __( 'Relative Path' ),
 				'modified'              => __( 'Modified' ),
 				'download'              => __( 'Download' ),
 				'change_detected_at'    => __( 'Change Detected' ),
@@ -156,65 +88,82 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 				'download_modified'     => __( 'Download Modified' ),
 				'file_download'         => __( 'File Download' ),
 				'file_info'             => __( 'File Info' ),
-				'file_accept'           => __( 'File Accept' ),
+				'file_accept'           => __( 'Accept File Changes' ),
 				'file_accept_checkbox'  => __( 'Are you sure you want to keep the file changes?' ),
-				'file_restore'          => __( 'File Restore' ),
+				'file_restore'          => __( 'Restore Original File' ),
 				'file_restore_checkbox' => __( 'Are you sure you want to restore the original file contents?' ),
 				'file_restore_button'   => __( 'Are you sure you want to restore the original file contents?' ),
 			]
 		];
 		try {
+			$lock = $FLCon->getFileLock( $nRID );
 
-			$oLock = $oFLCon->getFileLock( $nRID );
-			$bDiff = $oLock->detected_at > 0;
-			$aData[ 'ajax' ] = $oFLCon->createFileDownloadLinks( $oLock );
-			$aData[ 'flags' ][ 'has_diff' ] = $bDiff;
-			$aData[ 'html' ][ 'diff' ] = $bDiff ?
+			$isDifferent = $lock->detected_at > 0;
+			$data[ 'ajax' ] = $FLCon->createFileDownloadLinks( $lock );
+			$data[ 'flags' ][ 'has_diff' ] = $isDifferent;
+			$data[ 'html' ][ 'diff' ] = $isDifferent ?
 				( new FileLocker\Ops\PerformAction() )
 					->setMod( $this->getMod() )
-					->run( $nRID, 'diff' ) : '';
+					->run( $lock, 'diff' ) : '';
 
-			$oCarb = Services::Request()->carbon( true );
-			$aData[ 'vars' ][ 'locked_at' ] = $oCarb->setTimestamp( $oLock->created_at )->diffForHumans();
-			$aData[ 'vars' ][ 'file_modified_at' ] =
-				Services::WpGeneral()->getTimeStampForDisplay( $FS->getModifiedTime( $oLock->file ) );
-			$aData[ 'vars' ][ 'change_detected_at' ] = $oCarb->setTimestamp( $oLock->detected_at )->diffForHumans();
-			$aData[ 'vars' ][ 'file_size_locked' ] = Shield\Utilities\Tool\FormatBytes::Format( strlen(
+			$carb = Services::Request()->carbon( true );
+
+			$absPath = wp_normalize_path( ABSPATH );
+			$filePath = wp_normalize_path( $lock->file );
+			if ( strpos( $filePath, $absPath ) !== false ) {
+				$data[ 'vars' ][ 'relative_path' ] = str_replace( $absPath, '/', $filePath );
+			}
+			else {
+				$data[ 'vars' ][ 'relative_path' ] = '../'.basename( $filePath );
+			}
+
+			$data[ 'vars' ][ 'relative_path' ] = str_replace( wp_normalize_path( ABSPATH ), '/', wp_normalize_path( $lock->file ) );
+			$data[ 'vars' ][ 'locked_at' ] = $carb->setTimestamp( $lock->created_at )->diffForHumans();
+			$data[ 'vars' ][ 'file_modified_at' ] =
+				Services::WpGeneral()->getTimeStampForDisplay( $FS->getModifiedTime( $lock->file ) );
+			$data[ 'vars' ][ 'file_modified_ago' ] =
+				$carb->setTimestamp( $FS->getModifiedTime( $lock->file ) )->diffForHumans();
+			$data[ 'vars' ][ 'change_detected_at' ] = $carb->setTimestamp( $lock->detected_at )->diffForHumans();
+			$data[ 'vars' ][ 'file_size_locked' ] = Shield\Utilities\Tool\FormatBytes::Format( strlen(
 				( new FileLocker\Ops\ReadOriginalFileContent() )
 					->setMod( $mod )
-					->run( $oLock )
+					->run( $lock )
 			), 3 );
-			$aData[ 'vars' ][ 'file_size_modified' ] = $FS->exists( $oLock->file ) ?
-				Shield\Utilities\Tool\FormatBytes::Format( $FS->getFileSize( $oLock->file ), 3 )
+			$data[ 'vars' ][ 'file_size_modified' ] = $FS->exists( $lock->file ) ?
+				Shield\Utilities\Tool\FormatBytes::Format( $FS->getFileSize( $lock->file ), 3 )
 				: 0;
-			$aData[ 'vars' ][ 'file_name' ] = basename( $oLock->file );
-			$aData[ 'success' ] = true;
+			$data[ 'vars' ][ 'file_name' ] = basename( $lock->file );
+			$data[ 'success' ] = true;
 		}
 		catch ( \Exception $e ) {
-			$aData[ 'error' ] = $e->getMessage();
+			$data[ 'error' ] = $e->getMessage();
 		}
 
 		return [
-			'success' => $aData[ 'success' ],
-			'message' => $aData[ 'error' ],
+			'success' => $data[ 'success' ],
+			'message' => $data[ 'error' ],
 			'html'    => $this->getMod()
 							  ->renderTemplate(
-								  '/wpadmin_pages/insights/scans/realtime/file_locker/file_diff.twig',
-								  $aData,
+								  '/wpadmin_pages/insights/scans/results/realtime/file_locker/file_diff.twig',
+								  $data,
 								  true
 							  )
 		];
 	}
 
 	private function ajaxExec_FileLockerFileAction() :array {
+		/** @var ModCon $mod */
+		$mod = $this->getMod();
+		$FLCon = $mod->getFileLocker();
 		$req = Services::Request();
 		$success = false;
 
 		if ( $req->post( 'confirmed' ) == '1' ) {
 			try {
+				$lock = $FLCon->getFileLock( (int)$req->post( 'rid' ) );
 				$success = ( new FileLocker\Ops\PerformAction() )
 					->setMod( $this->getMod() )
-					->run( $req->post( 'rid' ), $req->post( 'file_action' ) );
+					->run( $lock, (string)$req->post( 'file_action' ) );
 				$msg = __( 'Requested action completed successfully.', 'wp-simple-firewall' );
 			}
 			catch ( \Exception $e ) {
@@ -236,132 +185,60 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 		$mod = $this->getMod();
 		$req = Services::Request();
 
-		$bReinstall = (bool)$req->post( 'reinstall' );
-		$bActivate = (bool)$req->post( 'activate' );
+		$activate = $req->post( 'activate' );
 		$file = sanitize_text_field( wp_unslash( $req->post( 'file' ) ) );
 
-		if ( $bReinstall ) {
-			/** @var Scan\Controller\Ptg $scan */
-			$scan = $mod->getScansCon()->getScanCon( 'ptg' );
-			$bActivate = $scan->actionPluginReinstall( $file );
+		if ( $req->post( 'reinstall' ) ) {
+			/** @var Scan\Controller\Afs $scan */
+			$scan = $mod->getScansCon()->getScanCon( 'afs' );
+			$activate = $scan->actionPluginReinstall( $file );
 		}
 
-		if ( $bActivate ) {
+		if ( $activate ) {
 			Services::WpPlugins()->activate( $file );
 		}
 
 		return [ 'success' => true ];
 	}
 
-	/**
-	 * @param string $action
-	 * @param bool   $bIsBulkAction
-	 * @return array
-	 */
-	private function ajaxExec_ScanItemAction( $action, $bIsBulkAction = false ) :array {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-
-		$success = false;
-
-		if ( $action == 'download' ) {
-			// A special case since this action is handled using Javascript
-			$success = true;
-			$msg = __( 'File download has started.', 'wp-simple-firewall' );
-		}
-		else {
-			if ( $bIsBulkAction ) {
-				$itemIDs = (array)Services::Request()->post( 'ids', [] );
-			}
-			else {
-				$itemIDs = [ Services::Request()->post( 'rid' ) ];
-			}
-			/** @var int[] $itemIDs */
-			$itemIDs = array_filter( array_map( 'intval', $itemIDs ) );
-
-			if ( empty( $itemIDs ) ) {
-				$msg = __( 'Unsupported item(s) selected', 'wp-simple-firewall' );
-			}
-			else {
-				try {
-					$scanSlugs = [];
-					$aSuccessfulItems = [];
-					foreach ( $itemIDs as $ID ) {
-						/** @var Shield\Databases\Scanner\EntryVO $entry */
-						$entry = $mod->getDbHandler_ScanResults()
-									 ->getQuerySelector()
-									 ->byId( $ID );
-						if ( $entry instanceof Shield\Databases\Scanner\EntryVO ) {
-							$scanSlugs[] = $entry->scan;
-							if ( $mod->getScanCon( $entry->scan )->executeItemAction( $ID, $action ) ) {
-								$aSuccessfulItems[] = $ID;
-							}
-						}
-					}
-
-					if ( count( $aSuccessfulItems ) === count( $itemIDs ) ) {
-						$success = true;
-						$msg = __( 'Action successful.' );
-					}
-					else {
-						$msg = __( 'An error occurred.' ).' '.__( 'Some items may not have been processed.' );
-					}
-
-					// We don't rescan for ignores.
-					$rescanSlugs = array_diff( $scanSlugs, [ Scan\Controller\Mal::SCAN_SLUG ] );
-
-					if ( empty( $rescanSlugs ) || in_array( $action, [ 'ignore' ] ) ) {
-						$msg .= ' '.__( 'Reloading', 'wp-simple-firewall' ).' ...';
-					}
-					else {
-						// rescan
-						$mod->getScanQueueController()->startScans( $rescanSlugs );
-						$msg .= ' '.__( 'Rescanning', 'wp-simple-firewall' ).' ...';
-					}
-				}
-				catch ( \Exception $e ) {
-					$msg = $e->getMessage();
-				}
-			}
-		}
-
-		return [
-			'success'     => $success,
-			'page_reload' => !in_array( $action, [ 'download' ] ),
-			'message'     => $msg,
-		];
-	}
-
 	private function ajaxExec_CheckScans() :array {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
-		/** @var Strings $oStrings */
-		$oStrings = $mod->getStrings();
-		/** @var Shield\Databases\ScanQueue\Select $oSel */
-		$oSel = $mod->getDbHandler_ScanQueue()->getQuerySelector();
+		/** @var Strings $strings */
+		$strings = $mod->getStrings();
 
-		$oQueCon = $mod->getScanQueueController();
-		$sCurrent = $oSel->getCurrentScan();
-		$bHasCurrent = !empty( $sCurrent );
-		if ( $bHasCurrent ) {
-			$sCurrentScan = $oStrings->getScanName( $sCurrent );
+		$statusChecker = ( new Scan\Init\ScansStatus() )->setMod( $mod );
+		$queueCon = $mod->getScanQueueController();
+		$current = $statusChecker->current();
+		$hasCurrent = !empty( $current );
+		if ( $hasCurrent ) {
+			$currentScan = $strings->getScanName( $current );
 		}
 		else {
-			$sCurrentScan = __( 'No scan running.', 'wp-simple-firewall' );
+			$currentScan = __( 'No scan running.', 'wp-simple-firewall' );
+		}
+
+		$running = $statusChecker->enqueued();
+
+		if ( count( $running ) === 0 ) {
+			$remainingScans = __( 'No scans remaining.', 'wp-simple-firewall' );
+		}
+		else {
+			$remainingScans = sprintf( __( '%s scans remaining.', 'wp-simple-firewall' ),
+				count( $running ) );
 		}
 
 		return [
 			'success' => true,
-			'running' => $oQueCon->getScansRunningStates(),
+			'running' => $queueCon->getScansRunningStates(),
 			'vars'    => [
 				'progress_html' => $mod->renderTemplate(
 					'/wpadmin_pages/insights/scans/modal/progress_snippet.twig',
 					[
 						'current_scan'    => __( 'Current Scan', 'wp-simple-firewall' ),
-						'scan'            => $sCurrentScan,
-						'remaining_scans' => sprintf( __( '%s of %s scans remaining.', 'wp-simple-firewall' ),
-							count( $oSel->getUnfinishedScans() ), count( $oSel->getInitiatedScans() ) ),
-						'progress'        => 100*$oQueCon->getScanJobProgress(),
+						'scan'            => $currentScan,
+						'remaining_scans' => $remainingScans,
+						'progress'        => 100*$queueCon->getScanJobProgress(),
 						'patience_1'      => __( 'Please be patient.', 'wp-simple-firewall' ),
 						'patience_2'      => __( 'Some scans can take quite a while to complete.', 'wp-simple-firewall' ),
 						'completed'       => __( 'Scans completed.', 'wp-simple-firewall' ).' '.__( 'Reloading page', 'wp-simple-firewall' ).'...'
@@ -380,44 +257,22 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 		$success = false;
 		$reloadPage = false;
 		$msg = __( 'No scans were selected', 'wp-simple-firewall' );
-		$formParams = $this->getAjaxFormParams();
+		$params = FormParams::Retrieve();
 
-		$scanCon = $mod->getScanQueueController();
+		if ( !empty( $params ) ) {
+			$uiTrack = $mod->getUiTrack();
+			$uiTrack->selected_scans = array_intersect( array_keys( $params ), $opts->getScanSlugs() );
+			$mod->setUiTrack( $uiTrack );
 
-		if ( !empty( $formParams ) ) {
-			$selected = array_keys( $formParams );
-
-			$aUiTrack = $mod->getUiTrack();
-			$aUiTrack[ 'selected_scans' ] = array_intersect( array_keys( $formParams ), $opts->getScanSlugs() );
-			$mod->setUiTrack( $aUiTrack );
-
-			$toScan = [];
-			foreach ( $selected as $slug ) {
-				try {
-					$thisScanCon = $mod->getScanCon( $slug );
-					if ( $thisScanCon->isScanningAvailable() ) {
-
-						$toScan[] = $slug;
-
-						if ( isset( $formParams[ 'opt_clear_ignore' ] ) ) {
-							$thisScanCon->resetIgnoreStatus();
-						}
-						if ( isset( $formParams[ 'opt_clear_notification' ] ) ) {
-							$thisScanCon->resetNotifiedStatus();
-						}
-
-						$success = true;
-						$reloadPage = true;
-						$msg = __( 'Scans started.', 'wp-simple-firewall' ).' '.__( 'Please wait, as this will take a few moments.', 'wp-simple-firewall' );
-					}
-				}
-				catch ( \Exception $e ) {
-				}
+			$resetIgnore = (bool)( $params[ 'opt_clear_ignore' ] ?? false );
+			if ( $mod->getScansCon()->startNewScans( $uiTrack->selected_scans, $resetIgnore ) ) {
+				$success = true;
+				$reloadPage = true;
+				$msg = __( 'Scans started.', 'wp-simple-firewall' ).' '.__( 'Please wait, as this will take a few moments.', 'wp-simple-firewall' );
 			}
-			$scanCon->startScans( $toScan );
 		}
 
-		$isScanRunning = $scanCon->hasRunningScans();
+		$isScanRunning = $mod->getScanQueueController()->hasRunningScans();
 
 		return [
 			'success'       => $success,
@@ -425,5 +280,20 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 			'page_reload'   => $reloadPage && !$isScanRunning,
 			'message'       => $msg,
 		];
+	}
+
+	private function ajaxExec_ScanTableAction() :array {
+		try {
+			return ( new Lib\ScanTables\DelegateAjaxHandler() )
+				->setMod( $this->getMod() )
+				->processAjaxAction();
+		}
+		catch ( \Exception $e ) {
+			return [
+				'success'     => false,
+				'page_reload' => true,
+				'message'     => $e->getMessage(),
+			];
+		}
 	}
 }

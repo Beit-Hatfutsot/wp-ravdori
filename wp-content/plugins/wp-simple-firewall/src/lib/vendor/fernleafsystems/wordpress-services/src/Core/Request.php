@@ -3,38 +3,25 @@
 namespace FernleafSystems\Wordpress\Services\Core;
 
 use Carbon\Carbon;
+use FernleafSystems\Utilities\Data\Adapter\DynPropertiesClass;
 use FernleafSystems\Wordpress\Services\Services;
 
 /**
  * Class Request
  * @package FernleafSystems\Wordpress\Services\Core
+ * @property array $post
+ * @property array $query
+ * @property array $cookie
+ * @property array $cookie_copy
+ * @property array $server
+ * @property array $env
  */
-class Request {
+class Request extends DynPropertiesClass {
 
 	/**
-	 * @var array
+	 * @var string
 	 */
-	private $post;
-
-	/**
-	 * @var array
-	 */
-	private $query;
-
-	/**
-	 * @var array
-	 */
-	private $cookie;
-
-	/**
-	 * @var array
-	 */
-	private $server;
-
-	/**
-	 * @var array
-	 */
-	private $env;
+	private $id;
 
 	/**
 	 * @var int
@@ -57,15 +44,33 @@ class Request {
 	public function __construct() {
 		$this->post = is_array( $_POST ) ? $_POST : [];
 		$this->query = is_array( $_GET ) ? $_GET : [];
-		if ( is_array( $_COOKIE ) ) {
-			$this->cookie = &$_COOKIE;
-		}
-		else {
-			$this->cookie = [];
-		}
+		$this->cookie_copy = is_array( $_COOKIE ) ? $_COOKIE : [];
 		$this->server = is_array( $_SERVER ) ? $_SERVER : [];
 		$this->env = is_array( $_ENV ) ? $_ENV : [];
 		$this->ts();
+	}
+
+	public function __get( string $key ) {
+		switch ( $key ) {
+			case 'cookie':
+				$value = is_array( $_COOKIE ) ? $_COOKIE : [];
+				break;
+			default:
+				$value = parent::__get( $key );
+				break;
+		}
+		return $value;
+	}
+
+	public function getID( bool $sub = false, int $length = 10 ) :string {
+		if ( empty( $this->id ) ) {
+			$str = Services::IP()->getRequestIp().Services::Request()->ts().wp_rand();
+			$this->id = (string)hash( 'sha256', $str );
+			if ( empty( $this->id ) ) {
+				$this->id = (string)hash( 'md5', $str );
+			}
+		}
+		return ( $sub && $length > 0 && $length < strlen( $this->id ) ) ? substr( $this->id, 0, $length ) : $this->id;
 	}
 
 	public function getContent() :string {
@@ -121,9 +126,23 @@ class Request {
 		return $carbon;
 	}
 
+	/**
+	 * Can't use array_merge as we can't be sure as some keys may be numeric.
+	 * TODO: test to find the optimal approach for combining these arrays.
+	 */
 	public function getRawRequestParams( bool $includeCookies = true ) :array {
-		$params = array_merge( $this->query, $this->post );
-		return $includeCookies ? array_merge( $params, $this->cookie ) : $params;
+		$params = [];
+
+		$toGather = [ $this->query, $this->post ];
+		if ( $includeCookies ) {
+			$toGather[] = $this->cookie_copy;
+		}
+		foreach ( $toGather as $bag ) {
+			foreach ( $bag as $key => $value ) {
+				$params[ $key ] = $value;
+			}
+		}
+		return $params;
 	}
 
 	public function getHost() :string {
@@ -240,7 +259,7 @@ class Request {
 	}
 
 	/**
-	 * @param array $container
+	 * @param array  $container
 	 * @param string $key
 	 * @param mixed  $default
 	 * @return mixed|null

@@ -4,24 +4,20 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Wp;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class Versions
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Wp
- */
 class Versions extends Services\Utilities\WpOrg\Base\VersionsBase {
 
 	/**
-	 * @param string $sVersion
-	 * @param bool   $bVerifyUrl
+	 * @param string $version
+	 * @param bool   $isVerifyUrl
 	 * @return bool
 	 */
-	public function exists( $sVersion, $bVerifyUrl = false ) {
-		$bExists = in_array( $sVersion, $this->all() );
-		if ( $bExists && $bVerifyUrl ) {
+	public function exists( $version, $isVerifyUrl = false ) {
+		$bExists = in_array( $version, $this->all() );
+		if ( $bExists && $isVerifyUrl ) {
 			try {
-				( new Services\Utilities\HttpUtil() )->checkUrl( Repo::GetUrlForVersion( $sVersion ) );
+				( new Services\Utilities\HttpUtil() )->checkUrl( Repo::GetUrlForVersion( $version ) );
 			}
-			catch ( \Exception $oE ) {
+			catch ( \Exception $e ) {
 				$bExists = false;
 			}
 		}
@@ -32,39 +28,36 @@ class Versions extends Services\Utilities\WpOrg\Base\VersionsBase {
 	 * @return string[]
 	 */
 	protected function downloadVersions() {
-		$sData = ( new Services\Utilities\HttpRequest() )
+		$data = ( new Services\Utilities\HttpRequest() )
 			->getContent( 'https://api.wordpress.org/core/stable-check/1.0/' );
 
-		if ( empty( $sData ) ) {
-			$aVersions = $this->downloadVersionsAlt();
+		if ( empty( $data ) ) {
+			$versions = $this->downloadVersionsAlt();
 		}
 		else {
-			$aVersions = array_keys( json_decode( trim( $sData ), true ) );
+			$versions = array_keys( json_decode( trim( $data ), true ) );
 		}
 
-		return $aVersions;
+		return $versions;
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function downloadVersionsAlt() {
-		$aV = [];
-		$sSvnVersionsContent = Services\Services::HttpRequest()->getContent( Repo::GetUrlForVersions() );
+	protected function downloadVersionsAlt() :array {
+		$versions = [];
+		$svnVersionsContent = Services\Services::HttpRequest()->getContent( Repo::GetUrlForVersions() );
 
-		if ( !empty( $sSvnVersionsContent ) ) {
+		if ( !empty( $svnVersionsContent ) ) {
 			$oSvnDom = new \DOMDocument();
-			$oSvnDom->loadHTML( $sSvnVersionsContent );
+			$oSvnDom->loadHTML( $svnVersionsContent );
 
 			foreach ( $oSvnDom->getElementsByTagName( 'a' ) as $oElem ) {
 				/** @var \DOMElement $oElem */
 				$sHref = $oElem->getAttribute( 'href' );
 				if ( $sHref != '../' && !filter_var( $sHref, FILTER_VALIDATE_URL ) ) {
-					$aV[] = trim( $sHref, '/' );
+					$versions[] = trim( $sHref, '/' );
 				}
 			}
 		}
 
-		return $aV;
+		return $versions;
 	}
 }

@@ -9,17 +9,17 @@ namespace FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Has
 abstract class PluginThemeBase extends AssetHashesBase {
 
 	/**
-	 * @param string $sSlug
-	 * @param string $sVersion
-	 * @param string $sHashAlgo
+	 * @param string $slug
+	 * @param string $version
+	 * @param string $hashAlgo
 	 * @return array|null
 	 */
-	public function getHashes( $sSlug, $sVersion, $sHashAlgo = null ) {
-		/** @var RequestVO $oReq */
-		$oReq = $this->getRequestVO();
-		$oReq->slug = $sSlug;
-		$oReq->version = $sVersion;
-		$oReq->hash = $sHashAlgo;
+	public function getHashes( $slug, $version, $hashAlgo = null ) {
+		/** @var RequestVO $req */
+		$req = $this->getRequestVO();
+		$req->slug = $slug;
+		$req->version = $version;
+		$req->hash = $hashAlgo;
 		return $this->query();
 	}
 }

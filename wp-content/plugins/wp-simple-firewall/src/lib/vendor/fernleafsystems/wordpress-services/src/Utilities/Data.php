@@ -35,12 +35,12 @@ class Data {
 	}
 
 	/**
-	 * @param string $sPath
+	 * @param string $path
 	 * @return string
 	 */
-	public function getExtension( $sPath ) {
-		$nLastPeriod = strrpos( $sPath, '.' );
-		return ( $nLastPeriod === false ) ? $sPath : str_replace( '.', '', substr( $sPath, $nLastPeriod ) );
+	public function getExtension( $path ) {
+		$extPeriod = strrpos( $path, '.' );
+		return ( $extPeriod === false ) ? $path : str_replace( '.', '', substr( $path, $extPeriod ) );
 	}
 
 	/**
@@ -50,6 +50,17 @@ class Data {
 	 * non-PHP files so we simply put the content we want to have read into a php file and then "include" it.
 	 * @param string $file
 	 * @return string
+	 */
+	public function readFileWithInclude( string $file ) {
+		ob_start();
+		include( $file );
+		return ob_get_clean();
+	}
+
+	/**
+	 * @param string $file
+	 * @return string
+	 * @deprecated
 	 */
 	public function readFileContentsUsingInclude( string $file ) {
 		ob_start();

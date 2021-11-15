@@ -11,7 +11,8 @@ use FernleafSystems\Wordpress\Services\Utilities\Integrations\RequestVO;
  */
 abstract class ApiBase {
 
-	const API_URL = 'https://wphashes.com/api/apto-wphashes/v1/';
+	const API_URL = 'https://wphashes.com/api/apto-wphashes';
+	const API_VERSION = 1;
 	const API_ENDPOINT = '';
 	const REQUEST_TYPE = 'GET';
 	const RESPONSE_DATA_KEY = '';
@@ -21,37 +22,30 @@ abstract class ApiBase {
 	/**
 	 * @var RequestVO
 	 */
-	private $oReq;
+	private $req;
 
 	/**
 	 * @var bool
 	 */
-	private $bUseQueryCache = false;
+	private $useQueryCache = false;
 
 	/**
 	 * @var array
 	 */
-	private static $aQueryCache = [];
+	private static $QueryCache = [];
 
 	/**
-	 * ApiBase constructor.
-	 * @param string $sApiToken
+	 * @param string $apiToken
 	 */
-	public function __construct( $sApiToken = null ) {
-		$this->setApiToken( $sApiToken );
+	public function __construct( $apiToken = null ) {
+		$this->setApiToken( $apiToken );
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
-		return static::API_URL.static::API_ENDPOINT;
+	protected function getApiUrl() :string {
+		return sprintf( '%s/v%s/%s', static::API_URL, static::API_VERSION, static::API_ENDPOINT );
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getQueryData() {
+	protected function getQueryData() :array {
 		return empty( static::$API_TOKEN ) ? [] : [ 'token' => static::$API_TOKEN ];
 	}
 
@@ -59,10 +53,10 @@ abstract class ApiBase {
 	 * @return RequestVO|mixed
 	 */
 	protected function getRequestVO() {
-		if ( !isset( $this->oReq ) ) {
-			$this->oReq = $this->newReqVO();
+		if ( !isset( $this->req ) ) {
+			$this->req = $this->newReqVO();
 		}
-		return $this->oReq;
+		return $this->req;
 	}
 
 	/**
@@ -76,16 +70,16 @@ abstract class ApiBase {
 	 * @return array|mixed|null
 	 */
 	public function query() {
-		$aData = $this->fireRequestDecodeResponse();
-		if ( is_array( $aData ) ) {
+		$data = $this->fireRequestDecodeResponse();
+		if ( is_array( $data ) ) {
 			if ( strlen( static::RESPONSE_DATA_KEY ) > 0 ) {
-				$aData = isset( $aData[ static::RESPONSE_DATA_KEY ] ) ? $aData[ static::RESPONSE_DATA_KEY ] : null;
+				$data = $data[ static::RESPONSE_DATA_KEY ] ?? null;
 			}
 		}
 		else {
-			$aData = null;
+			$data = null;
 		}
-		return $aData;
+		return $data;
 	}
 
 	/**
@@ -103,14 +97,14 @@ abstract class ApiBase {
 		$this->preRequest();
 		switch ( static::REQUEST_TYPE ) {
 			case 'POST':
-				$sResponse = $this->fireRequest_POST();
+				$response = $this->fireRequest_POST();
 				break;
 			case 'GET':
 			default:
-				$sResponse = $this->fireRequest_GET();
+				$response = $this->fireRequest_GET();
 				break;
 		}
-		return $sResponse;
+		return $response;
 	}
 
 	protected function preRequest() {
@@ -120,62 +114,62 @@ abstract class ApiBase {
 	 * @return string
 	 */
 	protected function fireRequest_GET() {
-		$sResponse = null;
+		$response = null;
 
-		$sUrl = add_query_arg( $this->getQueryData(), $this->getApiUrl() );
-		$sSig = md5( $sUrl );
+		$url = add_query_arg( $this->getQueryData(), $this->getApiUrl() );
+		$sig = md5( $url );
 
-		if ( $this->isUseQueryCache() && isset( self::$aQueryCache[ $sSig ] ) ) {
-			$sResponse = self::$aQueryCache[ $sSig ];
+		if ( $this->isUseQueryCache() && isset( self::$QueryCache[ $sig ] ) ) {
+			$response = self::$QueryCache[ $sig ];
 		}
 
-		if ( is_null( $sResponse ) ) {
-			$sResponse = ( new HttpRequest() )->getContent( $sUrl );
+		if ( is_null( $response ) ) {
+			$response = ( new HttpRequest() )->getContent( $url );
 			if ( $this->isUseQueryCache() ) {
-				self::$aQueryCache[ $sSig ] = $sResponse;
+				self::$QueryCache[ $sig ] = $response;
 			}
 		}
 
-		return $sResponse;
+		return $response;
 	}
 
 	/**
 	 * @return string|null
 	 */
 	protected function fireRequest_POST() {
-		$oHttp = new HttpRequest();
-		$oHttp
+		$http = new HttpRequest();
+		$http
 			->post(
 				add_query_arg( $this->getQueryData(), $this->getApiUrl() ),
-				[ 'body' => $this->getRequestVO()->getRawDataAsArray() ]
+				[ 'body' => $this->getRequestVO()->getRawData() ]
 			);
-		return $oHttp->isSuccess() ? $oHttp->lastResponse->body : null;
+		return $http->isSuccess() ? $http->lastResponse->body : null;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isUseQueryCache() {
-		return (bool)$this->bUseQueryCache;
+	public function isUseQueryCache() :bool {
+		return (bool)$this->useQueryCache;
 	}
 
 	/**
-	 * @param string $sToken
+	 * @param string $token
 	 * @return $this
 	 */
-	public function setApiToken( $sToken ) {
-		if ( is_string( $sToken ) && preg_match( '#^[a-z0-9]{32,}$#', $sToken ) ) {
-			static::$API_TOKEN = $sToken;
+	public function setApiToken( $token ) {
+		if ( is_string( $token ) && preg_match( '#^[a-z0-9]{32,}$#', $token ) ) {
+			static::$API_TOKEN = $token;
 		}
 		return $this;
 	}
 
 	/**
-	 * @param bool $bUseQueryCache
+	 * @param bool $useQueryCache
 	 * @return $this
 	 */
-	public function setUseQueryCache( $bUseQueryCache ) {
-		$this->bUseQueryCache = $bUseQueryCache;
+	public function setUseQueryCache( bool $useQueryCache ) {
+		$this->useQueryCache = $useQueryCache;
 		return $this;
 	}
 }

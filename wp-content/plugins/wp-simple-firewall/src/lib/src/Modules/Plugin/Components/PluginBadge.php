@@ -10,16 +10,18 @@ use FernleafSystems\Wordpress\Services\Services;
  * Class PluginBadge
  * @package FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin\Components
  */
-class PluginBadge {
+class PluginBadge extends Modules\Base\Common\ExecOnceModConsumer {
 
-	use Modules\ModConsumer;
-
-	public function run() {
+	protected function run() {
 		/** @var Plugin\Options $opts */
 		$opts = $this->getOptions();
-		$bDisplay = $opts->isOpt( 'display_plugin_badge', 'Y' )
-					&& ( Services::Request()->cookie( $this->getCookieIdBadgeState() ) != 'closed' );
-		if ( $bDisplay ) {
+		$req = Services::Request();
+
+		$display = apply_filters( 'shield/show_security_badge',
+			$opts->isOpt( 'display_plugin_badge', 'Y' ) && ( $req->cookie( $this->getCookieIdBadgeState() ) != 'closed' )
+		);
+
+		if ( $display ) {
 			add_action( 'wp_enqueue_scripts', [ $this, 'includeJquery' ] );
 			add_action( 'login_enqueue_scripts', [ $this, 'includeJquery' ] );
 			add_action( 'wp_footer', [ $this, 'printPluginBadge' ], 100 );
@@ -29,7 +31,7 @@ class PluginBadge {
 		add_action( 'widgets_init', [ $this, 'addPluginBadgeWidget' ] );
 
 		add_shortcode( 'SHIELD_BADGE', function () {
-			$this->render( false );
+			$this->render();
 		} );
 	}
 
@@ -57,16 +59,13 @@ class PluginBadge {
 		echo $this->render( true );
 	}
 
-	/**
-	 * @param bool $isFloating
-	 * @return string
-	 */
-	public function render( $isFloating = false ) {
+	public function render( bool $isFloating = false ) :string {
 		$con = $this->getCon();
-		/** @var Modules\SecurityAdmin\Options $secAdminOpts */
-		$secAdminOpts = $con->getModule_SecAdmin()->getOptions();
+		$wlCon = $con->getModule_SecAdmin()->getWhiteLabelController();
 
-		if ( $secAdminOpts->isEnabledWhitelabel() && $secAdminOpts->isReplacePluginBadge() ) {
+		if ( $wlCon->isEnabled() && $wlCon->isReplacePluginBadge() ) {
+			/** @var Modules\SecurityAdmin\Options $secAdminOpts */
+			$secAdminOpts = $con->getModule_SecAdmin()->getOptions();
 			$badgeUrl = $secAdminOpts->getOpt( 'wl_homeurl' );
 			$name = $secAdminOpts->getOpt( 'wl_pluginnamemain' );
 			$logo = $secAdminOpts->getOpt( 'wl_dashboardlogourl' );
@@ -74,7 +73,7 @@ class PluginBadge {
 		else {
 			$badgeUrl = 'https://shsec.io/wpsecurityfirewall';
 			$name = $con->getHumanName();
-			$logo = $con->getPluginUrl_Image( 'shield/shield-security-logo-colour-32px.png' );
+			$logo = $con->urls->forImage( 'shield/shield-security-logo-colour-32px.png' );
 
 			$lic = $con->getModule_License()
 					   ->getLicenseHandler()
@@ -98,34 +97,32 @@ class PluginBadge {
 			$badgeAttrs = apply_filters( 'icwp_shield_plugin_badge_attributes', $badgeAttrs, $isFloating );
 		}
 
-		$data = [
-			'ajax'    => [
-				'plugin_badge_close' => $this->getMod()->getAjaxActionData( 'plugin_badge_close', true ),
-			],
-			'content' => [
-				'custom_css' => esc_js( $badgeAttrs[ 'custom_css' ] ),
-			],
-			'flags'   => [
-				'nofollow'    => apply_filters( 'icwp_shield_badge_relnofollow', false ),
-				'is_floating' => $isFloating
-			],
-			'hrefs'   => [
-				'badge' => $badgeAttrs[ 'url' ],
-				'logo'  => $badgeAttrs[ 'logo' ],
-			],
-			'strings' => [
-				'protected' => $badgeAttrs[ 'protected_by' ],
-				'name'      => $badgeAttrs[ 'name' ],
-			],
-		];
-
-		try {
-			$render = $this->getMod()->renderTemplate( 'snippets/plugin_badge_widget', $data, true );
-		}
-		catch ( \Exception $e ) {
-			$render = 'Could not generate badge: '.$e->getMessage();
-		}
-		return $render;
+		return $this->getMod()
+					->renderTemplate(
+						'snippets/plugin_badge_widget',
+						[
+							'ajax'    => [
+								'plugin_badge_close' => $this->getMod()
+															 ->getAjaxActionData( 'plugin_badge_close', true ),
+							],
+							'content' => [
+								'custom_css' => esc_js( $badgeAttrs[ 'custom_css' ] ),
+							],
+							'flags'   => [
+								'nofollow'    => apply_filters( 'icwp_shield_badge_relnofollow', false ),
+								'is_floating' => $isFloating
+							],
+							'hrefs'   => [
+								'badge' => $badgeAttrs[ 'url' ],
+								'logo'  => $badgeAttrs[ 'logo' ],
+							],
+							'strings' => [
+								'protected' => $badgeAttrs[ 'protected_by' ],
+								'name'      => $badgeAttrs[ 'name' ],
+							],
+						],
+						true
+					);
 	}
 
 	public function setBadgeStateClosed() :bool {

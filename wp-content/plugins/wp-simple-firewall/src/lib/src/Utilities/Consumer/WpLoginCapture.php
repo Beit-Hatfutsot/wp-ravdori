@@ -14,7 +14,17 @@ trait WpLoginCapture {
 	/**
 	 * @var bool
 	 */
+	private $allowMultipleCapture = false;
+
+	/**
+	 * @var bool
+	 */
 	private $isCaptureApplicationLogin = false;
+
+	/**
+	 * @var string
+	 */
+	private $loggedInCookie = '';
 
 	abstract protected function captureLogin( \WP_User $user );
 
@@ -28,6 +38,12 @@ trait WpLoginCapture {
 			}
 		}
 		return $pass;
+	}
+
+	protected function getLoggedInCookie() :string {
+		$cookie = empty( $this->loggedInCookie ) ?
+			Services::Request()->cookie( LOGGED_IN_COOKIE ) : $this->loggedInCookie;
+		return is_string( $cookie ) ? $cookie : '';
 	}
 
 	protected function isCaptureApplicationLogin() :bool {
@@ -51,13 +67,23 @@ trait WpLoginCapture {
 		return $this;
 	}
 
+	protected function setLoggedInCookie( string $cookieValue ) :self {
+		$this->loggedInCookie = $cookieValue;
+		return $this;
+	}
+
 	protected function setToCaptureApplicationLogin( bool $capture = true ) :self {
 		$this->isCaptureApplicationLogin = $capture;
 		return $this;
 	}
 
+	protected function setAllowMultipleCapture( bool $multiple = true ) :self {
+		$this->allowMultipleCapture = $multiple;
+		return $this;
+	}
+
 	protected function setupLoginCaptureHooks() {
-		add_action( 'wp_login', [ $this, 'onWpLogin' ], 10, 2 );
+		add_action( 'wp_login', [ $this, 'onWpLogin' ], $this->getHookPriority(), 2 );
 		if ( !Services::WpUsers()->isProfilePage() ) { // Ignore firing during profile update.
 			add_action( 'set_logged_in_cookie', [ $this, 'onWpSetLoggedInCookie' ], 5, 4 );
 		}
@@ -71,7 +97,12 @@ trait WpLoginCapture {
 	 */
 	public function onWpSetLoggedInCookie( $cookie, $expire, $expiration, $userID ) {
 		$user = Services::WpUsers()->getUserById( $userID );
-		if ( $this->isLoginToBeCaptured() && !$this->isLoginCaptured() && $user instanceof \WP_User ) {
+		if ( is_string( $cookie ) ) {
+			$this->setLoggedInCookie( $cookie );
+		}
+		if ( $user instanceof \WP_User
+			 && $this->isLoginToBeCaptured()
+			 && ( $this->allowMultipleCapture || !$this->isLoginCaptured() ) ) {
 			$this->setLoginCaptured();
 			$this->captureLogin( $user );
 		}
@@ -82,9 +113,15 @@ trait WpLoginCapture {
 	 * @param \WP_User $user
 	 */
 	public function onWpLogin( $username, $user ) {
-		if ( $this->isLoginToBeCaptured() && !$this->isLoginCaptured() && $user instanceof \WP_User ) {
+		if ( $user instanceof \WP_User
+			 && $this->isLoginToBeCaptured()
+			 && ( $this->allowMultipleCapture || !$this->isLoginCaptured() ) ) {
 			$this->setLoginCaptured();
 			$this->captureLogin( $user );
 		}
+	}
+
+	protected function getHookPriority() :int {
+		return 10;
 	}
 }

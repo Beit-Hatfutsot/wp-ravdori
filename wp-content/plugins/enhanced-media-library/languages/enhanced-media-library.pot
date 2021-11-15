@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Enhanced Media Library\n"
-"POT-Creation-Date: 2020-12-09 21:13+0200\n"
+"POT-Creation-Date: 2021-04-10 21:51+0300\n"
 "PO-Revision-Date: 2016-04-14 21:02+0300\n"
 "Last-Translator: wpUXsolutions <wpUXsolutions@gmail.com>\n"
 "Language-Team: wpUXsolutions <wpUXsolutions@gmail.com>\n"
@@ -188,7 +188,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: core/options-pages.php:561 pro/enhanced-media-library-pro.php:120
+#: core/options-pages.php:561
 msgid "Close"
 msgstr ""
 
@@ -224,7 +224,7 @@ msgstr ""
 #: core/options-pages.php:568 core/options-pages.php:862
 #: core/options-pages.php:1084 core/options-pages.php:2050
 #: core/options-pages.php:2113 core/taxonomies.php:381
-#: enhanced-media-library.php:571
+#: enhanced-media-library.php:573
 msgid "All"
 msgstr ""
 
@@ -320,7 +320,6 @@ msgstr ""
 
 #: core/options-pages.php:596 core/options-pages.php:601
 #: core/options-pages.php:645 core/options-pages.php:690
-#: pro/enhanced-media-library-pro.php:128
 msgid "Cancel"
 msgstr ""
 
@@ -578,8 +577,7 @@ msgstr ""
 #: core/options-pages.php:1900 core/options-pages.php:1944
 #: core/options-pages.php:2152 core/options-pages.php:2240
 #: core/options-pages.php:2278 core/options-pages.php:2310
-#: core/options-pages.php:2479 enhanced-media-library.php:580
-#: pro/core/options-pages.php:305
+#: core/options-pages.php:2479 enhanced-media-library.php:582
 msgid "Save Changes"
 msgstr ""
 
@@ -714,8 +712,7 @@ msgid ""
 "WordPress looks into filenames, titles, captions, and descriptions."
 msgstr ""
 
-#: core/options-pages.php:1819 pro/core/medialist.php:44
-#: pro/core/medialist.php:94
+#: core/options-pages.php:1819
 msgid "Order"
 msgstr ""
 
@@ -723,18 +720,15 @@ msgstr ""
 msgid "Order media items by"
 msgstr ""
 
-#: core/options-pages.php:1831 pro/core/medialist.php:28
-#: pro/core/medialist.php:78
+#: core/options-pages.php:1831
 msgid "Date"
 msgstr ""
 
 #: core/options-pages.php:1832 core/options-pages.php:1892
-#: pro/core/medialist.php:31 pro/core/medialist.php:81
 msgid "Title"
 msgstr ""
 
-#: core/options-pages.php:1833 pro/core/medialist.php:34
-#: pro/core/medialist.php:84
+#: core/options-pages.php:1833
 msgid "Custom Order"
 msgstr ""
 
@@ -751,13 +745,11 @@ msgstr ""
 msgid "Sort order"
 msgstr ""
 
-#: core/options-pages.php:1844 pro/core/medialist.php:48
-#: pro/core/medialist.php:98
+#: core/options-pages.php:1844
 msgid "Ascending"
 msgstr ""
 
-#: core/options-pages.php:1845 pro/core/medialist.php:51
-#: pro/core/medialist.php:101
+#: core/options-pages.php:1845
 msgid "Descending"
 msgstr ""
 
@@ -976,8 +968,7 @@ msgid ""
 "Show non-hierarchical taxonomies like hierarchical in Grid View / Media Popup"
 msgstr ""
 
-#: core/options-pages.php:2291 pro/core/bulk-edit.php:398
-#: pro/enhanced-media-library-pro.php:122
+#: core/options-pages.php:2291
 msgid "Bulk Edit"
 msgstr ""
 
@@ -1112,11 +1103,11 @@ msgid "All Authors"
 msgstr ""
 
 #: core/taxonomies.php:374 core/taxonomies.php:380
-#: enhanced-media-library.php:570
+#: enhanced-media-library.php:572
 msgid "Filter by"
 msgstr ""
 
-#: core/taxonomies.php:382 enhanced-media-library.php:572
+#: core/taxonomies.php:382 enhanced-media-library.php:574
 msgid "Not in"
 msgstr ""
 
@@ -1124,313 +1115,100 @@ msgstr ""
 msgid "Add some"
 msgstr ""
 
-#: enhanced-media-library.php:368 enhanced-media-library.php:569
+#: enhanced-media-library.php:370 enhanced-media-library.php:571
 msgid "All Uncategorized"
 msgstr ""
 
-#: enhanced-media-library.php:369 enhanced-media-library.php:573
+#: enhanced-media-library.php:371 enhanced-media-library.php:575
 msgid "Reset All Filters"
 msgstr ""
 
-#: enhanced-media-library.php:400
+#: enhanced-media-library.php:402
 msgid "More Details"
 msgstr ""
 
-#: enhanced-media-library.php:401
+#: enhanced-media-library.php:403
 msgid "Less Details"
 msgstr ""
 
-#: enhanced-media-library.php:574
+#: enhanced-media-library.php:576
 msgid "author"
 msgstr ""
 
-#: enhanced-media-library.php:575
+#: enhanced-media-library.php:577
 msgid "authors"
 msgstr ""
 
-#: enhanced-media-library.php:578
+#: enhanced-media-library.php:580
 msgid "Saved."
 msgstr ""
 
-#: enhanced-media-library.php:579
+#: enhanced-media-library.php:581
 msgid "Something went wrong."
 msgstr ""
 
-#: enhanced-media-library.php:582 pro/core/media-templates.php:78
+#: enhanced-media-library.php:584
 msgid "Select All"
 msgstr ""
 
-#: enhanced-media-library.php:583
+#: enhanced-media-library.php:585
 msgid "Deselect "
 msgstr ""
 
-#: enhanced-media-library.php:612
+#: enhanced-media-library.php:614
 msgid "Uploaded to post #"
 msgstr ""
 
-#: enhanced-media-library.php:613
+#: enhanced-media-library.php:615
 msgid "Based On"
 msgstr ""
 
-#: enhanced-media-library.php:682 enhanced-media-library.php:684
+#: enhanced-media-library.php:684 enhanced-media-library.php:686
 msgid "Media Categories"
 msgstr ""
 
-#: enhanced-media-library.php:683
+#: enhanced-media-library.php:685
 msgid "Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:685
+#: enhanced-media-library.php:687
 msgid "All Media Categories"
 msgstr ""
 
-#: enhanced-media-library.php:686
+#: enhanced-media-library.php:688
 msgid "Edit Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:687
+#: enhanced-media-library.php:689
 msgid "View Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:688
+#: enhanced-media-library.php:690
 msgid "Update Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:689
+#: enhanced-media-library.php:691
 msgid "Add New Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:690
+#: enhanced-media-library.php:692
 msgid "New Media Category Name"
 msgstr ""
 
-#: enhanced-media-library.php:691
+#: enhanced-media-library.php:693
 msgid "Parent Media Category"
 msgstr ""
 
-#: enhanced-media-library.php:692
+#: enhanced-media-library.php:694
 msgid "Parent Media Category:"
 msgstr ""
 
-#: enhanced-media-library.php:693
+#: enhanced-media-library.php:695
 msgid "Search Media Categories"
 msgstr ""
 
-#: pro/core/media-templates.php:24
-msgid "Attachments Details"
-msgstr ""
-
-#: pro/core/media-templates.php:79
-msgid "Deselect All"
-msgstr ""
-
-#: pro/core/media-templates.php:80 pro/core/media-templates.php:83
-msgid "Delete Selected"
-msgstr ""
-
-#: pro/core/media-templates.php:81
-msgid "Trash Selected"
-msgstr ""
-
-#: pro/core/media-templates.php:82
-msgid "Untrash Selected"
-msgstr ""
-
-#: pro/core/medialist.php:24 pro/core/medialist.php:74
-msgid "Order By"
-msgstr ""
-
-#: pro/core/medialist.php:37 pro/core/medialist.php:87
-msgid "Random"
-msgstr ""
-
-#: pro/core/medialist.php:62 pro/core/medialist.php:108
-msgid "Limit"
-msgstr ""
-
-#: pro/core/options-pages.php:80
-msgid "Your license has been network deactivated."
-msgstr ""
-
-#: pro/core/options-pages.php:80
-msgid "Your license has been deactivated."
-msgstr ""
-
-#: pro/core/options-pages.php:103
-msgid "Please check if your license key is correct and try again."
-msgstr ""
-
-#: pro/core/options-pages.php:124
-#, php-format
-msgid ""
-"Activation failed with the error: %s. Please <a href=\"%s\">contact plugin "
-"authors</a>."
-msgstr ""
-
-#: pro/core/options-pages.php:142
-#, php-format
-msgid ""
-"Your license key is incorrect or canceled. Please <a href=\"%s\">contact "
-"plugin authors</a>."
-msgstr ""
-
-#: pro/core/options-pages.php:151
-msgid "Your license has been network activated."
-msgstr ""
-
-#: pro/core/options-pages.php:151
-msgid "Your license has been activated."
-msgstr ""
-
 #. Plugin Name of the plugin/theme
-#: pro/core/options-pages.php:212
 msgid "Enhanced Media Library PRO"
-msgstr ""
-
-#: pro/core/options-pages.php:217
-msgid "Updates"
-msgstr ""
-
-#: pro/core/options-pages.php:224
-msgid "to check if your license key is correct"
-msgstr ""
-
-#: pro/core/options-pages.php:224 pro/core/update.php:223
-msgid "to check if an update is available"
-msgstr ""
-
-#: pro/core/options-pages.php:228 pro/core/update.php:221
-#, php-format
-msgid ""
-"%s could not establish a secure connection %s. An error occurred: %s. Please "
-"<a href=\"%s\">contact plugin authors</a>."
-msgstr ""
-
-#: pro/core/options-pages.php:251
-msgid "Your license is active!"
-msgstr ""
-
-#: pro/core/options-pages.php:255
-msgid "Deactivate License"
-msgstr ""
-
-#: pro/core/options-pages.php:260
-#, php-format
-msgid ""
-"To unlock updates please enter your license key below. You can get your "
-"license key in <a href=\"%s\">Your Account</a>. If you do not have a "
-"license, you are welcome to <a href=\"%s\">purchase it</a>."
-msgstr ""
-
-#: pro/core/options-pages.php:267
-msgid "License Key"
-msgstr ""
-
-#: pro/core/options-pages.php:270
-msgid "Activate License"
-msgstr ""
-
-#: pro/core/options-pages.php:293 pro/core/options-pages.php:296
-msgid "Turn off SSL verification"
-msgstr ""
-
-#: pro/core/options-pages.php:297
-msgid "Try this if you see the error message above."
-msgstr ""
-
-#: pro/core/options-pages.php:299
-#, php-format
-msgid ""
-"This will turn off SSL verification for the update requests that %s sends to "
-"its server %s only."
-msgstr ""
-
-#: pro/core/update.php:192
-#, php-format
-msgid "Auto-updates disabled for %s."
-msgstr ""
-
-#: pro/core/update.php:200 pro/core/update.php:346
-#, php-format
-msgid ""
-"To unlock updates, please <a href=\"%s\">activate your license</a>. You can "
-"get your license key in <a href=\"%s\">Your Account</a>. If you do not have "
-"a license, you are welcome to <a href=\"%s\">purchase it</a>."
-msgstr ""
-
-#: pro/core/update.php:277 pro/core/update.php:283 pro/core/update.php:289
-msgid ""
-"An unexpected error occurred. Something may be wrong with WordPress.org or "
-"this server&#8217;s configuration. If you continue to have problems, please "
-"try the <a href=\"https://wordpress.org/support/\">support forums</a>."
-msgstr ""
-
-#: pro/core/update.php:277
-msgid ""
-"(WordPress could not establish a secure connection to WordPress.org. Please "
-"contact your server administrator.)"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:117
-msgid "ALL files belong to this item"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:118
-msgid "SOME files belong to this item"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:119
-msgid "NO files belong to this item"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:121
-msgid "Edit Media Files"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:124
-msgid "Selecting"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:125
-msgid "Delete Selected Permanently"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:126
-msgid "You are about to permanently delete all selected items."
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:127
-msgid "Delete"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:129
-msgid "Moving to Trash"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:130
-msgid "Restoring"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:131
-msgid "Deleting"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:155
-msgid "Create a filter-based gallery"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:156
-msgid "Create a filter-based playlist"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:157
-msgid "Create a filter-based video playlist"
-msgstr ""
-
-#: pro/enhanced-media-library-pro.php:335
-msgid ""
-"Only one version of <strong>Enhanced Media Library</strong> should be active "
-"at a time."
 msgstr ""
 
 #. Plugin URI of the plugin/theme

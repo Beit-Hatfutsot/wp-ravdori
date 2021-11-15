@@ -17,10 +17,7 @@ class ApiInfo extends Base {
 		return $this->query();
 	}
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
+	protected function getApiUrl() :string {
 		return parent::getApiUrl().'/info';
 	}
 }

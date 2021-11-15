@@ -8,11 +8,8 @@ abstract class AssetHashesBase extends Base {
 	const RESPONSE_DATA_KEY = 'hashes';
 	const TYPE = '';
 
-	/**
-	 * @return string
-	 */
-	protected function getApiUrl() {
-		$aData = array_map( 'strtolower', array_filter( array_merge(
+	protected function getApiUrl() :string {
+		$data = array_map( 'strtolower', array_filter( array_merge(
 			[
 				'type'    => false,
 				'slug'    => false,
@@ -20,9 +17,9 @@ abstract class AssetHashesBase extends Base {
 				'locale'  => false,
 				'hash'    => false,
 			],
-			$this->getRequestVO()->getRawDataAsArray()
+			$this->getRequestVO()->getRawData()
 		) ) );
-		return sprintf( '%s/%s', parent::getApiUrl(), implode( '/', $aData ) );
+		return sprintf( '%s/%s', parent::getApiUrl(), implode( '/', $data ) );
 	}
 
 	/**
@@ -33,31 +30,31 @@ abstract class AssetHashesBase extends Base {
 	}
 
 	protected function preRequest() {
-		/** @var RequestVO $oReq */
-		$oReq = $this->getRequestVO();
-		if ( empty( $oReq->hash ) ) {
+		/** @var RequestVO $req */
+		$req = $this->getRequestVO();
+		if ( empty( $req->hash ) ) {
 			$this->setHashAlgo( static::DEFAULT_HASH_ALGO );
 		}
-		if ( empty( $oReq->type ) ) {
+		if ( empty( $req->type ) ) {
 			$this->setType( static::TYPE );
 		}
 	}
 
 	/**
-	 * @param string $sHashAlgo
+	 * @param string $algo
 	 * @return $this
 	 */
-	public function setHashAlgo( $sHashAlgo ) {
-		$this->getRequestVO()->hash = $sHashAlgo;
+	public function setHashAlgo( $algo ) {
+		$this->getRequestVO()->hash = $algo;
 		return $this;
 	}
 
 	/**
-	 * @param string $sType
+	 * @param string $type
 	 * @return $this
 	 */
-	public function setType( $sType ) {
-		$this->getRequestVO()->type = $sType;
+	public function setType( $type ) {
+		$this->getRequestVO()->type = $type;
 		return $this;
 	}
 }

@@ -4,6 +4,11 @@ namespace FernleafSystems\Wordpress\Services\Utilities\Net;
 
 use FernleafSystems\Wordpress\Services\Services;
 
+/**
+ * Class IpIdentify
+ * @package FernleafSystems\Wordpress\Services\Utilities\Net
+ * @deprecated 2.11
+ */
 class IpIdentify {
 
 	const UNKNOWN = 'unknown';
@@ -141,6 +146,7 @@ class IpIdentify {
 			self::GTMETRIX    => 'GTMetrix',
 			self::ICONTROLWP  => 'iControlWP',
 			self::MANAGEWP    => 'ManageWP',
+			self::NODEPING    => 'NodePing',
 			self::PAYPAL      => 'PayPal',
 			self::PINGDOM     => 'Pingdom',
 			self::SEMRUSH     => 'SEMRush',

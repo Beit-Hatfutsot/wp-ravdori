@@ -4,35 +4,31 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class Files
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme
- */
 class Files extends Services\Utilities\WpOrg\Base\PluginThemeFilesBase {
 
 	use Base;
 
 	/**
 	 * Given a full root path on the file system for a file, locate the plugin to which this file belongs.
-	 * @param string $sFullFilePath
-	 * @return Services\Core\VOs\WpThemeVo|null
+	 * @param string $fullPath
+	 * @return Services\Core\VOs\Assets\WpThemeVo|null
 	 */
-	public function findThemeFromFile( $sFullFilePath ) {
-		$oTheTheme = null;
+	public function findThemeFromFile( string $fullPath ) {
+		$theTheme = null;
 
-		$sFragment = $this->getThemePathFragmentFromPath( $sFullFilePath );
+		$fragment = $this->getThemePathFragmentFromPath( $fullPath );
 
-		if ( !empty( $sFragment ) && strpos( $sFragment, '/' ) > 0 ) {
-			$oWpThemes = Services\Services::WpThemes();
-			$sDir = substr( $sFragment, 0, strpos( $sFragment, '/' ) );
-			foreach ( $oWpThemes->getThemes() as $oTheme ) {
-				if ( $sDir == $oTheme->get_stylesheet() ) {
-					$oTheTheme = $oWpThemes->getThemeAsVo( $sDir );
+		if ( !empty( $fragment ) && strpos( $fragment, '/' ) > 0 ) {
+			$WPT = Services\Services::WpThemes();
+			$dir = substr( $fragment, 0, strpos( $fragment, '/' ) );
+			foreach ( $WPT->getThemes() as $theme ) {
+				if ( $dir == $theme->get_stylesheet() ) {
+					$theTheme = $WPT->getThemeAsVo( $dir );
 					break;
 				}
 			}
 		}
-		return $oTheTheme;
+		return $theTheme;
 	}
 
 	/**
@@ -43,57 +39,56 @@ class Files extends Services\Utilities\WpOrg\Base\PluginThemeFilesBase {
 	 */
 	public function isValidFileFromTheme( $sFullFilePath ) {
 
-		$oTheTheme = $this->findThemeFromFile( $sFullFilePath );
-		if ( !$oTheTheme instanceof Services\Core\VOs\WpThemeVo ) {
+		$theTheme = $this->findThemeFromFile( $sFullFilePath );
+		if ( !$theTheme instanceof Services\Core\VOs\Assets\WpThemeVo ) {
 			throw new \InvalidArgumentException( 'Not actually a theme file.', 1 );
 		}
-		if ( !$oTheTheme->isWpOrg() ) {
+		if ( !$theTheme->isWpOrg() ) {
 			throw new \InvalidArgumentException( 'Not a WordPress.org theme.', 2 );
 		}
 
 		// if uses SVN tags, use that version. Otherwise trunk.
 		return ( new Repo() )
-			->setWorkingSlug( $oTheTheme->stylesheet )
-			->setWorkingVersion( $oTheTheme->version )
+			->setWorkingSlug( $theTheme->stylesheet )
+			->setWorkingVersion( $theTheme->version )
 			->existsInVcs( $this->getRelativeFilePathFromItsInstallDir( $sFullFilePath ) );
 	}
 
 	/**
-	 * @param string $sFullFilePath
+	 * @param string $fullPath
 	 * @return bool
 	 */
-	public function replaceFileFromVcs( $sFullFilePath ) {
-		$sTmpFile = $this->getOriginalFileFromVcs( $sFullFilePath );
-		return !empty( $sTmpFile ) && Services\Services::WpFs()->move( $sTmpFile, $sFullFilePath );
+	public function replaceFileFromVcs( $fullPath ) :bool {
+		$tmpFile = $this->getOriginalFileFromVcs( $fullPath );
+		return !empty( $tmpFile ) && Services\Services::WpFs()->move( $tmpFile, $fullPath );
 	}
 
 	/**
 	 * Verifies the file exists on the SVN repository for the particular version that's installed.
-	 * @param string $sFullFilePath
+	 * @param string $fullPath
 	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function verifyFileContents( $sFullFilePath ) {
-		$sTmpFile = $this->getOriginalFileFromVcs( $sFullFilePath );
-		return !empty( $sTmpFile )
-			   && ( new Services\Utilities\File\Compare\CompareHash() )
-				   ->isEqualFilesMd5( $sTmpFile, $sFullFilePath );
+	public function verifyFileContents( $fullPath ) :bool {
+		$tmpFile = $this->getOriginalFileFromVcs( $fullPath );
+		return !empty( $tmpFile )
+			   && ( new Services\Utilities\File\Compare\CompareHash() )->isEqualFiles( $tmpFile, $fullPath );
 	}
 
 	/**
-	 * @param string $sFullFilePath
+	 * @param string $fullPath
 	 * @return string|null
 	 */
-	public function getOriginalFileFromVcs( $sFullFilePath ) {
-		$sTmpFile = null;
-		$oTheTheme = $this->findThemeFromFile( $sFullFilePath );
-		if ( $oTheTheme instanceof Services\Core\VOs\WpThemeVo ) {
-			$sTmpFile = ( new Repo() )
-				->setWorkingSlug( $oTheTheme->stylesheet )
-				->setWorkingVersion( $oTheTheme->version )
-				->downloadFromVcs( $this->getRelativeFilePathFromItsInstallDir( $sFullFilePath ) );
+	public function getOriginalFileFromVcs( $fullPath ) {
+		$tmpFile = null;
+		$theTheme = $this->findThemeFromFile( $fullPath );
+		if ( !empty( $theTheme ) ) {
+			$tmpFile = ( new Repo() )
+				->setWorkingSlug( $theTheme->stylesheet )
+				->setWorkingVersion( $theTheme->version )
+				->downloadFromVcs( $this->getRelativeFilePathFromItsInstallDir( $fullPath ) );
 		}
-		return $sTmpFile;
+		return $tmpFile;
 	}
 
 	/**
@@ -118,11 +113,11 @@ class Files extends Services\Utilities\WpOrg\Base\PluginThemeFilesBase {
 
 	/**
 	 * Gets the path of the plugin file relative to its own home plugin dir. (not wp-content/plugins/)
-	 * @param string $sFile
+	 * @param string $file
 	 * @return string
 	 */
-	protected function getRelativeFilePathFromItsInstallDir( $sFile ) {
-		$sRelDirFragment = $this->getThemePathFragmentFromPath( $sFile );
+	public function getRelativeFilePathFromItsInstallDir( $file ) {
+		$sRelDirFragment = $this->getThemePathFragmentFromPath( $file );
 		return substr( $sRelDirFragment, strpos( $sRelDirFragment, '/' ) + 1 );
 	}
 }

@@ -7,48 +7,57 @@ use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base;
 class Strings extends Base\Strings {
 
 	/**
-	 * @return string[][]
+	 * @inheritDoc
 	 */
-	protected function getAuditMessages() :array {
+	public function getEventStrings() :array {
 		return [
-			'botbox_fail'             => [
-				__( 'User "%s" attempted "%s" but Bot checkbox was not found.', 'wp-simple-firewall' )
+			'botbox_fail'        => [
+				'name'  => __( 'BotBox Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'User "{{user_login}}" attempted "{{action}}" but Bot checkbox was not found.', 'wp-simple-firewall' ),
+				],
 			],
-			'cooldown_fail'           => [
-				__( 'Login/Register request triggered cooldown and was blocked.', 'wp-simple-firewall' )
+			'cooldown_fail'      => [
+				'name'  => __( 'Cooldown Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Login/Register request triggered cooldown and was blocked.', 'wp-simple-firewall' )
+				],
 			],
-			'honeypot_fail'           => [
-				__( 'User "%s" attempted %s but they were caught by the honeypot.', 'wp-simple-firewall' )
+			'honeypot_fail'      => [
+				'name'  => __( 'Honeypot Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'User "{{user_login}}" attempted {{action}} but they were caught by the honeypot.', 'wp-simple-firewall' )
+				],
 			],
-			'2fa_backupcode_verified' => [
-				__( 'User "%s" verified their identity using %s.', 'wp-simple-firewall' )
+			'2fa_success'        => [
+				'name'  => __( '2FA Login Success', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Successful 2FA Login Verification', 'wp-simple-firewall' ),
+				],
 			],
-			'2fa_backupcode_fail'     => [
-				__( 'User "%s" failed to verify their identity using %s.', 'wp-simple-firewall' )
+			'2fa_verify_success' => [
+				'name'  => __( '2FA Verify Success', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'User "{{user_login}}" verified their identity using "{{method}}".', 'wp-simple-firewall' )
+				],
 			],
-			'2fa_email_verified'      => [
-				__( 'User "%s" verified their identity using %s.', 'wp-simple-firewall' )
+			'2fa_verify_fail'    => [
+				'name'  => __( '2FA Verify Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'User "{{user_login}}" failed to verify their identity using "{{method}}".', 'wp-simple-firewall' )
+				],
 			],
-			'2fa_email_verify_fail'   => [
-				__( 'User "%s" failed to verify their identity using %s.', 'wp-simple-firewall' )
+			'login_block'        => [
+				'name'  => __( 'Login Blocked', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Login Blocked.', 'wp-simple-firewall' ),
+				],
 			],
-			'2fa_googleauth_verified' => [
-				__( 'User "%s" verified their identity using %s.', 'wp-simple-firewall' )
-			],
-			'2fa_googleauth_fail'     => [
-				__( 'User "%s" failed to verify their identity using %s.', 'wp-simple-firewall' )
-			],
-			'2fa_yubikey_verified'    => [
-				__( 'User "%s" verified their identity using %s.', 'wp-simple-firewall' )
-			],
-			'2fa_yubikey_fail'        => [
-				__( 'User "%s" failed to verify their identity using %s.', 'wp-simple-firewall' )
-			],
-			'2fa_email_send_success'  => [
-				__( 'User "%s" sent two-factor authentication email to verify identity.', 'wp-simple-firewall' )
-			],
-			'2fa_email_send_fail'     => [
-				__( 'Failed to send user "%s" two-factor authentication email.', 'wp-simple-firewall' )
+			'hide_login_url'     => [
+				'name'  => __( 'Hidden Login URL Fail', 'wp-simple-firewall' ),
+				'audit' => [
+					__( 'Redirecting wp-login due to hidden login URL', 'wp-simple-firewall' ),
+				],
 			],
 		];
 	}
@@ -63,37 +72,37 @@ class Strings extends Base\Strings {
 		switch ( $section ) {
 
 			case 'section_enable_plugin_feature_login_protection' :
-				$sTitle = sprintf( __( 'Enable Module: %s', 'wp-simple-firewall' ), $this->getMod()
-																						 ->getMainFeatureName() );
-				$sTitleShort = sprintf( '%s/%s', __( 'On', 'wp-simple-firewall' ), __( 'Off', 'wp-simple-firewall' ) );
-				$aSummary = [
+				$title = sprintf( __( 'Enable Module: %s', 'wp-simple-firewall' ), $this->getMod()
+																						->getMainFeatureName() );
+				$titleShort = sprintf( '%s/%s', __( 'On', 'wp-simple-firewall' ), __( 'Off', 'wp-simple-firewall' ) );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Login Guard blocks all automated and brute force attempts to log in to your site.', 'wp-simple-firewall' ) ),
 					sprintf( '%s - %s', __( 'Recommendation', 'wp-simple-firewall' ), sprintf( __( 'Keep the %s feature turned on.', 'wp-simple-firewall' ), __( 'Login Guard', 'wp-simple-firewall' ) ) )
 				];
 				break;
 
 			case 'section_rename_wplogin' :
-				$sTitle = __( 'Hide WordPress Login Page', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Hide Login', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Hide WordPress Login Page', 'wp-simple-firewall' );
+				$titleShort = __( 'Hide Login', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'To hide your wp-login.php page from brute force attacks and hacking attempts - if your login page cannot be found, no-one can login.', 'wp-simple-firewall' ) ),
 					sprintf( '%s - %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'This is not required for complete security and if your site has irregular or inconsistent configuration it may not work for you.', 'wp-simple-firewall' ) )
 				];
 				break;
 
 			case 'section_multifactor_authentication' :
-				$sTitle = __( 'Multi-Factor Authentication', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Multi-Factor Auth', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Multi-Factor Authentication', 'wp-simple-firewall' );
+				$titleShort = __( 'Multi-Factor Auth', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Verifies the identity of users who log in to your site - i.e. they are who they say they are.', 'wp-simple-firewall' ) ),
 					__( 'You may combine multiple authentication factors for increased security.', 'wp-simple-firewall' )
 				];
 				break;
 
 			case 'section_2fa_email' :
-				$sTitle = __( 'Email Two-Factor Authentication', 'wp-simple-firewall' );
-				$sTitleShort = __( '2FA Email', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Email Two-Factor Authentication', 'wp-simple-firewall' );
+				$titleShort = __( '2FA Email', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Verifies the identity of users who log in to your site using email-based one-time-passwords.', 'wp-simple-firewall' ) ),
 					sprintf( '%s - %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'Use of this feature is highly recommend.', 'wp-simple-firewall' ).' '.__( 'However, if your host blocks email sending you may lock yourself out.', 'wp-simple-firewall' ) ),
 					sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You may combine multiple authentication factors for increased security.', 'wp-simple-firewall' ) )
@@ -101,27 +110,27 @@ class Strings extends Base\Strings {
 				break;
 
 			case 'section_2fa_ga' :
-				$sTitle = __( 'Google Authenticator Two-Factor Authentication', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Google Auth', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Google Authenticator Two-Factor Authentication', 'wp-simple-firewall' );
+				$titleShort = __( 'Google Auth', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Verifies the identity of users who log in to your site using Google Authenticator one-time-passwords.', 'wp-simple-firewall' ) ),
 					sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You may combine multiple authentication factors for increased security.', 'wp-simple-firewall' ) )
 				];
 				break;
 
 			case 'section_brute_force_login_protection' :
-				$sTitle = __( 'Brute Force Login Protection', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Bots', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Brute Force Login Protection', 'wp-simple-firewall' );
+				$titleShort = __( 'Bots', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Blocks brute force hacking attacks against your login and registration pages.', 'wp-simple-firewall' ) ),
 					sprintf( '%s - %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'Use of this feature is highly recommend.', 'wp-simple-firewall' ) )
 				];
 				break;
 
 			case 'section_hardware_authentication' :
-				$sTitle = __( 'Hardware 2-Factor Authentication', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Hardware 2FA', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'Hardware 2-Factor Authentication', 'wp-simple-firewall' );
+				$titleShort = __( 'Hardware 2FA', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Verifies the identity of users who log in to your site using Yubikey one-time-passwords.', 'wp-simple-firewall' ) ),
 					sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You may combine multiple authentication factors for increased security.', 'wp-simple-firewall' ) )
 				];
@@ -132,9 +141,9 @@ class Strings extends Base\Strings {
 		}
 
 		return [
-			'title'       => $sTitle,
-			'title_short' => $sTitleShort,
-			'summary'     => ( isset( $aSummary ) && is_array( $aSummary ) ) ? $aSummary : [],
+			'title'       => $title,
+			'title_short' => $titleShort,
+			'summary'     => $summary,
 		];
 	}
 
@@ -144,6 +153,7 @@ class Strings extends Base\Strings {
 	 * @throws \Exception
 	 */
 	public function getOptionStrings( string $key ) :array {
+		$con = $this->getCon();
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 		$modName = $mod->getMainFeatureName();
@@ -211,32 +221,60 @@ class Strings extends Base\Strings {
 
 			case 'enable_google_recaptcha_login' :
 				$name = __( 'CAPTCHA', 'wp-simple-firewall' );
-				$summary = __( 'Protect WordPress Account Access Requests With CAPTCHA', 'wp-simple-firewall' );
+				$summary = sprintf( '[DEPRECATED - %s] : %s',
+					'Please use the newer AntiBot setting above',
+					__( 'Protect WordPress Account Access Requests With CAPTCHA', 'wp-simple-firewall' )
+				);
 				$desc = __( 'Use CAPTCHA on the user account forms such as login, register, etc.', 'wp-simple-firewall' ).'<br />'
 						.sprintf( __( 'Use of any theme other than "%s", requires a Pro license.', 'wp-simple-firewall' ), __( 'Light Theme', 'wp-simple-firewall' ) )
 						.'<br/>'.sprintf( '%s - %s', __( 'Note', 'wp-simple-firewall' ), __( "You'll need to setup your CAPTCHA API Keys in 'General' settings.", 'wp-simple-firewall' ) )
 						.'<br/><strong>'.sprintf( '%s - %s', __( 'Important', 'wp-simple-firewall' ), __( "Some forms are more dynamic than others so if you experience problems, please use non-Invisible CAPTCHA.", 'wp-simple-firewall' ) ).'</strong>';
 				break;
 
+			case 'enable_antibot_check' :
+				$name = __( 'AntiBot Detection Engine (ADE)', 'wp-simple-firewall' );
+				$summary = __( 'Use ADE To Detect Bots And Block Brute Force Logins', 'wp-simple-firewall' );
+				$desc = [
+					sprintf( __( "AntiBot Detection Engine is %s's exclusive bot-detection technology that removes the needs for CAPTCHA and other challenges.", 'wp-simple-firewall' ),
+						$con->getHumanName() ),
+					__( 'This feature is designed to replace the CAPTCHA and Bot Protection options.', 'wp-simple-firewall' ),
+					sprintf( '%s - %s', __( 'Important', 'wp-simple-firewall' ),
+						__( "Switching on this feature will disable the CAPTCHA and Bot Protection settings.", 'wp-simple-firewall' ) )
+				];
+				break;
+
 			case 'bot_protection_locations' :
 				$name = __( 'Protection Locations', 'wp-simple-firewall' );
 				$summary = __( 'Which Forms Should Be Protected', 'wp-simple-firewall' );
-				$desc = __( 'Choose the forms for which bot protection measures will be deployed.', 'wp-simple-firewall' ).'<br />'
-						.sprintf( '%s - %s', __( 'Note', 'wp-simple-firewall' ), sprintf( __( "Use with 3rd party systems such as %s, requires a Pro license.", 'wp-simple-firewall' ), 'WooCommerce' ) );
+				$desc = [
+					__( 'Choose the forms for which bot protection measures will be deployed.', 'wp-simple-firewall' ),
+					sprintf( '%s - %s', __( 'Note', 'wp-simple-firewall' ), sprintf( __( "Use with 3rd party systems such as %s, requires a Pro license.", 'wp-simple-firewall' ), 'WooCommerce' ) ),
+					sprintf( '<a href="%s">%s</a>', $con->getModule_Integrations()
+														->getUrl_DirectLinkToSection( 'section_user_forms' ),
+						sprintf( __( "Choose the 3rd party plugins you want %s to also integrate with.", 'wp-simple-firewall' ), $con->getHumanName() ) )
+				];
 				break;
 
 			case 'enable_login_gasp_check' :
 				$name = __( 'Bot Protection', 'wp-simple-firewall' );
-				$summary = __( 'Protect WP Login From Automated Login Attempts By Bots', 'wp-simple-firewall' );
-				$desc = __( 'Adds a dynamically (Javascript) generated checkbox to the login form that prevents bots using automated login techniques.', 'wp-simple-firewall' )
-						.'<br />'.sprintf( '%s: %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'ON', 'wp-simple-firewall' ) );
+				$summary = sprintf( '[DEPRECATED - %s] %s',
+					'Please use the newer AntiBot setting above',
+					__( 'Protect WP Login From Automated Login Attempts By Bots', 'wp-simple-firewall' )
+				);
+				$desc = [
+					__( 'Adds a dynamically (Javascript) generated checkbox to the login form that prevents bots using automated login techniques.', 'wp-simple-firewall' ),
+					sprintf( '%s: %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'ON', 'wp-simple-firewall' ) )
+				];
 				break;
 
 			case 'antibot_form_ids' :
 				$name = __( 'AntiBot Forms', 'wp-simple-firewall' );
-				$summary = __( 'Enter The Selectors Of The 3rd Party Login Forms For Use With AntiBot JS', 'wp-simple-firewall' );
+				$summary = sprintf( '%s %s',
+					'[DEPRECATED - Please use the newer AntiBot setting above]',
+					__( 'Enter The Selectors Of The 3rd Party Login Forms For Use With AntiBot JS', 'wp-simple-firewall' )
+				);
 				$desc = [
-					__( 'Provide DOM selectors to attached AntiBot protection to any form.', 'wp-simple-firewall' ),
+					__( 'Provide DOM selectors to attach AntiBot protection to any form.', 'wp-simple-firewall' ),
 					__( 'IDs are prefixed with "#".', 'wp-simple-firewall' ),
 					__( 'Classes are prefixed with ".".', 'wp-simple-firewall' ),
 					__( 'IDs are preferred over classes.', 'wp-simple-firewall' )
@@ -264,7 +302,6 @@ class Strings extends Base\Strings {
 				$desc = [
 					__( 'Allow users to register U2F devices to complete their login.', 'wp-simple-firewall' ),
 					__( "Currently only U2F keys are supported. Built-in fingerprint scanners aren't supported (yet).", 'wp-simple-firewall' ),
-					__( "Beta! This may only be used when at least 1 other 2FA option is enabled on a user account.", 'wp-simple-firewall' ),
 				];
 				break;
 

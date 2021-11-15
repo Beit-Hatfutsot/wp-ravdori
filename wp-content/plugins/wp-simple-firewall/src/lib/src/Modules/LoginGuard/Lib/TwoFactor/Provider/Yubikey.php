@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\LoginGuard\Lib\TwoFactor\Provider;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Controller\Assets\Enqueue;
+use FernleafSystems\Utilities\Data\Response\StdResponse;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\LoginGuard;
 use FernleafSystems\Wordpress\Services\Services;
 
@@ -12,123 +12,43 @@ class Yubikey extends BaseProvider {
 	const OTP_LENGTH = 12;
 	const URL_YUBIKEY_VERIFY = 'https://api.yubico.com/wsapi/2.0/verify';
 
-	public function setupProfile() {
-
-		add_filter( 'shield/custom_enqueues', function ( array $enqueues, $hook ) {
-			if ( in_array( $hook, [ 'profile.php', ] ) ) {
-				$enqueues[ Enqueue::JS ][] = 'shield/userprofile';
-
-				add_filter( 'shield/custom_localisations', function ( array $localz ) {
-					$localz[] = [
-						'shield/userprofile',
-						'icwp_wpsf_vars_profileyubikey',
-						[ 'yubikey_remove' => $this->getMod()->getAjaxActionData( 'yubikey_remove' ) ]
-					];
-					return $localz;
-				} );
-			}
-			return $enqueues;
-		}, 10, 2 );
+	public function getJavascriptVars() :array {
+		return [
+			'ajax' => [
+				'user_yubikey_toggle' => $this->getMod()->getAjaxActionData( 'user_yubikey_toggle' ),
+				'user_yubikey_remove' => $this->getMod()->getAjaxActionData( 'user_yubikey_remove' )
+			],
+		];
 	}
 
-	public function renderUserProfileOptions( \WP_User $user ) :string {
+	protected function getProviderSpecificRenderData( \WP_User $user ) :array {
 		$con = $this->getCon();
-
-		$aData = [
+		return [
 			'vars'    => [
 				'yubi_ids' => $this->getYubiIds( $user ),
 			],
 			'strings' => [
-				'registered_yubi_ids'  => __( 'Registered Yubikey devices', 'wp-simple-firewall' ),
-				'no_active_yubi_ids'   => __( 'There are no registered Yubikey devices on this profile.', 'wp-simple-firewall' ),
-				'enter_otp'            => __( 'To register a new Yubikey device, enter a One Time Password from the Yubikey.', 'wp-simple-firewall' ),
-				'to_remove_device'     => __( 'To remove a Yubikey device, enter the registered device ID and save.', 'wp-simple-firewall' ),
-				'multiple_for_pro'     => sprintf( '[%s] %s', __( 'Pro Only', 'wp-simple-firewall' ),
+				'registered_yubi_ids'   => __( 'Registered Yubikey devices', 'wp-simple-firewall' ),
+				'no_active_yubi_ids'    => __( 'There are no registered Yubikey devices on this profile.', 'wp-simple-firewall' ),
+				'placeholder_enter_otp' => __( 'Enter One Time Password From Yubikey', 'wp-simple-firewall' ),
+				'enter_otp'             => __( 'To register a new Yubikey device, enter a One Time Password from the Yubikey.', 'wp-simple-firewall' ),
+				'to_remove_device'      => __( 'To remove a Yubikey device, enter the registered device ID and save.', 'wp-simple-firewall' ),
+				'multiple_for_pro'      => sprintf( '[%s] %s', __( 'Pro Only', 'wp-simple-firewall' ),
 					__( 'You may add as many Yubikey devices to your profile as you need to.', 'wp-simple-firewall' ) ),
-				'description_otp_code' => __( 'This is your unique Yubikey Device ID.', 'wp-simple-firewall' ),
-				'description_otp'      => __( 'Provide a One Time Password from your Yubikey.', 'wp-simple-firewall' ),
-				'label_enter_code'     => __( 'Yubikey ID', 'wp-simple-firewall' ),
-				'label_enter_otp'      => __( 'Yubikey OTP', 'wp-simple-firewall' ),
-				'title'                => __( 'Yubikey Authentication', 'wp-simple-firewall' ),
-				'cant_add_other_user'  => sprintf( __( "Sorry, %s may not be added to another user's account.", 'wp-simple-firewall' ), 'Yubikey' ),
-				'cant_remove_admins'   => sprintf( __( "Sorry, %s may only be removed from another user's account by a Security Administrator.", 'wp-simple-firewall' ), __( 'Yubikey', 'wp-simple-firewall' ) ),
-				'provided_by'          => sprintf( __( 'Provided by %s', 'wp-simple-firewall' ), $con->getHumanName() ),
-				'remove_more_info'     => sprintf( __( 'Understand how to remove Google Authenticator', 'wp-simple-firewall' ) )
+				'description_otp_code'  => __( 'This is your unique Yubikey Device ID.', 'wp-simple-firewall' ),
+				'description_otp'       => __( 'Provide a One Time Password from your Yubikey.', 'wp-simple-firewall' ),
+				'label_enter_code'      => __( 'Yubikey ID', 'wp-simple-firewall' ),
+				'label_enter_otp'       => __( 'Yubikey OTP', 'wp-simple-firewall' ),
+				'title'                 => __( 'Yubikey Authentication', 'wp-simple-firewall' ),
+				'cant_add_other_user'   => sprintf( __( "Sorry, %s may not be added to another user's account.", 'wp-simple-firewall' ), 'Yubikey' ),
+				'cant_remove_admins'    => sprintf( __( "Sorry, %s may only be removed from another user's account by a Security Administrator.", 'wp-simple-firewall' ), __( 'Yubikey', 'wp-simple-firewall' ) ),
+				'provided_by'           => sprintf( __( 'Provided by %s', 'wp-simple-firewall' ), $con->getHumanName() ),
+				'remove_more_info'      => __( 'Understand how to remove Google Authenticator', 'wp-simple-firewall' )
 			],
 		];
-
-		return $this->getMod()
-					->renderTemplate(
-						'/snippets/user/profile/mfa/mfa_yubikey.twig',
-						Services::DataManipulation()->mergeArraysRecursive( $this->getCommonData( $user ), $aData ),
-						true
-					);
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function handleUserProfileSubmit( \WP_User $user ) {
-
-		// If it's your own account, you CANT do anything without your OTP (except turn off via email).
-		$sOtpOrDeviceId = trim( (string)$this->fetchCodeFromRequest() );
-		if ( empty( $sOtpOrDeviceId ) ) {
-			return;
-		}
-
-		$bError = true;
-		$aRegisteredDevices = $this->getYubiIds( $user );
-
-		if ( strlen( $sOtpOrDeviceId ) < self::OTP_LENGTH ) {
-			$sMsg = __( 'The Yubikey device ID was not valid.', 'wp-simple-firewall' )
-					.' '.__( 'Please try again.', 'wp-simple-firewall' );
-		}
-		else {
-			$sDeviceId = substr( $sOtpOrDeviceId, 0, self::OTP_LENGTH );
-			$bDeviceRegistered = in_array( $sDeviceId, $aRegisteredDevices );
-
-			if ( $bDeviceRegistered || strlen( $sOtpOrDeviceId ) == self::OTP_LENGTH ) { // attempt to remove device
-
-				if ( $bDeviceRegistered ) {
-					$this->addRemoveRegisteredYubiId( $user, $sDeviceId, false );
-					$sMsg = sprintf(
-						__( '%s was removed from your profile.', 'wp-simple-firewall' ),
-						__( 'Yubikey Device', 'wp-simple-firewall' ).sprintf( ' (%s)', $sDeviceId )
-					);
-					$bError = false;
-				}
-				else {
-					$sMsg = __( "That Yubikey device ID wasn't found on your profile", 'wp-simple-firewall' );
-				}
-			}
-			elseif ( $this->sendYubiOtpRequest( $sOtpOrDeviceId ) ) { // A full OTP was provided so we're adding a new one
-				if ( count( $aRegisteredDevices ) == 0 || $this->getCon()->isPremiumActive() ) {
-					$this->addRemoveRegisteredYubiId( $user, $sDeviceId, true );
-					$sMsg = sprintf(
-						__( '%s was added to your profile.', 'wp-simple-firewall' ),
-						__( 'Yubikey Device', 'wp-simple-firewall' ).sprintf( ' (%s)', $sDeviceId )
-					);
-					$bError = false;
-				}
-				else {
-					$sMsg = __( 'No further Yubikey devices may be added to your account at this time.', 'wp-simple-firewall' );
-				}
-			}
-			else {
-				$sMsg = __( 'One Time Password (OTP) was not valid.', 'wp-simple-firewall' )
-						.' '.__( 'Please try again.', 'wp-simple-firewall' );
-			}
-		}
-
-		$this->setProfileValidated( $user, $this->hasValidSecret( $user ) );
-		$this->getMod()->setFlashAdminNotice( $sMsg, $bError );
-	}
-
-	/**
-	 * @param \WP_User $user
-	 * @return array
-	 */
-	private function getYubiIds( \WP_User $user ) {
+	private function getYubiIds( \WP_User $user ) :array {
 		return array_filter( array_map( 'trim', explode( ',', $this->getSecret( $user ) ) ) );
 	}
 
@@ -148,79 +68,99 @@ class Yubikey extends BaseProvider {
 		return $valid;
 	}
 
-	/**
-	 * @param string $sOTP
-	 * @return bool
-	 */
-	private function sendYubiOtpRequest( $sOTP ) {
-		/** @var LoginGuard\Options $oOpts */
-		$oOpts = $this->getOptions();
-		$sOTP = trim( $sOTP );
-		$bSuccess = false;
+	private function sendYubiOtpRequest( string $otp ) :bool {
+		/** @var LoginGuard\Options $opts */
+		$opts = $this->getOptions();
+		$otp = trim( $otp );
+		$success = false;
 
-		if ( preg_match( '#^[a-z]{44}$#', $sOTP ) ) {
-			$aParts = [
-				'otp'   => $sOTP,
-				'nonce' => md5( uniqid( $this->getCon()->getUniqueRequestId() ) ),
-				'id'    => $oOpts->getYubikeyAppId()
+		if ( preg_match( '#^[a-z]{44}$#', $otp ) ) {
+			// 2021-09-27: API requires at least 16 chars in the nonce, or it fails.
+			$parts = [
+				'otp'   => $otp,
+				'nonce' => md5( uniqid( Services::Request()->getID() ) ),
+				'id'    => $opts->getYubikeyAppId()
 			];
 
-			$sResp = Services::HttpRequest()->getContent(
-				add_query_arg( $aParts, self::URL_YUBIKEY_VERIFY )
-			);
+			$response = Services::HttpRequest()->getContent( add_query_arg( $parts, self::URL_YUBIKEY_VERIFY ) );
 
-			unset( $aParts[ 'id' ] );
-			$aParts[ 'status' ] = 'OK';
+			unset( $parts[ 'id' ] );
+			$parts[ 'status' ] = 'OK';
 
-			$bSuccess = true;
-			foreach ( $aParts as $sKey => $mVal ) {
-				if ( !preg_match( sprintf( '#%s=%s#', $sKey, $mVal ), $sResp ) ) {
-					$bSuccess = false;
+			$success = true;
+			foreach ( $parts as $key => $value ) {
+				if ( !preg_match( sprintf( '#%s=%s#', $key, $value ), $response ) ) {
+					$success = false;
 					break;
 				}
 			}
 		}
 
-		return $bSuccess;
+		return $success;
 	}
 
-	/**
-	 * @param \WP_User $user
-	 * @param string   $sKey
-	 * @param bool     $bAdd - true to add; false to remove
-	 * @return $this
-	 */
-	public function addRemoveRegisteredYubiId( \WP_User $user, $sKey, $bAdd = true ) {
-		$aIDs = $this->getYubiIds( $user );
-		if ( $bAdd ) {
-			$aIDs[] = $sKey;
+	public function toggleRegisteredYubiID( \WP_User $user, string $keyOrOTP ) :StdResponse {
+		$response = new StdResponse();
+		$response->success = true;
+
+		if ( empty( $keyOrOTP ) ) {
+			$response->success = false;
+			$response->error_text = 'One-Time Password was empty';
+		}
+		elseif ( strlen( $keyOrOTP ) < self::OTP_LENGTH ) {
+			$response->success = false;
+			$response->error_text = 'One-Time Password was too short';
 		}
 		else {
-			$aIDs = Services::DataManipulation()->removeFromArrayByValue( $aIDs, $sKey );
+			$keyID = substr( $keyOrOTP, 0, self::OTP_LENGTH );
+			$IDs = $this->getYubiIds( $user );
+
+			if ( in_array( $keyID, $IDs ) ) {
+				$response->success = true;
+				$IDs = Services::DataManipulation()->removeFromArrayByValue( $IDs, $keyID );
+				$response->msg_text = sprintf(
+					__( '%s was removed from your profile.', 'wp-simple-firewall' ),
+					__( 'Yubikey Device', 'wp-simple-firewall' ).sprintf( ' (%s)', $keyID )
+				);
+			}
+			elseif ( !$this->sendYubiOtpRequest( $keyOrOTP ) ) {
+				// If we're going to add the device, we test it
+				$response->success = false;
+				$response->error_text = 'Failed to verify One-Time Password from device';
+			}
+			else {
+				$IDs[] = $keyID;
+				$response->msg_text = sprintf(
+					__( '%s was added to your profile.', 'wp-simple-firewall' ),
+					__( 'Yubikey Device', 'wp-simple-firewall' ).sprintf( ' (%s)', $keyID )
+				);
+			}
+
+			if ( !$this->sendYubiOtpRequest( $keyOrOTP ) ) {
+				$response->success = false;
+				$response->error_text = 'One-Time Password verification failed';
+			}
+			$response->success = true;
+
+			$this->setSecret( $user, implode( ',', array_unique( array_filter( $IDs ) ) ) );
 		}
-		return $this->setSecret( $user, implode( ',', array_unique( array_filter( $aIDs ) ) ) );
+
+		return $response;
 	}
 
 	/**
 	 * @param \WP_User $user
-	 * @param bool     $bIsSuccess
+	 * @param string   $key
+	 * @param bool     $add - true to add; false to remove
+	 * @return $this
 	 */
-	protected function auditLogin( \WP_User $user, bool $bIsSuccess ) {
-		$this->getCon()->fireEvent(
-			$bIsSuccess ? 'yubikey_verified' : 'yubikey_fail',
-			[
-				'audit' => [
-					'user_login' => $user->user_login,
-					'method'     => 'Yubikey',
-				]
-			]
-		);
+	public function addRemoveRegisteredYubiId( \WP_User $user, string $key, $add = true ) {
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getFormField() {
+	public function getFormField() :array {
 		return [
 			'name'        => $this->getLoginFormParameter(),
 			'type'        => 'text',
@@ -250,5 +190,9 @@ class Yubikey extends BaseProvider {
 			}
 		}
 		return $bValid;
+	}
+
+	public function getProviderName() :string {
+		return 'Yubikey';
 	}
 }

@@ -11,28 +11,28 @@ class ModCon extends BaseShield\ModCon {
 	 * Should have no default email. If no email is set, no notification is sent.
 	 * @return string[]
 	 */
-	public function getAdminLoginNotificationEmails() {
-		$aEmails = [];
+	public function getAdminLoginNotificationEmails() :array {
+		$emails = [];
 
-		$sEmails = $this->getOptions()->getOpt( 'enable_admin_login_email_notification', '' );
-		if ( !empty( $sEmails ) ) {
-			$aEmails = array_values( array_unique( array_filter(
+		$rawEmails = $this->getOptions()->getOpt( 'enable_admin_login_email_notification', '' );
+		if ( !empty( $rawEmails ) ) {
+			$emails = array_values( array_unique( array_filter(
 				array_map(
 					function ( $sEmail ) {
 						return trim( strtolower( $sEmail ) );
 					},
-					explode( ',', $sEmails )
+					explode( ',', $rawEmails )
 				),
-				function ( $sEmail ) {
-					return Services::Data()->validEmail( $sEmail );
+				function ( $email ) {
+					return Services::Data()->validEmail( $email );
 				}
 			) ) );
-			if ( !$this->isPremium() && !empty( $aEmails ) ) {
-				$aEmails = array_slice( $aEmails, 0, 1 );
+			if ( count( $emails ) > 1 && !$this->isPremium() ) {
+				$emails = array_slice( $emails, 0, 1 );
 			}
 		}
 
-		return $aEmails;
+		return $emails;
 	}
 
 	protected function preProcessOptions() {
@@ -54,11 +54,11 @@ class ModCon extends BaseShield\ModCon {
 			) ) )
 		);
 
-		$aChecks = $opts->getEmailValidationChecks();
-		if ( !empty( $aChecks ) ) {
-			$aChecks[] = 'syntax';
+		$checks = $opts->getEmailValidationChecks();
+		if ( !empty( $checks ) ) {
+			$checks[] = 'syntax';
 		}
-		$opts->setOpt( 'email_checks', array_unique( $aChecks ) );
+		$opts->setOpt( 'email_checks', array_unique( $checks ) );
 	}
 
 	public function isSendUserEmailLoginNotification() :bool {
@@ -70,56 +70,55 @@ class ModCon extends BaseShield\ModCon {
 	 * @return int
 	 */
 	public function getPassStrengthName( $nStrength ) {
-		$aMap = [
-			__( 'Very Weak', 'wp-simple-firewall' ),
-			__( 'Weak', 'wp-simple-firewall' ),
-			__( 'Medium', 'wp-simple-firewall' ),
-			__( 'Strong', 'wp-simple-firewall' ),
-			__( 'Very Strong', 'wp-simple-firewall' ),
-		];
-		return $aMap[ max( 0, min( 4, $nStrength ) ) ];
+		return [
+				   __( 'Very Weak', 'wp-simple-firewall' ),
+				   __( 'Weak', 'wp-simple-firewall' ),
+				   __( 'Medium', 'wp-simple-firewall' ),
+				   __( 'Strong', 'wp-simple-firewall' ),
+				   __( 'Very Strong', 'wp-simple-firewall' ),
+			   ][ max( 0, min( 4, $nStrength ) ) ];
 	}
 
 	/**
-	 * @param int  $nUserId
-	 * @param bool $bAdd - set true to add, false to remove
+	 * @param int  $userID
+	 * @param bool $add - set true to add, false to remove
 	 */
-	public function addRemoveHardSuspendUserId( $nUserId, $bAdd = true ) {
+	public function addRemoveHardSuspendUser( \WP_User $user, bool $add = true ) {
 		/** @var Options $opts */
 		$opts = $this->getOptions();
 
-		$aIds = $opts->getSuspendHardUserIds();
+		$IDs = $opts->getSuspendHardUserIds();
 
-		$oMeta = $this->getCon()->getUserMeta( Services::WpUsers()->getUserById( $nUserId ) );
-		$bIdSuspended = isset( $aIds[ $nUserId ] ) || $oMeta->hard_suspended_at > 0;
+		$meta = $this->getCon()->getUserMeta( $user );
+		$isSuspended = isset( $IDs[ $user->ID ] ) || $meta->hard_suspended_at > 0;
 
-		if ( $bAdd && !$bIdSuspended ) {
-			$oMeta->hard_suspended_at = Services::Request()->ts();
-			$aIds[ $nUserId ] = $oMeta->hard_suspended_at;
+		if ( $add && !$isSuspended ) {
+			$meta->hard_suspended_at = Services::Request()->ts();
+			$IDs[ $user->ID ] = $meta->hard_suspended_at;
 			$this->getCon()->fireEvent(
 				'user_hard_suspended',
 				[
-					'audit' => [
-						'user_id' => $nUserId,
-						'admin'   => Services::WpUsers()->getCurrentWpUsername(),
+					'audit_params' => [
+						'user_login' => $user->user_login,
+						'admin'      => Services::WpUsers()->getCurrentWpUsername(),
 					]
 				]
 			);
 		}
-		elseif ( !$bAdd && $bIdSuspended ) {
-			$oMeta->hard_suspended_at = 0;
-			unset( $aIds[ $nUserId ] );
+		elseif ( !$add && $isSuspended ) {
+			$meta->hard_suspended_at = 0;
+			unset( $IDs[ $user->ID ] );
 			$this->getCon()->fireEvent(
 				'user_hard_unsuspended',
 				[
-					'audit' => [
-						'user_id' => $nUserId,
-						'admin'   => Services::WpUsers()->getCurrentWpUsername(),
+					'audit_params' => [
+						'user_login' => $user->user_login,
+						'admin'      => Services::WpUsers()->getCurrentWpUsername(),
 					]
 				]
 			);
 		}
 
-		$opts->setOpt( 'hard_suspended_userids', $aIds );
+		$opts->setOpt( 'hard_suspended_userids', $IDs );
 	}
 }

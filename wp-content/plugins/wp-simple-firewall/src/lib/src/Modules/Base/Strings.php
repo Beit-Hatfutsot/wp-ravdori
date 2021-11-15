@@ -10,7 +10,7 @@ class Strings {
 	use ModConsumer;
 
 	public function getModTagLine() :string {
-		return __( $this->getOptions()->getFeatureProperty( 'tagline' ), 'wp-simple-firewall' );
+		return (string)__( $this->getOptions()->getFeatureProperty( 'tagline' ), 'wp-simple-firewall' );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class Strings {
 				'btn_options'       => __( 'Options' ),
 				'btn_help'          => __( 'Help' ),
 				'btn_wizards'       => $this->getMod()->hasWizard() ? __( 'Wizards' ) : __( 'No Wizards' ),
-				'go_to_settings'    => __( 'Settings', 'wp-simple-firewall' ),
+				'go_to_settings'    => __( 'Configuration', 'wp-simple-firewall' ),
 				'on'                => __( 'On', 'wp-simple-firewall' ),
 				'off'               => __( 'Off', 'wp-simple-firewall' ),
 				'yes'               => __( 'Yes' ),
@@ -148,33 +148,29 @@ class Strings {
 	}
 
 	/**
-	 * @return string[][]
+	 * @return string[][]|string[]
 	 */
 	protected function getAuditMessages() :array {
 		return [];
 	}
 
 	/**
-	 * @param string $sKey
-	 * @return string[]
+	 * @return string[][][]|string[][]
 	 */
-	public function getAuditMessage( $sKey ) {
-		$aMsg = $this->getAuditMessages();
-		return isset( $aMsg[ $sKey ] ) ? $aMsg[ $sKey ] : [];
+	public function getEventStrings() :array {
+		return [];
 	}
 
 	/**
-	 * @param string $key
-	 * @return array
 	 * @throws \Exception
 	 */
 	public function getOptionStrings( string $key ) :array {
-		$aOpt = $this->getOptions()->getOptDefinition( $key );
-		if ( is_array( $aOpt ) && !empty( $aOpt[ 'name' ] ) && !empty( $aOpt[ 'summary' ] ) && !empty( $aOpt[ 'description' ] ) ) {
+		$opt = $this->getOptions()->getOptDefinition( $key );
+		if ( is_array( $opt ) && !empty( $opt[ 'name' ] ) && !empty( $opt[ 'summary' ] ) && !empty( $opt[ 'description' ] ) ) {
 			return [
-				'name'        => __( $aOpt[ 'name' ], 'wp-simple-firewall' ),
-				'summary'     => __( $aOpt[ 'summary' ], 'wp-simple-firewall' ),
-				'description' => __( $aOpt[ 'description' ], 'wp-simple-firewall' ),
+				'name'        => __( $opt[ 'name' ], 'wp-simple-firewall' ),
+				'summary'     => __( $opt[ 'summary' ], 'wp-simple-firewall' ),
+				'description' => __( $opt[ 'description' ], 'wp-simple-firewall' ),
 			];
 		}
 		throw new \Exception( sprintf( 'An option has been defined but without strings assigned to it. Option key: "%s".', $key ) );
@@ -190,9 +186,9 @@ class Strings {
 		switch ( $section ) {
 
 			case 'section_user_messages' :
-				$sTitle = __( 'User Messages', 'wp-simple-firewall' );
-				$sTitleShort = __( 'Messages', 'wp-simple-firewall' );
-				$aSummary = [
+				$title = __( 'User Messages', 'wp-simple-firewall' );
+				$titleShort = __( 'Messages', 'wp-simple-firewall' );
+				$summary = [
 					sprintf( '%s - %s', __( 'Purpose', 'wp-simple-firewall' ), __( 'Customize the messages displayed to the user.', 'wp-simple-firewall' ) ),
 					sprintf( '%s - %s', __( 'Recommendation', 'wp-simple-firewall' ), __( 'Use this section if you need to communicate to the user in a particular manner.', 'wp-simple-firewall' ) ),
 					sprintf( '%s: %s', __( 'Hint', 'wp-simple-firewall' ), sprintf( __( 'To reset any message to its default, enter the text exactly: %s', 'wp-simple-firewall' ), 'default' ) )
@@ -200,11 +196,11 @@ class Strings {
 				break;
 
 			default:
-				$aSect = $this->getOptions()->getSection( $section );
-				if ( is_array( $aSect ) && !empty( $aSect[ 'title' ] ) && !empty( $aSect[ 'title_short' ] ) ) {
-					$sTitle = __( $aSect[ 'title' ], 'wp-simple-firewall' );
-					$sTitleShort = __( $aSect[ 'title_short' ], 'wp-simple-firewall' );
-					$aSummary = empty( $aSect[ 'summary' ] ) ? [] : $aSect[ 'summary' ];
+				$section = $this->getOptions()->getSection( $section );
+				if ( is_array( $section ) && !empty( $section[ 'title' ] ) && !empty( $section[ 'title_short' ] ) ) {
+					$title = __( $section[ 'title' ], 'wp-simple-firewall' );
+					$titleShort = __( $section[ 'title_short' ], 'wp-simple-firewall' );
+					$summary = empty( $section[ 'summary' ] ) ? [] : $section[ 'summary' ];
 				}
 				else {
 					throw new \Exception( sprintf( 'A section slug was defined but with no associated strings. Slug: "%s".', $section ) );
@@ -212,9 +208,9 @@ class Strings {
 		}
 
 		return [
-			'title'       => $sTitle,
-			'title_short' => $sTitleShort,
-			'summary'     => ( isset( $aSummary ) && is_array( $aSummary ) ) ? $aSummary : [],
+			'title'       => $title,
+			'title_short' => $titleShort,
+			'summary'     => ( isset( $summary ) && is_array( $summary ) ) ? $summary : [],
 		];
 	}
 }

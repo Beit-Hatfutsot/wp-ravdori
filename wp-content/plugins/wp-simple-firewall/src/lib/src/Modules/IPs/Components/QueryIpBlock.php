@@ -44,7 +44,7 @@ class QueryIpBlock {
 		$oIP = ( new IPs\Lib\Ops\LookupIpOnList() )
 			->setDbHandler( $mod->getDbHandler_IPs() )
 			->setIP( $this->getIP() )
-			->setListTypeBlack()
+			->setListTypeBlock()
 			->setIsIpBlocked( true )
 			->lookup();
 
@@ -57,7 +57,7 @@ class QueryIpBlock {
 				 && $oIP->last_access_at < Services::Request()->ts() - $oOpts->getAutoExpireTime() ) {
 
 				( new IPs\Lib\Ops\DeleteIp() )
-					->setDbHandler( $mod->getDbHandler_IPs() )
+					->setMod( $mod )
 					->setIP( Services::IP()->getRequestIp() )
 					->fromBlacklist();
 			}

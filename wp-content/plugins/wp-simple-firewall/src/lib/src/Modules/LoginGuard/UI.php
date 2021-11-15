@@ -8,12 +8,34 @@ use FernleafSystems\Wordpress\Plugin\Shield\Utilities\Time\WorldTimeApi;
 class UI extends BaseShield\UI {
 
 	protected function getSectionWarnings( string $section ) :array {
+		$con = $this->getCon();
+		/** @var Options $opts */
+		$opts = $this->getOptions();
+
 		$warnings = [];
 
-		if ( $section == 'section_brute_force_login_protection' && !$this->getCon()->isPremiumActive() ) {
-			$sIntegration = $this->getPremiumOnlyIntegration();
-			if ( !empty( $sIntegration ) ) {
-				$warnings[] = sprintf( __( 'Support for login protection with %s is a Pro-only feature.', 'wp-simple-firewall' ), $sIntegration );
+		if ( $section == 'section_brute_force_login_protection' ) {
+
+			if ( empty( $opts->getBotProtectionLocations() ) ) {
+				$warnings[] = __( "AntiBot detection isn't being applied to your site because you haven't selected any forms to protect, such as Login or Register.", 'wp-simple-firewall' );
+			}
+
+			$installedButNotEnabledProviders = array_filter(
+				$con->getModule_Integrations()
+					->getController_UserForms()
+					->getInstalledProviders(),
+				function ( $provider ) {
+					return !$provider->isEnabled();
+				}
+			);
+			if ( !empty( $installedButNotEnabledProviders ) ) {
+				$warnings[] = sprintf( __( "%s has an integration available to protect the login forms of a 3rd party plugin you're using: %s", 'wp-simple-firewall' ),
+					$con->getHumanName(),
+					sprintf( '<a href="%s">%s</a>',
+						$con->getModule_Integrations()->getUrl_DirectLinkToSection( 'section_user_forms' ),
+						sprintf( __( "View the available integrations.", 'wp-simple-firewall' ), $con->getHumanName() )
+					)
+				);
 			}
 		}
 
@@ -29,32 +51,18 @@ class UI extends BaseShield\UI {
 		}
 
 		if ( $section == 'section_2fa_email' ) {
+
+			if ( $opts->isEnabledEmailAuth() && !$opts->getIfCanSendEmailVerified() ) {
+				$warnings[] = __( "The ability of this site to send email hasn't been verified.", 'wp-simple-firewall' )
+							  .'<br/>'.__( 'Please click to re-save your settings to trigger another verification email.', 'wp-simple-firewall' );
+			}
+
 			$warnings[] =
 				__( '2FA by email demands that your WP site is properly configured to send email.', 'wp-simple-firewall' )
 				.'<br/>'.__( 'This is a common problem and you may get locked out in the future if you ignore this.', 'wp-simple-firewall' )
-				.' '.sprintf( '<a href="%s" target="_blank" class="alert-link">%s</a>', 'https://shsec.io/dd', __( 'Learn More.', 'wp-simple-firewall' ) );
+				.' '.sprintf( '<a href="%s" target="_blank" class="alert-link">%s</a>', 'https://shsec.io/dd', trim( __( 'Learn More.', 'wp-simple-firewall' ), '.' ) );
 		}
 
 		return $warnings;
-	}
-
-	/**
-	 * @return string
-	 */
-	private function getPremiumOnlyIntegration() {
-		$aIntegrations = [
-			'WooCommerce'            => 'WooCommerce',
-			'Easy_Digital_Downloads' => 'Easy Digital Downloads',
-			'BuddyPress'             => 'BuddyPress',
-		];
-
-		$sIntegration = '';
-		foreach ( $aIntegrations as $classToIntegrate => $sName ) {
-			if ( class_exists( $classToIntegrate ) ) {
-				$sIntegration = $sName;
-				break;
-			}
-		}
-		return $sIntegration;
 	}
 }

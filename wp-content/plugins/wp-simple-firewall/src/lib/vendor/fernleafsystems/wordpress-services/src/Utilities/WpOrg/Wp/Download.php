@@ -10,38 +10,38 @@ class Download {
 	const URL_DOWNLOAD = 'https://%swordpress.org/wordpress-%s%s.zip';
 
 	/**
-	 * @param string $sVersion
-	 * @param string $sLocale - defaults to en_US
+	 * @param string $version
+	 * @param string $locale - defaults to en_US
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function version( $sVersion, $sLocale = '' ) {
-		$sTmpFile = null;
+	public function version( $version, $locale = '' ) {
+		$tmpFile = null;
 
-		$sLocale = strtolower( $sLocale );
-		if ( $sLocale == 'en_us' ) {
-			$sLocale = '';
+		$locale = strtolower( $locale );
+		if ( $locale == 'en_us' ) {
+			$locale = '';
 		}
 
-		$sLocale = str_replace( '-', '_', $sLocale );
+		$locale = str_replace( '-', '_', $locale );
 
-		if ( strpos( $sLocale, '_' ) ) {
-			list( $pt1, $pt2 ) = explode( '_', $sLocale );
-			$sLocale = $pt1.'_'.strtoupper( $pt2 );
+		if ( strpos( $locale, '_' ) ) {
+			list( $pt1, $pt2 ) = explode( '_', $locale );
+			$locale = $pt1.'_'.strtoupper( $pt2 );
 		}
 
-		$sUrl = sprintf(
+		$url = sprintf(
 			static::URL_DOWNLOAD,
-			( empty( $sLocale ) ? '' : $sLocale.'.' ),
-			$sVersion,
-			( empty( $sLocale ) ? '' : '-'.$sLocale )
+			( empty( $locale ) ? '' : $locale.'.' ),
+			$version,
+			( empty( $locale ) ? '' : '-'.$locale )
 		);
 
 		try {
-			$sTmpFile = ( new HttpUtil() )->downloadUrl( $sUrl );
+			$tmpFile = ( new HttpUtil() )->downloadUrl( $url );
 		}
-		catch ( \Exception $oE ) {
+		catch ( \Exception $e ) {
 		}
-		return $sTmpFile;
+		return $tmpFile;
 	}
 }

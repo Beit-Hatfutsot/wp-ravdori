@@ -2,61 +2,57 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Plugin;
 
-use FernleafSystems\Wordpress\Services\Core\VOs\WpPluginVo;
+use FernleafSystems\Wordpress\Services\Core\VOs\Assets\WpPluginVo;
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Trait Base
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Plugin
- */
 trait Base {
 
 	/**
 	 * @var string
 	 */
-	private $sWorkingPluginSlug;
+	private $workingPluginSlug;
 
 	/**
 	 * @var string
 	 */
-	private $sWorkingPluginVersion;
+	private $workingPluginVersion;
 
 	/**
 	 * @return string
 	 */
 	public function getWorkingSlug() {
-		return $this->sWorkingPluginSlug;
+		return $this->workingPluginSlug;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getWorkingVersion() {
-		$sVersion = $this->sWorkingPluginVersion;
-		if ( empty( $sVersion ) ) {
-			$oP = Services::WpPlugins()->getPluginAsVo( $this->getWorkingSlug() );
-			if ( $oP instanceof WpPluginVo ) {
-				$sVersion = $oP->Version;
+		$version = $this->workingPluginVersion;
+		if ( empty( $version ) ) {
+			$p = Services::WpPlugins()->getPluginAsVo( $this->getWorkingSlug() );
+			if ( $p instanceof WpPluginVo ) {
+				$version = $p->Version;
 			}
 		}
-		return $sVersion;
+		return $version;
 	}
 
 	/**
-	 * @param string $sSlug
+	 * @param string $slug
 	 * @return $this
 	 */
-	public function setWorkingSlug( $sSlug ) {
-		$this->sWorkingPluginSlug = $sSlug;
+	public function setWorkingSlug( $slug ) {
+		$this->workingPluginSlug = $slug;
 		return $this;
 	}
 
 	/**
-	 * @param string $sV
+	 * @param string $version
 	 * @return $this
 	 */
-	public function setWorkingVersion( $sV ) {
-		$this->sWorkingPluginVersion = $sV;
+	public function setWorkingVersion( $version ) {
+		$this->workingPluginVersion = $version;
 		return $this;
 	}
 }

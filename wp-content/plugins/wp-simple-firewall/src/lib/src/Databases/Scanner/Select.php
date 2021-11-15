@@ -8,24 +8,20 @@ class Select extends Base\Select {
 
 	use Common;
 
-	/**
-	 * @param string $sScan
-	 * @return int
-	 */
-	public function countForScan( $sScan ) {
-		return $this->reset()
+	public function countForEachScan() :array {
+		/** @var array[] $res */
+		$res = $this->setCustomSelect( '`scan`,COUNT(*) as count' )
+					->setGroupBy( 'scan' )
+					->setResultsAsVo( false )
+					->setSelectResultsFormat( ARRAY_A )
 					->filterByNotIgnored()
-					->filterByScan( $sScan )
-					->count();
-	}
-
-	/**
-	 * @param string $sScan
-	 * @return EntryVO[]
-	 */
-	public function forScan( $sScan ) {
-		return $this->reset()
-					->filterByScan( $sScan )
 					->query();
+		$counts = [];
+		if ( is_array( $res ) ) {
+			foreach ( $res as $entry ) {
+				$counts[ $entry[ 'scan' ] ] = $entry[ 'count' ];
+			}
+		}
+		return $counts;
 	}
 }

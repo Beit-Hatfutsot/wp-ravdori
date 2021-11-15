@@ -1,31 +1,19 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Scans\Wpv;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Scans\Base;
-use FernleafSystems\Wordpress\Plugin\Shield\Scans\Wpv\WpVulnDb\WpVulnVO;
+use FernleafSystems\Wordpress\Plugin\Shield\Scans\Wpv\WpVulnDb\VulnVO;
 
 /**
- * Class ResultItem
- * @property string slug
- * @property string context
- * @property int    wpvuln_id
- * @property array  wpvuln_vo
- * @package FernleafSystems\Wordpress\Plugin\Shield\Scans\Wpv
+ * @property bool $is_vulnerable
  */
-class ResultItem extends Base\BaseResultItem {
+class ResultItem extends \FernleafSystems\Wordpress\Plugin\Shield\Scans\Base\ResultItem {
 
-	/**
-	 * @return string
-	 */
-	public function generateHash() {
-		return md5( $this->slug.$this->wpvuln_id );
+	public function getDescriptionForAudit() :string {
+		return sprintf( '%s: %s', ( strpos( $this->VO->item_id, '/' ) ? 'Plugin' : 'Theme' ), $this->VO->item_id );
 	}
 
-	/**
-	 * @return WpVulnVO
-	 */
-	public function getWpVulnVo() {
-		return ( new WpVulnVO() )->applyFromArray( $this->wpvuln_vo );
+	public function getVulnVo() :VulnVO {
+		return ( new VulnVO() )->applyFromArray( $this->wpvuln_vo );
 	}
 }

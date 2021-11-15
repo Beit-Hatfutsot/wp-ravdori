@@ -11,24 +11,24 @@ use FernleafSystems\Wordpress\Services\Services;
 class WriteDataToFileEncrypted {
 
 	/**
-	 * @param string $sPath
-	 * @param string $sData
-	 * @param string $sPublicKey
-	 * @param string $sPrivateKeyForVerify - verify writing successful if private key supplied
+	 * @param string $path
+	 * @param string $data
+	 * @param string $publicKey
+	 * @param string $privateKeyForVerify - verify writing successful if private key supplied
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function run( $sPath, $sData, $sPublicKey, $sPrivateKeyForVerify = null ) {
-		$oEncrypt = Services::Encrypt();
+	public function run( $path, $data, $publicKey, $privateKeyForVerify = null ) {
+		$srvEncrypt = Services::Encrypt();
 
-		$oEncrypted = $oEncrypt->sealData( $sData, $sPublicKey );
-		if ( !$oEncrypted->success ) {
-			throw new \Exception( 'Could not seal data with message: '.$oEncrypted->message );
+		$encrypted = $srvEncrypt->sealData( $data, $publicKey );
+		if ( !$encrypted->success ) {
+			throw new \Exception( 'Could not seal data with message: '.$encrypted->message );
 		}
 
-		$bSuccess = Services::WpFs()->putFileContent( $sPath, json_encode( $oEncrypted->getRawDataAsArray() ) );
-		if ( $bSuccess && !empty( $sPrivateKeyForVerify ) ) {
-			$bSuccess = ( new ReadDataFromFileEncrypted() )->run( $sPath, $sPrivateKeyForVerify ) === $sData;
+		$bSuccess = Services::WpFs()->putFileContent( $path, json_encode( $encrypted->getRawData() ) );
+		if ( $bSuccess && !empty( $privateKeyForVerify ) ) {
+			$bSuccess = ( new ReadDataFromFileEncrypted() )->run( $path, $privateKeyForVerify ) === $data;
 		}
 		return $bSuccess;
 	}

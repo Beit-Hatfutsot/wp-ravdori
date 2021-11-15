@@ -29,20 +29,25 @@ class ModCon extends BaseShield\ModCon {
 				 ->sendEmailVerifyCanSend();
 		}
 
-		$aIds = $opts->getOpt( 'antibot_form_ids', [] );
-		foreach ( $aIds as $nKey => $sId ) {
-			$sId = trim( strip_tags( $sId ) );
-			if ( empty( $sId ) ) {
-				unset( $aIds[ $nKey ] );
+		$IDs = $opts->getOpt( 'antibot_form_ids', [] );
+		foreach ( $IDs as $nKey => $id ) {
+			$id = trim( strip_tags( $id ) );
+			if ( empty( $id ) ) {
+				unset( $IDs[ $nKey ] );
 			}
 			else {
-				$aIds[ $nKey ] = $sId;
+				$IDs[ $nKey ] = $id;
 			}
 		}
-		$opts->setOpt( 'antibot_form_ids', array_values( array_unique( $aIds ) ) );
+		$opts->setOpt( 'antibot_form_ids', array_values( array_unique( $IDs ) ) );
 
 		$this->cleanLoginUrlPath();
 		$this->ensureCorrectCaptchaConfig();
+
+		if ( $opts->isEnabledAntiBot() ) {
+			$opts->setOpt( 'enable_google_recaptcha_login', 'disabled' );
+			$opts->setOpt( 'enable_login_gasp_check', 'N' );
+		}
 	}
 
 	public function ensureCorrectCaptchaConfig() {
@@ -69,6 +74,7 @@ class ModCon extends BaseShield\ModCon {
 				$this->processEmailSendVerify();
 				break;
 			default:
+				parent::handleModAction( $action );
 				break;
 		}
 	}
@@ -260,8 +266,8 @@ class ModCon extends BaseShield\ModCon {
 		return $text;
 	}
 
-	public function setEnabledGaspCheck( bool $enable ) {
-		$this->getOptions()->setOpt( 'enable_login_gasp_check', $enable ? 'Y' : 'N' );
+	public function setEnabledAntiBotDetection( bool $enable ) {
+		$this->getOptions()->setOpt( 'enable_antibot_check', $enable ? 'Y' : 'N' );
 	}
 
 	public function getScriptLocalisations() :array {
@@ -270,8 +276,10 @@ class ModCon extends BaseShield\ModCon {
 			'global-plugin',
 			'icwp_wpsf_vars_lg',
 			[
-				'ajax_gen_backup_codes' => $this->getAjaxActionData( 'gen_backup_codes' ),
-				'ajax_del_backup_codes' => $this->getAjaxActionData( 'del_backup_codes' ),
+				'ajax' => [
+					'gen_backup_codes' => $this->getAjaxActionData( 'gen_backup_codes' ),
+					'del_backup_codes' => $this->getAjaxActionData( 'del_backup_codes' ),
+				],
 			]
 		];
 		return $locals;

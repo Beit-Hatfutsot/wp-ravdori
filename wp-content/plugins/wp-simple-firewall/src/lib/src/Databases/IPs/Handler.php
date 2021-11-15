@@ -20,25 +20,13 @@ class Handler extends Base\Handler {
 	}
 
 	/**
-	 * @param int $nTimeStamp
+	 * @param int $timestamp
 	 * @return bool
 	 */
-	public function deleteRowsOlderThan( $nTimeStamp ) {
+	public function deleteRowsOlderThan( $timestamp ) :bool {
 		return $this->getQueryDeleter()
-					->addWhereOlderThan( $nTimeStamp, 'last_access_at' )
+					->addWhereOlderThan( $timestamp, 'last_access_at' )
 					->addWhere( 'list', ModCon::LIST_MANUAL_WHITE, '!=' )
 					->query();
-	}
-
-	protected function getCustomColumns() :array {
-		return $this->getOptions()->getDef( 'ip_list_table_columns' );
-	}
-
-	protected function getDefaultTableName() :string {
-		return $this->getOptions()->getDef( 'ip_lists_table_name' );
-	}
-
-	protected function getTimestampColumns() :array {
-		return $this->getOptions()->getDef( 'ip_list_table_timestamp_columns' );
 	}
 }

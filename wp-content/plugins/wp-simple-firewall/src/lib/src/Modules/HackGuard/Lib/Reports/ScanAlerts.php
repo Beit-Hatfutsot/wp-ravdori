@@ -1,4 +1,4 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Lib\Reports;
 
@@ -9,18 +9,14 @@ use FernleafSystems\Wordpress\Services\Services;
 
 class ScanAlerts extends BaseReporter {
 
-	/**
-	 * @inheritDoc
-	 */
-	public function build() {
+	public function build() :array {
 		$alerts = [];
 
 		/** @var HackGuard\Strings $strings */
 		$strings = $this->getMod()->getStrings();
 
-		$rep = $this->getReport();
 		$scanCounts = array_filter(
-			( new Query\ScanCounts( $rep->interval_start_at, $rep->interval_end_at ) )
+			( new Query\ScanCounts() )
 				->setMod( $this->getMod() )
 				->standard()
 		);
@@ -29,7 +25,7 @@ class ScanAlerts extends BaseReporter {
 			foreach ( $scanCounts as $slug => $count ) {
 				$scanCounts[ $slug ] = [
 					'count' => $count,
-					'name'  => $strings->getScanNames()[ $slug ],
+					'name'  => $strings->getScanName( $slug ),
 				];
 			}
 			$alerts[] = $this->getMod()->renderTemplate(
@@ -41,9 +37,14 @@ class ScanAlerts extends BaseReporter {
 					'strings' => [
 						'title'        => __( 'New Scan Results', 'wp-simple-firewall' ),
 						'view_results' => __( 'Click Here To View Scan Results Details', 'wp-simple-firewall' ),
+						'note_changes' => sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ),
+							__( 'Depending on previous actions taken on the site or file system changes, these results may no longer be available to view.', 'wp-simple-firewall' ) ),
+
 					],
 					'hrefs'   => [
-						'view_results' => $this->getCon()->getModule_Insights()->getUrl_SubInsightsPage( 'scans' ),
+						'view_results' => $this->getCon()
+											   ->getModule_Insights()
+											   ->getUrl_ScansResults(),
 					],
 				]
 			);
@@ -57,11 +58,9 @@ class ScanAlerts extends BaseReporter {
 	private function markAlertsAsNotified() {
 		/** @var HackGuard\ModCon $mod */
 		$mod = $this->getMod();
-		/** @var Scanner\Update $oUpdater */
-		$oUpdater = $mod->getDbHandler_ScanResults()->getQueryUpdater();
-		$oUpdater
+		$mod->getDbH_ResultItems()
+			->getQueryUpdater()
 			->setUpdateWheres( [
-				'ignored_at'  => 0,
 				'notified_at' => 0,
 			] )
 			->setUpdateData( [

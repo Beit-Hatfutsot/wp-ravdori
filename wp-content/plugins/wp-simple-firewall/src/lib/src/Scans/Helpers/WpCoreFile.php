@@ -5,10 +5,6 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Scans\Helpers;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\WpOrg;
 
-/**
- * Class WpCoreFileDownload
- * @package FernleafSystems\Wordpress\Plugin\Shield\Scans\Helpers
- */
 class WpCoreFile {
 
 	const URL_WP_CORE = 'https://core.svn.wordpress.org';
@@ -22,41 +18,41 @@ class WpCoreFile {
 	protected $sVersion;
 
 	/**
-	 * @param string $sPath
+	 * @param string $path
 	 * @return bool
 	 */
-	public function replace( $sPath ) {
-		$bSuccess = false;
-		if ( Services::CoreFileHashes()->isCoreFile( $sPath ) ) {
+	public function replace( $path ) :bool {
+		$success = false;
+		if ( Services::CoreFileHashes()->isCoreFile( $path ) ) {
 			$oFiles = Services::WpGeneral()->isClassicPress() ? new WpOrg\Cp\Files() : new WpOrg\Wp\Files();
 			try {
-				$oFiles->replaceFileFromVcs( $sPath );
-				$bSuccess = true;
+				$oFiles->replaceFileFromVcs( $path );
+				$success = true;
 			}
 			catch ( \InvalidArgumentException $e ) {
 			}
 		}
-		return $bSuccess;
+		return $success;
 	}
 
 	/**
-	 * @param string $sPath
-	 * @param bool   $bUseLocale
+	 * @param string $path
+	 * @param bool   $useLocale
 	 * @return string - path to downloaded file
 	 * @throws \InvalidArgumentException
 	 */
-	public function download( $sPath, $bUseLocale = true ) {
-		$oHashes = Services::CoreFileHashes();
-		if ( !$oHashes->isCoreFile( $sPath ) ) {
-			throw new \InvalidArgumentException( sprintf( 'Core file "%s" is not an official WordPress core file.', $sPath ) );
+	public function download( string $path, bool $useLocale = true ) {
+		$hashes = Services::CoreFileHashes();
+		if ( !$hashes->isCoreFile( $path ) ) {
+			throw new \InvalidArgumentException( sprintf( 'Core file "%s" is not an official WordPress core file.', $path ) );
 		}
 
 		$sLocale = Services::WpGeneral()->getLocaleForChecksums();
-		$bUseInternational = $bUseLocale && ( $sLocale != 'en_US' );
+		$bUseInternational = $useLocale && ( $sLocale != 'en_US' );
 
-		$sTmpFile = download_url( $this->getFileUrl( $sPath, $bUseLocale ) );
+		$sTmpFile = download_url( $this->getFileUrl( $path, $useLocale ) );
 		if ( $bUseInternational && empty( $sTmpFile ) ) {
-			$sTmpFile = $this->download( $sPath, false );
+			$sTmpFile = $this->download( $path, false );
 		} // try international retrieval and if it fails, we resort to en_US.
 
 		return ( !is_wp_error( $sTmpFile ) && Services::WpFs()->exists( $sTmpFile ) ) ? $sTmpFile : null;

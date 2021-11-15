@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Controller\Config;
 
-use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+use FernleafSystems\Utilities\Data\Adapter\DynPropertiesClass;
 
 /**
  * Class ConfigVO
@@ -23,11 +23,7 @@ use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
  * @property string $previous_version
  * @property array  $update_first_detected
  */
-class ConfigVO {
-
-	use StdClassAdapter {
-		__get as __adapterGet;
-	}
+class ConfigVO extends DynPropertiesClass {
 
 	/**
 	 * @var bool
@@ -38,8 +34,8 @@ class ConfigVO {
 	 * @param string $key
 	 * @return mixed
 	 */
-	public function __get( $key ) {
-		$val = $this->__adapterGet( $key );
+	public function __get( string $key ) {
+		$val = parent::__get( $key );
 
 		switch ( $key ) {
 
@@ -60,6 +56,14 @@ class ConfigVO {
 
 			case 'update_first_detected':
 				if ( empty( $val ) ) {
+					$val = [];
+				}
+				break;
+
+			case 'meta':
+			case 'plugin_meta':
+			case 'upgrade_reqs':
+				if ( !is_array( $val ) ) {
 					$val = [];
 				}
 				break;

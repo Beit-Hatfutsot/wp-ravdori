@@ -1441,18 +1441,19 @@ if ( ! function_exists('wpuxss_eml_pre_get_posts') ) {
         // front-end only
         if ( ! is_admin() ) {
 
-            $wpuxss_eml_tax_options = get_option('wpuxss_eml_tax_options');
+            $wpuxss_eml_tax_options = get_option( 'wpuxss_eml_tax_options', array() );
+            $wpuxss_eml_taxonomies = get_option( 'wpuxss_eml_taxonomies', array() );
 
-            if ( (bool) $wpuxss_eml_tax_options['tax_archives'] ) {
+            foreach ( (array) $wpuxss_eml_taxonomies as $taxonomy => $params ) {
 
-                $wpuxss_eml_taxonomies = get_option('wpuxss_eml_taxonomies');
+                if ( (bool) $params['assigned'] && (bool) $params['eml_media'] && is_tax( $taxonomy ) ) {
 
-                foreach ( (array) $wpuxss_eml_taxonomies as $taxonomy => $params ) {
-
-                    if ( (bool) $params['assigned'] && (bool) $params['eml_media'] && is_tax( $taxonomy ) ) {
-
+                    if ( (bool) $wpuxss_eml_tax_options['tax_archives'] ) {
                         $query->set( 'post_type', 'attachment' );
                         $query->set( 'post_status', 'inherit' );
+                    }
+                    else {
+                        $query->set_404();
                     }
                 }
             }

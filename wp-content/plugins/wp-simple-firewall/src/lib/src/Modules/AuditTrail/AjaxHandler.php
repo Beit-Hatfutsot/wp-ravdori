@@ -10,72 +10,28 @@ class AjaxHandler extends Shield\Modules\BaseShield\AjaxHandler {
 	protected function processAjaxAction( string $action ) :array {
 
 		switch ( $action ) {
-			case 'render_table_audittrail':
-				$aResponse = $this->ajaxExec_BuildTableAuditTrail();
+			case 'logtable_action':
+				$response = $this->ajaxExec_AuditTrailTableAction();
 				break;
-
-			case 'item_addparamwhite':
-				$aResponse = $this->ajaxExec_AddParamToFirewallWhitelist();
-				break;
-
 			default:
-				$aResponse = parent::processAjaxAction( $action );
+				$response = parent::processAjaxAction( $action );
 		}
 
-		return $aResponse;
+		return $response;
 	}
 
-	protected function ajaxExec_AddParamToFirewallWhitelist() :array {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-		$bSuccess = false;
-
-		$nId = Services::Request()->post( 'rid' );
-		if ( empty( $nId ) || !is_numeric( $nId ) || $nId < 1 ) {
-			$sMessage = __( 'Invalid audit entry selected for this action', 'wp-simple-firewall' );
+	private function ajaxExec_AuditTrailTableAction() :array {
+		try {
+			return ( new Lib\LogTable\DelegateAjaxHandler() )
+				->setMod( $this->getMod() )
+				->processAjaxAction();
 		}
-		else {
-			/** @var Shield\Databases\AuditTrail\EntryVO $oEntry */
-			$oEntry = $mod->getDbHandler_AuditTrail()
-						  ->getQuerySelector()
-						  ->byId( $nId );
-
-			if ( empty( $oEntry ) ) {
-				$sMessage = __( 'Audit entry could not be loaded.', 'wp-simple-firewall' );
-			}
-			else {
-				$aData = $oEntry->meta;
-				$sParam = isset( $aData[ 'param' ] ) ? $aData[ 'param' ] : '';
-				$sUri = isset( $aData[ 'uri' ] ) ? $aData[ 'uri' ] : '*';
-				if ( empty( $sParam ) ) {
-					$sMessage = __( 'Parameter associated with this audit entry could not be found.', 'wp-simple-firewall' );
-				}
-				else {
-					/** @var Shield\Modules\Firewall\ModCon $oModFire */
-					$oModFire = $this->getCon()->getModule( 'firewall' );
-					$oModFire->addParamToWhitelist( $sParam, $sUri );
-					$sMessage = sprintf( __( 'Parameter "%s" whitelisted successfully', 'wp-simple-firewall' ), $sParam );
-					$bSuccess = true;
-				}
-			}
+		catch ( \Exception $e ) {
+			return [
+				'success'     => false,
+				'page_reload' => true,
+				'message'     => $e->getMessage(),
+			];
 		}
-
-		return [
-			'success' => $bSuccess,
-			'message' => $sMessage
-		];
-	}
-
-	private function ajaxExec_BuildTableAuditTrail() :array {
-		/** @var ModCon $mod */
-		$mod = $this->getMod();
-		$oTableBuilder = ( new Shield\Tables\Build\AuditTrail() )
-			->setMod( $mod )
-			->setDbHandler( $mod->getDbHandler_AuditTrail() );
-
-		return [
-			'success' => true,
-			'html'    => $oTableBuilder->render()
-		];
 	}
 }

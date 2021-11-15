@@ -10,7 +10,7 @@ class EmailValidate {
 
 	use ModConsumer;
 
-	private $aTrack;
+	private $track;
 
 	public function run() {
 		/** @var UserManagement\Options $oOpts */
@@ -25,34 +25,34 @@ class EmailValidate {
 	 * @return array
 	 */
 	public function validateNewUserEmail( $aUserData ) {
-		$sEmail = $aUserData[ 'user_email' ];
-		/** @var UserManagement\Options $oOpts */
+		$email = $aUserData[ 'user_email' ];
+		/** @var UserManagement\Options $opts */
 
-		if ( !is_array( $this->aTrack ) ) {
-			$this->aTrack = [];
+		if ( !is_array( $this->track ) ) {
+			$this->track = [];
 		}
 
 		// This hook seems to be called twice on any given registration.
-		if ( !in_array( $sEmail, $this->aTrack ) ) {
-			$this->aTrack[] = $sEmail;
+		if ( !empty( $email ) && !in_array( $email, $this->track ) ) {
+			$this->track[] = $email;
 
-			$oOpts = $this->getOptions();
-			$sInvalidBecause = null;
-			if ( !is_email( $sEmail ) ) {
-				$sInvalidBecause = 'syntax';
+			$opts = $this->getOptions();
+			$invalidBecause = null;
+			if ( !is_email( $email ) ) {
+				$invalidBecause = 'syntax';
 			}
 			else {
-				$sApiToken = $this->getCon()
-								  ->getModule_License()
-								  ->getWpHashesTokenManager()
-								  ->getToken();
-				if ( !empty( $sApiToken ) ) {
-					$aChecks = $oOpts->getEmailValidationChecks();
-					$aVerifys = ( new Email( $sApiToken ) )->getEmailVerification( $sEmail );
+				$apiToken = $this->getCon()
+								 ->getModule_License()
+								 ->getWpHashesTokenManager()
+								 ->getToken();
+				if ( !empty( $apiToken ) ) {
+					$aChecks = $opts->getEmailValidationChecks();
+					$aVerifys = ( new Email( $apiToken ) )->getEmailVerification( $email );
 					if ( is_array( $aVerifys ) ) {
 						foreach ( $aVerifys as $sVerifyKey => $bIsValid ) {
 							if ( !$bIsValid && in_array( $sVerifyKey, $aChecks ) ) {
-								$sInvalidBecause = $sVerifyKey;
+								$invalidBecause = $sVerifyKey;
 								break;
 							}
 						}
@@ -60,21 +60,21 @@ class EmailValidate {
 				}
 			}
 
-			if ( !empty( $sInvalidBecause ) ) {
-				$sOpt = $oOpts->getValidateEmailOnRegistration();
+			if ( !empty( $invalidBecause ) ) {
+				$opt = $opts->getValidateEmailOnRegistration();
 				$this->getCon()->fireEvent(
 					'reg_email_invalid',
 					[
-						'audit'         => [
-							'email'  => sanitize_email( $sEmail ),
-							'reason' => sanitize_key( $sInvalidBecause ),
+						'audit_params'  => [
+							'email'  => sanitize_email( $email ),
+							'reason' => sanitize_key( $invalidBecause ),
 						],
-						'offense_count' => $sOpt == 'log' ? 0 : 1,
-						'block'         => $sOpt == 'block',
+						'offense_count' => $opt == 'log' ? 0 : 1,
+						'block'         => $opt == 'block',
 					]
 				);
 
-				if ( $sOpt == 'block' ) {
+				if ( $opt == 'block' ) {
 					wp_die( 'Attempted user registration with invalid email address has been blocked.' );
 				}
 			}

@@ -19,6 +19,7 @@ use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Theme;
  * @property string                      $requires_php
  * @property bool                        $is_child
  * @property bool                        $is_parent
+ * @deprecated
  */
 class WpThemeVo extends WpBaseVo {
 

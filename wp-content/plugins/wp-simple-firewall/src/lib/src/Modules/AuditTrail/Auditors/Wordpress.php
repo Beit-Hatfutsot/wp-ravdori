@@ -6,37 +6,37 @@ use FernleafSystems\Wordpress\Services\Services;
 
 class Wordpress extends Base {
 
-	public function run() {
+	protected function run() {
 		add_action( '_core_updated_successfully', [ $this, 'auditCoreUpdated' ] );
 		add_action( 'update_option_permalink_structure', [ $this, 'auditPermalinkStructure' ], 10, 2 );
 	}
 
 	/**
-	 * @param string $sNewCoreVersion
+	 * @param string $newVersion
 	 */
-	public function auditCoreUpdated( $sNewCoreVersion ) {
+	public function auditCoreUpdated( $newVersion ) {
 		$this->getCon()->fireEvent(
 			'core_updated',
 			[
-				'audit' => [
-					'old' => Services::WpGeneral()->getVersion(),
-					'new' => $sNewCoreVersion,
+				'audit_params' => [
+					'from' => Services::WpGeneral()->getVersion(),
+					'to'   => $newVersion,
 				]
 			]
 		);
 	}
 
 	/**
-	 * @param string $sOld
-	 * @param string $sNew
+	 * @param string $old
+	 * @param string $new
 	 */
-	public function auditPermalinkStructure( $sOld, $sNew ) {
+	public function auditPermalinkStructure( $old, $new ) {
 		$this->getCon()->fireEvent(
 			'permalinks_structure',
 			[
-				'audit' => [
-					'old' => $sOld,
-					'new' => $sNew,
+				'audit_params' => [
+					'from' => $old,
+					'to'   => $new,
 				]
 			]
 		);

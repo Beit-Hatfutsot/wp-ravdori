@@ -3,6 +3,7 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\BaseShield;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Options\WildCardOptions;
 use FernleafSystems\Wordpress\Services\Services;
 
 class Options extends BaseShield\Options {
@@ -16,16 +17,38 @@ class Options extends BaseShield\Options {
 		return is_array( $this->getOpt( 'file_repair_areas' ) ) ? $this->getOpt( 'file_repair_areas' ) : [];
 	}
 
-	/**
-	 * @return int[] - keys are the unique report hash
-	 */
-	public function getMalFalsePositiveReports() :array {
-		$FP = $this->getOpt( 'mal_fp_reports', [] );
-		return is_array( $FP ) ? $FP : [];
+	public function getLastRealtimeScanAt( bool $update = false ) :int {
+		$at = $this->getOpt( 'realtime_scan_last_at' );
+		if ( empty( $at ) ) {
+			$at = Services::Request()->ts();
+			$this->setOpt( 'realtime_scan_last_at', $at );
+		}
+		if ( $update ) {
+			$this->setOpt( 'realtime_scan_last_at', Services::Request()->ts() );
+		}
+		return $at;
 	}
 
-	public function isMalFalsePositiveReported( string $hash ) :bool {
-		return isset( $this->getMalFalsePositiveReports()[ $hash ] );
+	/**
+	 * @return string[] - precise REGEX patterns to match against PATH.
+	 */
+	public function getWhitelistedPathsAsRegex() :array {
+		if ( $this->isPremium() ) {
+			$paths = array_merge(
+				$this->getOpt( 'scan_path_exclusions', [] ),
+				$this->getDef( 'default_whitelist_paths' )
+			);
+		}
+		else {
+			$paths = [];
+		}
+
+		return array_map(
+			function ( $value ) {
+				return ( new WildCardOptions() )->buildFullRegexValue( $value, WildCardOptions::FILE_PATH_REL );
+			},
+			is_array( $paths ) ? $paths : []
+		);
 	}
 
 	public function getMalConfidenceBoundary() :int {
@@ -33,40 +56,16 @@ class Options extends BaseShield\Options {
 	}
 
 	/**
-	 * We do some WP Content dir replacement as there may be custom wp-content dir defines
 	 * @return string[]
 	 */
-	public function getMalWhitelistPaths() {
-		return array_map(
-			function ( $sFragment ) {
-				return str_replace(
-					wp_normalize_path( ABSPATH.'wp-content' ),
-					rtrim( wp_normalize_path( WP_CONTENT_DIR ), '/' ),
-					wp_normalize_path( path_join( ABSPATH, ltrim( $sFragment, '/' ) ) )
-				);
-			},
-			apply_filters( 'icwp_shield_malware_whitelist_paths', $this->getDef( 'malware_whitelist_paths' ) )
-		);
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getMalQueueExpirationInterval() {
-		return MINUTE_IN_SECONDS*10;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getMalSignaturesSimple() {
+	public function getMalSignaturesSimple() :array {
 		return $this->getMalSignatures( 'malsigs_simple.txt', $this->getDef( 'url_mal_sigs_simple' ) );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getMalSignaturesRegex() {
+	public function getMalSignaturesRegex() :array {
 		return $this->getMalSignatures( 'malsigs_regex.txt', $this->getDef( 'url_mal_sigs_regex' ) );
 	}
 
@@ -75,10 +74,10 @@ class Options extends BaseShield\Options {
 	 * @param string $url
 	 * @return string[]
 	 */
-	public function getMalSignatures( string $fileName, string $url ) {
+	private function getMalSignatures( string $fileName, string $url ) :array {
 		$FS = Services::WpFs();
-		$file = $this->getCon()->getPluginCachePath( $fileName );
-		if ( $FS->exists( $file ) ) {
+		$file = $this->getCon()->paths->forCacheItem( $fileName );
+		if ( !empty( $file ) && $FS->exists( $file ) ) {
 			$sigs = explode( "\n", $FS->getFileContent( $file, true ) );
 		}
 		else {
@@ -87,15 +86,16 @@ class Options extends BaseShield\Options {
 					explode( "\n", Services::HttpRequest()->getContent( $url ) )
 				),
 				function ( $line ) {
-					return ( ( strpos( $line, '#' ) !== 0 ) && strlen( $line ) > 0 );
+					return ( strpos( $line, '#' ) !== 0 ) && strlen( $line ) > 0;
 				}
 			);
 
-			if ( !empty( $sigs ) ) {
+			if ( !empty( $file ) && !empty( $sigs ) ) {
 				$FS->putFileContent( $file, implode( "\n", $sigs ), true );
 			}
 		}
-		return $sigs;
+
+		return is_array( $sigs ) ? $sigs : [];
 	}
 
 	public function isMalAutoRepairSurgical() :bool {
@@ -104,6 +104,10 @@ class Options extends BaseShield\Options {
 
 	public function isMalUseNetworkIntelligence() :bool {
 		return $this->getMalConfidenceBoundary() > 0;
+	}
+
+	public function isAutoFilterResults() :bool {
+		return $this->isOpt( 'auto_filter_results', 'Y' );
 	}
 
 	public function isPtgReinstallLinks() :bool {
@@ -142,48 +146,50 @@ class Options extends BaseShield\Options {
 	}
 
 	/**
-	 * @param string $sScan
-	 * @param bool   $bAdd
-	 * @return Options
+	 * @return $this
 	 */
-	public function addRemoveScanToBuild( $sScan, $bAdd = true ) {
-		$aS = $this->getScansToBuild();
-		if ( $bAdd ) {
-			$aS[ $sScan ] = Services::Request()->ts();
+	public function addRemoveScanToBuild( string $scan, bool $addScan = true ) {
+		$scans = $this->getScansToBuild();
+		if ( $addScan ) {
+			$scans[ $scan ] = Services::Request()->ts();
 		}
-		elseif ( isset( $aS[ $sScan ] ) ) {
-			unset( $aS[ $sScan ] );
+		else {
+			unset( $scans[ $scan ] );
 		}
-		return $this->setScansToBuild( $aS );
+		return $this->setScansToBuild( $scans );
 	}
 
 	/**
 	 * @return int[] - keys are scan slugs
 	 */
-	public function getScansToBuild() {
-		$aS = $this->getOpt( 'scans_to_build', [] );
-		if ( !is_array( $aS ) ) {
-			$aS = [];
+	public function getScansToBuild() :array {
+		$toBuild = $this->getOpt( 'scans_to_build', [] );
+		if ( !is_array( $toBuild ) ) {
+			$toBuild = [];
 		}
-		if ( !empty( $aS ) ) {
+		if ( !empty( $toBuild ) ) {
+			$wasCount = count( $toBuild );
 			// We keep scans "to build" for no longer than a minute to prevent indefinite halting with failed Async HTTP.
-			$aS = array_filter( $aS,
-				function ( $nToBuildAt ) {
-					return is_int( $nToBuildAt )
-						   && Services::Request()->carbon()->subMinute()->timestamp < $nToBuildAt;
+			$toBuild = array_filter( $toBuild,
+				function ( $toBuildAt ) {
+					return is_int( $toBuildAt )
+						   && Services::Request()->carbon()->subMinute()->timestamp < $toBuildAt;
 				}
 			);
-			$this->setScansToBuild( $aS );
+			if ( $wasCount !== count( $toBuild ) ) {
+				$this->setScansToBuild( $toBuild );
+			}
 		}
-		return $aS;
+		return $toBuild;
 	}
 
 	/**
-	 * @param array $aScans
-	 * @return Options
+	 * @return $this
 	 */
-	public function setScansToBuild( $aScans ) {
-		return $this->setOpt( 'scans_to_build', array_intersect_key( $aScans, array_flip( $this->getScanSlugs() ) ) );
+	public function setScansToBuild( array $scans ) {
+		$this->setOpt( 'scans_to_build', array_intersect_key( $scans, array_flip( $this->getScanSlugs() ) ) );
+		$this->getMod()->saveModOptions();
+		return $this;
 	}
 
 	/**
@@ -192,15 +198,15 @@ class Options extends BaseShield\Options {
 	 * @return array[]
 	 */
 	public function getUfcScanDirectories() :array {
-		$aDirs = [
+		$dirs = [
 			path_join( ABSPATH, 'wp-admin' )    => [],
 			path_join( ABSPATH, 'wp-includes' ) => []
 		];
 
 		if ( $this->isOpt( 'ufc_scan_uploads', 'Y' ) ) { // include uploads
-			$sUploadsDir = Services::WpGeneral()->getDirUploads();
-			if ( !empty( $sUploadsDir ) ) {
-				$aDirs[ $sUploadsDir ] = [
+			$uploadsDir = Services::WpGeneral()->getDirUploads();
+			if ( !empty( $uploadsDir ) ) {
+				$dirs[ $uploadsDir ] = [
 					'php',
 					'php5',
 					'js',
@@ -208,7 +214,7 @@ class Options extends BaseShield\Options {
 			}
 		}
 
-		return $aDirs;
+		return $dirs;
 	}
 
 	/**
@@ -222,73 +228,18 @@ class Options extends BaseShield\Options {
 		return $this->getUnrecognisedFileScannerOption() === 'enabled_delete_only';
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getWcfFileExclusions() {
-		$sPattern = null;
-
-		$aExclusions = $this->getOptions()->getDef( 'wcf_exclusions' );
-		$aExclusions = is_array( $aExclusions ) ? $aExclusions : [];
-		// Flywheel specific mods
-		if ( defined( 'FLYWHEEL_PLUGIN_DIR' ) ) {
-			$aExclusions[] = 'wp-settings.php';
-			$aExclusions[] = 'wp-admin/includes/upgrade.php';
-		}
-
-		if ( is_array( $aExclusions ) && !empty( $aExclusions ) ) {
-			$aQuoted = array_map(
-				function ( $sExcl ) {
-					return preg_quote( $sExcl, '#' );
-				},
-				$aExclusions
-			);
-			$sPattern = '#('.implode( '|', $aQuoted ).')#i';
-		}
-		return $sPattern;
-	}
-
-	/**
-	 * Builds a regex-ready pattern for matching file names to exclude from scan if they're missing
-	 * @return string|null
-	 */
-	public function getWcfMissingExclusions() {
-		$sPattern = null;
-		$aExclusions = $this->getOptions()->getDef( 'wcf_exclusions_missing_only' );
-		if ( is_array( $aExclusions ) && !empty( $aExclusions ) ) {
-			$aQuoted = array_map(
-				function ( $sExcl ) {
-					return preg_quote( $sExcl, '#' );
-				},
-				$aExclusions
-			);
-			$sPattern = '#('.implode( '|', $aQuoted ).')#i';
-		}
-		return $sPattern;
-	}
-
 	public function isScanCron() :bool {
 		return (bool)$this->getOpt( 'is_scan_cron' );
 	}
 
-	/**
-	 * @param bool $bIsScanCron
-	 * @return $this
-	 */
-	public function setIsScanCron( $bIsScanCron ) {
-		return $this->setOpt( 'is_scan_cron', $bIsScanCron );
+	public function isEnabledAutoFileScanner() :bool {
+		return $this->isOpt( 'enable_core_file_integrity_scan', 'Y' );
 	}
 
 	/**
-	 * @param array $aFP
 	 * @return $this
 	 */
-	public function setMalFalsePositiveReports( array $aFP ) {
-		return $this->setOpt( 'mal_fp_reports', array_filter(
-			$aFP,
-			function ( $nTS ) {
-				return $nTS > Services::Request()->carbon()->subMonth()->timestamp;
-			}
-		) );
+	public function setIsScanCron( bool $isCron ) {
+		return $this->setOpt( 'is_scan_cron', $isCron );
 	}
 }

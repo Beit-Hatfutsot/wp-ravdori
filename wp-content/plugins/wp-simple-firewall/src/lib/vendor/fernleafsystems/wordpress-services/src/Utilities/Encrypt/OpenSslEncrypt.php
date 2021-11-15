@@ -9,124 +9,144 @@ namespace FernleafSystems\Wordpress\Services\Utilities\Encrypt;
 class OpenSslEncrypt {
 
 	/**
-	 * @param array $aArgs
+	 * @param array $args
 	 * @return array - keys are private & public as pem strings
 	 * @throws \Exception
 	 */
-	public function createNewPrivatePublicKeyPair( $aArgs = [] ) {
-		$rKey = openssl_pkey_new( $aArgs );
+	public function createNewPrivatePublicKeyPair( $args = [] ) {
+		$rKey = openssl_pkey_new( $args );
 		if ( empty( $rKey ) || !is_resource( $rKey ) ) {
 			throw new \Exception( 'Could not generate new private key' );
 		}
-		if ( !openssl_pkey_export( $rKey, $sPriv ) || empty( $sPriv ) ) {
+		if ( !openssl_pkey_export( $rKey, $private ) || empty( $private ) ) {
 			throw new \Exception( 'Could not export new private key' );
 		}
-		$aPub = openssl_pkey_get_details( $rKey );
-		if ( empty( $aPub ) || empty( $aPub[ 'key' ] ) ) {
+		$pub = openssl_pkey_get_details( $rKey );
+		if ( empty( $pub ) || empty( $pub[ 'key' ] ) ) {
 			throw new \Exception( 'Could not generate public key from private' );
 		}
 		return [
-			'private' => $sPriv,
-			'public'  => $aPub[ 'key' ],
+			'private' => $private,
+			'public'  => $pub[ 'key' ],
 		];
 	}
 
 	/**
-	 * @param string $sKey
+	 * @param string $key
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function getPublicKeyFromPrivateKey( $sKey ) {
-		$rKey = openssl_pkey_get_private( $sKey );
+	public function getPublicKeyFromPrivateKey( $key ) {
+		$rKey = openssl_pkey_get_private( $key );
 		if ( empty( $rKey ) || !is_resource( $rKey ) ) {
 			throw new \Exception( 'Could not build private key' );
 		}
-		$aPub = openssl_pkey_get_details( $rKey );
-		if ( empty( $aPub ) || empty( $aPub[ 'key' ] ) ) {
+		$public = openssl_pkey_get_details( $rKey );
+		if ( empty( $public ) || empty( $public[ 'key' ] ) ) {
 			throw new \Exception( 'Could not generate public key from private' );
 		}
-		return $aPub[ 'key' ];
+		return $public[ 'key' ];
 	}
 
 	/**
-	 * @param OpenSslEncryptVo $oVo
-	 * @param string           $sPrivateKey
-	 * @return bool
-	 */
-	public function openDataVo( $oVo, $sPrivateKey ) {
-		return $this->openData( $oVo->sealed_data, $oVo->sealed_password, $sPrivateKey );
-	}
-
-	/**
-	 * @param string $sSealedData
-	 * @param string $sSealedPassword
-	 * @param string $sPrivateKey
+	 * @param OpenSslEncryptVo $VO
+	 * @param string           $privateKey
 	 * @return string|false
 	 */
-	public function openData( $sSealedData, $sSealedPassword, $sPrivateKey ) {
-		$bResult = openssl_open( $sSealedData, $sOpenedData, $sSealedPassword, $sPrivateKey );
-		return $bResult ? $sOpenedData : false;
+	public function openDataVo( OpenSslEncryptVo $VO, string $privateKey ) {
+		$success = \openssl_open(
+			$VO->sealed_data,
+			$openedData,
+			$VO->sealed_password,
+			$privateKey,
+			$VO->cipher
+		);
+		return $success ? $openedData : false;
+	}
+
+	/**
+	 * @param string $sealedData
+	 * @param string $sealedPassword
+	 * @param string $privateKey
+	 * @return string|false
+	 * @deprecated
+	 */
+	public function openData( $sealedData, $sealedPassword, $privateKey, string $cipher = 'rc4' ) {
+		$success = \openssl_open( $sealedData, $openedData, $sealedPassword, $privateKey, $cipher );
+		return $success ? $openedData : false;
 	}
 
 	/**
 	 * @param mixed  $mDataToEncrypt
-	 * @param string $sPublicKey
+	 * @param string $publicKey
 	 * @return OpenSslEncryptVo
 	 */
-	public function sealData( $mDataToEncrypt, $sPublicKey ) {
+	public function sealData( $mDataToEncrypt, $publicKey, $cipher = 'rc4' ) {
 
-		$oVo = $this->getStandardEncryptResponse();
+		$VO = $this->getStandardEncryptResponse();
 
 		if ( empty( $mDataToEncrypt ) ) {
-			$oVo->success = false;
-			$oVo->message = 'Data to encrypt was empty';
-			return $oVo;
+			$VO->success = false;
+			$VO->message = 'Data to encrypt was empty';
+			return $VO;
 		}
 		elseif ( !$this->isSupportedOpenSslDataEncryption() ) {
-			$oVo->success = false;
-			$oVo->message = 'Does not support OpenSSL data encryption';
+			$VO->success = false;
+			$VO->message = 'Does not support OpenSSL data encryption';
+		}
+		elseif ( !$this->hasCipherAlgo( $cipher ) ) {
+			$VO->message = sprintf( 'Defaulting to RC4 as cipher %s is not available', $cipher );
+			$cipher = 'rc4';
 		}
 		else {
-			$oVo->success = true;
+			$VO->success = true;
 		}
 
 		// If at this stage we're not 'success' we return it.
-		if ( !$oVo->success ) {
-			return $oVo;
+		if ( !$VO->success ) {
+			return $VO;
 		}
 
-		if ( !is_string( $mDataToEncrypt ) ) {
-			$mDataToEncrypt = json_encode( $mDataToEncrypt );
-			$oVo->json_encoded = true;
+		$VO->cipher = $cipher;
+
+		if ( is_string( $mDataToEncrypt ) ) {
+			$finalDataToEncrypt = $mDataToEncrypt;
+			$VO->json_encoded = false;
 		}
 		else {
-			$oVo->json_encoded = false;
+			$finalDataToEncrypt = json_encode( $mDataToEncrypt );
+			$VO->json_encoded = true;
 		}
 
-		$aPasswordKeys = [];
-		$nResult = openssl_seal( $mDataToEncrypt, $sEncryptedData, $aPasswordKeys, [ $sPublicKey ] );
+		$passwordKeys = [];
+		$mResult = openssl_seal(
+			$finalDataToEncrypt,
+			$encryptedData,
+			$passwordKeys,
+			[ $publicKey ],
+			$cipher
+		);
 
-		$oVo->result = $nResult;
-		$oVo->success = is_int( $nResult ) && $nResult > 0 && !is_null( $sEncryptedData );
-		if ( $oVo->success ) {
-			$oVo->sealed_data = $sEncryptedData;
-			$oVo->sealed_password = $aPasswordKeys[ 0 ];
+		$VO->result = $mResult;
+		$VO->success = is_int( $mResult ) && $mResult > 0 && !is_null( $encryptedData );
+		if ( $VO->success ) {
+			$VO->sealed_data = $encryptedData;
+			$VO->sealed_password = $passwordKeys[ 0 ];
 		}
 
-		return $oVo;
+		if ( $cipher !== 'rc4' ) {
+			// we do a backup seal as rc4 while we determine availability of other cipers
+			$VO->rc4_fallback = $this->sealData( $mDataToEncrypt, $publicKey, 'rc4' );
+		}
+
+		return $VO;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSupportedOpenSsl() {
+	public function isSupportedOpenSsl() :bool {
 		return extension_loaded( 'openssl' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSupportedOpenSslSign() {
+	public function isSupportedOpenSslSign() :bool {
 		return function_exists( 'base64_decode' )
 			   && extension_loaded( 'openssl' )
 			   && function_exists( 'openssl_sign' )
@@ -134,43 +154,42 @@ class OpenSslEncrypt {
 			   && defined( 'OPENSSL_ALGO_SHA1' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSupportedOpenSslDataEncryption() {
-		$bSupported = $this->isSupportedOpenSsl();
-		$aFunc = [
+	public function isSupportedOpenSslDataEncryption() :bool {
+		$supported = $this->isSupportedOpenSsl();
+		$funcs = [
 			'openssl_seal',
 			'openssl_open',
 			'openssl_pkey_new',
 			'openssl_pkey_export',
 			'openssl_pkey_get_details',
-			'openssl_pkey_get_private'
+			'openssl_pkey_get_private',
+			'openssl_get_cipher_methods',
 		];
-		foreach ( $aFunc as $sFunc ) {
-			$bSupported = $bSupported && function_exists( $sFunc );
+		foreach ( $funcs as $func ) {
+			$supported = $supported && function_exists( $func );
 		}
-		return $bSupported;
+		return $supported;
 	}
 
 	/**
-	 * @param string $sVerificationCode
-	 * @param string $sSignature
-	 * @param string $sPublicKey
+	 * @param string $verificationCode
+	 * @param string $signature
+	 * @param string $publicKey
 	 * @return int                    1: Success; 0: Failure; -1: Error; -2: Not supported
 	 */
-	public function verifySslSignature( $sVerificationCode, $sSignature, $sPublicKey ) {
-		$nResult = -2;
+	public function verifySslSignature( $verificationCode, $signature, $publicKey ) {
+		$result = -2;
 		if ( $this->isSupportedOpenSslSign() ) {
-			$nResult = openssl_verify( $sVerificationCode, $sSignature, $sPublicKey );
+			$result = openssl_verify( $verificationCode, $signature, $publicKey );
 		}
-		return $nResult;
+		return $result;
 	}
 
-	/**
-	 * @return OpenSslEncryptVo
-	 */
-	protected function getStandardEncryptResponse() {
+	protected function getStandardEncryptResponse() :OpenSslEncryptVo {
 		return new OpenSslEncryptVo();
+	}
+
+	public function hasCipherAlgo( string $cipher ) :bool {
+		return in_array( strtolower( $cipher ), array_map( 'strtolower', openssl_get_cipher_methods( true ) ) );
 	}
 }

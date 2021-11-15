@@ -4,37 +4,33 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Wp;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class Files
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Wp
- */
 class Files {
 
 	/**
-	 * @param string $sFilePath
+	 * @param string $filePath
 	 * @return string|null
 	 * @throws \InvalidArgumentException
 	 */
-	public function getOriginalFileFromVcs( $sFilePath ) {
-		if ( !Services\Services::CoreFileHashes()->isCoreFile( $sFilePath ) ) {
+	public function getOriginalFileFromVcs( $filePath ) {
+		if ( !Services\Services::CoreFileHashes()->isCoreFile( $filePath ) ) {
 			throw new \InvalidArgumentException( 'File provided is not actually a core file.' );
 		}
 		return ( new Repo() )->downloadFromVcs(
-			Services\Services::WpFs()->getPathRelativeToAbsPath( $sFilePath )
+			Services\Services::WpFs()->getPathRelativeToAbsPath( $filePath )
 		);
 	}
 
 	/**
-	 * @param string $sFilePath
+	 * @param string $filePath
 	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function replaceFileFromVcs( $sFilePath ) {
-		$sTmp = $this->getOriginalFileFromVcs( $sFilePath );
+	public function replaceFileFromVcs( $filePath ) {
+		$sTmp = $this->getOriginalFileFromVcs( $filePath );
 		return !empty( $sTmp )
 			   && Services\Services::WpFs()->move(
 				$sTmp,
-				Services\Services::CoreFileHashes()->getAbsolutePathFromFragment( $sFilePath )
+				Services\Services::CoreFileHashes()->getAbsolutePathFromFragment( $filePath )
 			);
 	}
 }

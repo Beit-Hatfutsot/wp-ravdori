@@ -23,6 +23,7 @@ use FernleafSystems\Wordpress\Services\Utilities\WpOrg\Plugin;
  * @property string                  $file
  * @property bool                    $svn_uses_tags
  * @property Plugin\VOs\PluginInfoVO $wp_info
+ * @deprecated
  */
 class WpPluginVo extends WpBaseVo {
 
@@ -117,7 +118,7 @@ class WpPluginVo extends WpBaseVo {
 				->setWorkingSlug( $this->slug )
 				->getInfo();
 		}
-		catch ( \Exception $oE ) {
+		catch ( \Exception $e ) {
 			$oInfo = false;
 		}
 		return $oInfo;

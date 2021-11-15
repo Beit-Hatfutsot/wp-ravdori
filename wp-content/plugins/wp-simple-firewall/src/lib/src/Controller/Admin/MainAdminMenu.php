@@ -27,14 +27,13 @@ class MainAdminMenu {
 
 	private function createAdminMenu() {
 		$con = $this->getCon();
-
 		$menu = $con->cfg->menu;
 		if ( $menu[ 'top_level' ] ) {
 
 			$labels = $con->getLabels();
-			$sMenuTitle = empty( $labels[ 'MenuTitle' ] ) ? $menu[ 'title' ] : $labels[ 'MenuTitle' ];
-			if ( is_null( $sMenuTitle ) ) {
-				$sMenuTitle = $con->getHumanName();
+			$menuTitle = empty( $labels[ 'MenuTitle' ] ) ? $menu[ 'title' ] : $labels[ 'MenuTitle' ];
+			if ( is_null( $menuTitle ) ) {
+				$menuTitle = $con->getHumanName();
 			}
 
 			$sMenuIcon = $con->urls->forImage( $menu[ 'icon_image' ] );
@@ -43,7 +42,7 @@ class MainAdminMenu {
 			$parentMenuID = $con->getPluginPrefix();
 			add_menu_page(
 				$con->getHumanName(),
-				$sMenuTitle,
+				$menuTitle,
 				$con->getBasePermissions(),
 				$parentMenuID,
 				[ $this, 'onDisplayTopMenu' ],
@@ -51,23 +50,8 @@ class MainAdminMenu {
 			);
 
 			if ( $menu[ 'has_submenu' ] ) {
-
-				$menuItems = apply_filters( $con->prefix( 'submenu_items' ), [] );
-				if ( !empty( $menuItems ) ) {
-					foreach ( $menuItems as $sMenuTitle => $aMenu ) {
-						list( $sMenuItemText, $sMenuItemId, $aMenuCallBack, $bShowItem ) = $aMenu;
-						add_submenu_page(
-							$bShowItem ? $parentMenuID : null,
-							$sMenuTitle,
-							$sMenuItemText,
-							$con->getBasePermissions(),
-							$sMenuItemId,
-							$aMenuCallBack
-						);
-					}
-				}
+				do_action( $con->prefix( 'admin_submenu' ) );
 			}
-
 			if ( $menu[ 'do_submenu_fix' ] ) {
 				$this->fixSubmenu();
 			}

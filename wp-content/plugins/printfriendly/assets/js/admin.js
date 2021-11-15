@@ -1,15 +1,30 @@
 // Throughout the admin I chose to use slow animations to make it clear that stuff is being hidden or shown depending on settings.
-(function ($, config) {
+(function ($, pf_config) {
     $(document).ready(function() {
         initAll();
     });
 
+    $(window).on('load', function() {
+        // load the tab from where the settings was saved.
+        $('#pf-tabs .pf-bu-tabs li[data-id="' + $('#current-tab').val() + '"]').trigger('click');
+    });
+
     function initAll() {
         $('#pf-tabs').tabs({
+            active: $('#current-tab').val(),
             activate: function( event, ui ) {
                 $(ui.oldTab).removeClass('pf-bu-is-active');
                 $(ui.newTab).addClass('pf-bu-is-active');
+
+                // set the current tab so that when the page is reloaded after save
+                // we know which tab to activate
+                $('#current-tab').val($(ui.newTab).attr('data-id'));
             }
+        });
+
+        $('.pf-accordion').accordion({
+            collapsible: true,
+            active: false
         });
 
         var clipboard1 = new ClipboardJS('.pf-clipboard');
@@ -23,6 +38,8 @@
         initMediaUpload();
 
         initCategories();
+
+        initCustomCssSelectors();
     }
 
     function initCategories() {
@@ -37,13 +54,13 @@
 
             var button = $(this),
             pf_uploader = wp.media({
-                title: config.i10n.upload_window_title,
+                title: pf_config.i10n.upload_window_title,
                 library : {
                     uploadedTo : wp.media.view.settings.post.id,
                     type : 'image'
                 },
                 button: {
-                    text: config.i10n.upload_window_button_title
+                    text: pf_config.i10n.upload_window_button_title
                 },
                 multiple: false
             }).on('select', function() {
@@ -192,7 +209,7 @@
                     preview.html('').append(img);
                   });
                   img.on('error', function(){
-                    error.html('<div class="error settings-error"><p><strong>' + config.i10n.invalid_image_url + '</strong></p></div>');
+                    error.html('<div class="error settings-error"><p><strong>' + pf_config.i10n.invalid_image_url + '</strong></p></div>');
                   });
                   img.attr('src',imgUrl);
                 }
@@ -304,6 +321,34 @@
             $("#custom-text-rb").prop('checked', true);
             $("#custom-text-rb").trigger("change");
           });
+
     }
 
-})(jQuery, config);
+    function initCustomCssSelectors() {
+        $('.pf-algo-usage-' + $("[name='printfriendly_option[pf_algo]']:checked").val()).show();
+
+        $("[name='printfriendly_option[pf_algo]']").on('click', function(e){
+            $('.pf-algo-usage').hide();
+            $('.pf-algo-usage-' + $(this).val()).show();
+        });
+
+        $('.pf-algo-usage-css input[type="text"], input[name="printfriendly_option[pf_algo_css_content]"]').on('keyup change click', function(e){
+            $selectors = '';
+            $('.pf-algo-usage-css input[type="text"]').each(function(index, element){
+                if($(element).val().trim() !== ''){
+                    $selectors += $(element).attr('data-selector-name') + '=' + $(element).val() + ';';
+                }
+            });
+
+            $fallback = $('input[name="printfriendly_option[pf_algo_css_content]"]:checked').val();
+            $template = $('.pf-algo-usage-css').attr('data-tag-template');
+            $template = $template.replace('#1', $selectors).replace('#2', $fallback);
+            var encodedStr = $template.replace(/[\u00A0-\u9999<>\&]/g, function(i) {
+               return '&#'+i.charCodeAt(0)+';';
+            });
+            $('.pf-custom-css-code').html(encodedStr);
+            $('.pf-custom-css-code-snippet').attr('data-clipboard-text', $template);
+        });
+    }
+
+})(jQuery, pf_config);

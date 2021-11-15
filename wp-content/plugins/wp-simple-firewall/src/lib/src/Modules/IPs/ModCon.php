@@ -4,6 +4,7 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\IPs;
 
 use FernleafSystems\Wordpress\Plugin\Shield;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\BaseShield;
+use FernleafSystems\Wordpress\Plugin\Shield\Utilities\Tool\DbTableExport;
 use FernleafSystems\Wordpress\Services\Services;
 
 class ModCon extends BaseShield\ModCon {
@@ -22,6 +23,19 @@ class ModCon extends BaseShield\ModCon {
 	 */
 	private $oBlacklistHandler;
 
+	/**
+	 * @var Lib\Bots\BotSignalsController
+	 */
+	private $botSignalsCon;
+
+	public function getBotSignalsController() :Lib\Bots\BotSignalsController {
+		if ( !isset( $this->botSignalsCon ) ) {
+			$this->botSignalsCon = ( new Lib\Bots\BotSignalsController() )
+				->setMod( $this );
+		}
+		return $this->botSignalsCon;
+	}
+
 	public function getBlacklistHandler() :Lib\BlacklistHandler {
 		if ( !isset( $this->oBlacklistHandler ) ) {
 			$this->oBlacklistHandler = ( new Lib\BlacklistHandler() )->setMod( $this );
@@ -29,8 +43,13 @@ class ModCon extends BaseShield\ModCon {
 		return $this->oBlacklistHandler;
 	}
 
+	public function getDbH_BotSignal() :DB\BotSignal\Ops\Handler {
+		$this->getCon()->getModule_Data()->getDbH_IPs();
+		return $this->getDbHandler()->loadDbH( 'botsignal' );
+	}
+
 	public function getDbHandler_IPs() :Shield\Databases\IPs\Handler {
-		return $this->getDbH( 'ips' );
+		return $this->getDbH( 'ip_lists' );
 	}
 
 	/**
@@ -43,6 +62,16 @@ class ModCon extends BaseShield\ModCon {
 			   && ( $this->getDbHandler_IPs() instanceof Shield\Databases\IPs\Handler )
 			   && $this->getDbHandler_IPs()->isReady()
 			   && parent::isReadyToExecute();
+	}
+
+	protected function handleFileDownload( string $downloadID ) {
+		switch ( $downloadID ) {
+			case 'db_ip':
+				( new DbTableExport() )
+					->setDbHandler( $this->getDbHandler_IPs() )
+					->toCSV();
+				break;
+		}
 	}
 
 	protected function preProcessOptions() {
@@ -60,6 +89,30 @@ class ModCon extends BaseShield\ModCon {
 		$this->cleanPathWhitelist();
 	}
 
+	private function cleanPathWhitelist() {
+		/** @var Options $opts */
+		$opts = $this->getOptions();
+
+		$specialPaths = array_map(
+			function ( $url ) {
+				return (string)parse_url( $url, PHP_URL_PATH );
+			},
+			[
+				Services::WpGeneral()->getHomeUrl(),
+				Services::WpGeneral()->getWpUrl(),
+			]
+		);
+
+		$values = $opts->getOpt( 'request_whitelist', [] );
+		$opts->setOpt( 'request_whitelist',
+			( new Shield\Modules\Base\Options\WildCardOptions() )->clean(
+				is_array( $values ) ? $values : [],
+				$specialPaths,
+				Shield\Modules\Base\Options\WildCardOptions::URL_PATH
+			)
+		);
+	}
+
 	public function canLinkCheese() :bool {
 		$FS = Services::WpFs();
 		$WP = Services::WpGeneral();
@@ -67,32 +120,6 @@ class ModCon extends BaseShield\ModCon {
 				   !== trim( (string)parse_url( $WP->getWpUrl(), PHP_URL_PATH ), '/' );
 		return !$FS->exists( path_join( ABSPATH, 'robots.txt' ) )
 			   && ( !$isSplit || !$FS->exists( path_join( dirname( ABSPATH ), 'robots.txt' ) ) );
-	}
-
-	private function cleanPathWhitelist() {
-		/** @var Options $opts */
-		$opts = $this->getOptions();
-		$opts->setOpt( 'request_whitelist', array_unique( array_filter( array_map(
-			function ( $rule ) {
-				$rule = strtolower( trim( $rule ) );
-				if ( !empty( $rule ) ) {
-					$toCheck = array_unique( [
-						(string)parse_url( Services::WpGeneral()->getHomeUrl(), PHP_URL_PATH ),
-						(string)parse_url( Services::WpGeneral()->getWpUrl(), PHP_URL_PATH ),
-					] );
-					$regEx = sprintf( '#^%s$#i', str_replace( 'STAR', '.*', preg_quote( str_replace( '*', 'STAR', $rule ), '#' ) ) );
-					foreach ( $toCheck as $path ) {
-						$slashPath = rtrim( $path, '/' ).'/';
-						if ( preg_match( $regEx, $path ) || preg_match( $regEx, $slashPath ) ) {
-							$rule = false;
-							break;
-						}
-					}
-				}
-				return $rule;
-			},
-			$opts->getOpt( 'request_whitelist', [] ) // do not use Options getter as it formats into regex
-		) ) ) );
 	}
 
 	public function loadOffenseTracker() :Lib\OffenseTracker {
@@ -118,6 +145,7 @@ class ModCon extends BaseShield\ModCon {
 					__( 'Warning', 'wp-simple-firewall' ),
 					__( 'You have %s remaining offenses(s) against this site and then your IP address will be completely blocked.', 'wp-simple-firewall' )
 					.'<br/><strong>'.__( 'Seriously, stop repeating what you are doing or you will be locked out.', 'wp-simple-firewall' ).'</strong>'
+					.sprintf( ' [<a href="%s" target="_blank">%s</a>]', 'https://shsec.io/shieldcantaccess', __( 'More Info', 'wp-simple-firewall' ) )
 				);
 				break;
 
@@ -126,5 +154,22 @@ class ModCon extends BaseShield\ModCon {
 				break;
 		}
 		return $text;
+	}
+
+	/**
+	 * @deprecated 12.1
+	 */
+	protected function cleanupDatabases() {
+		$dbhIPs = $this->getDbHandler_IPs();
+		if ( $dbhIPs->isReady() ) {
+			$dbhIPs->autoCleanDb();
+		}
+		$this->getDbH_BotSignal()
+			 ->getQueryDeleter()
+			 ->addWhereOlderThan(
+				 Services::Request()->carbon()->subWeeks( 1 )->timestamp,
+				 'updated_at'
+			 )
+			 ->query();
 	}
 }

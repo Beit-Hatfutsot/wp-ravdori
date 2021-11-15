@@ -6,6 +6,10 @@ use FernleafSystems\Wordpress\Plugin\Shield\Modules\BaseShield;
 
 class Options extends BaseShield\Options {
 
+	public function getBotProtectionLocations() :array {
+		return is_array( $this->getOpt( 'bot_protection_locations' ) ) ? $this->getOpt( 'bot_protection_locations' ) : [];
+	}
+
 	public function getLoginIntentMinutes() :int {
 		return (int)max( 1, apply_filters(
 			$this->getCon()->prefix( 'login_intent_timeout' ),
@@ -26,10 +30,7 @@ class Options extends BaseShield\Options {
 		return (string)$this->getOpt( 'rename_wplogin_path', '' );
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getEmail2FaRoles() {
+	public function getEmail2FaRoles() :array {
 		/** @var ModCon $mod */
 		$mod = $this->getMod();
 		$roles = $this->getOpt( 'two_factor_auth_user_roles', [] );
@@ -76,7 +77,12 @@ class Options extends BaseShield\Options {
 	}
 
 	public function isEnabledGaspCheck() :bool {
-		return $this->isOpt( 'enable_login_gasp_check', 'Y' );
+		return $this->isOpt( 'enable_login_gasp_check', 'Y' )
+			   && !$this->isEnabledAntiBot();
+	}
+
+	public function isEnabledAntiBot() :bool {
+		return $this->isOpt( 'enable_antibot_check', 'Y' );
 	}
 
 	public function isEnabledEmailAuthAnyUserSet() :bool {
@@ -103,17 +109,11 @@ class Options extends BaseShield\Options {
 		return $this->isProtect( 'login' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isProtectLostPassword() {
+	public function isProtectLostPassword() :bool {
 		return $this->isProtect( 'password' );
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isProtectRegister() {
+	public function isProtectRegister() :bool {
 		return $this->isProtect( 'register' );
 	}
 
@@ -121,9 +121,9 @@ class Options extends BaseShield\Options {
 	 * @param string $location - see config for keys, e.g. login, register, password, checkout_woo
 	 * @return bool
 	 */
-	public function isProtect( $location ) {
-		$aLocs = $this->getOpt( 'bot_protection_locations' );
-		return in_array( $location, is_array( $aLocs ) ? $aLocs : $this->getOptDefault( 'bot_protection_locations' ) );
+	public function isProtect( $location ) :bool {
+		$locs = $this->getOpt( 'bot_protection_locations' );
+		return in_array( $location, is_array( $locs ) ? $locs : $this->getOptDefault( 'bot_protection_locations' ) );
 	}
 
 	public function isUseLoginIntentPage() :bool {

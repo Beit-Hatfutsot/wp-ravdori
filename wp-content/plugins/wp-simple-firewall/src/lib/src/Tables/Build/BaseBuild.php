@@ -92,11 +92,11 @@ class BaseBuild {
 
 	/**
 	 * Override this to filter entries that cannot be filtered using SQL WHERE
-	 * @param array[] $aEntries
+	 * @param array[] $entries
 	 * @return array[]
 	 */
-	protected function postSelectEntriesFilter( $aEntries ) {
-		return $aEntries;
+	protected function postSelectEntriesFilter( $entries ) {
+		return $entries;
 	}
 
 	/**
@@ -157,18 +157,12 @@ class BaseBuild {
 		return $this->aBuildParams;
 	}
 
-	/**
-	 * @return array
-	 */
-	private function getFormParams() {
-		parse_str( Services::Request()->post( 'form_params', '' ), $aFormParams );
-		return Services::DataManipulation()->arrayMapRecursive( $aFormParams, 'trim' );
+	private function getFormParams() :array {
+		parse_str( Services::Request()->post( 'form_params', '' ), $formParams );
+		return Services::DataManipulation()->arrayMapRecursive( $formParams, 'trim' );
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getParamDefaults() {
+	protected function getParamDefaults() :array {
 		return array_merge(
 			[
 				'paged'   => 1,

@@ -2,60 +2,35 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Scan\Controller;
 
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
+use FernleafSystems\Wordpress\Plugin\Shield\Crons\PluginCronsConsumer;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\DB\ResultItems;
 use FernleafSystems\Wordpress\Plugin\Shield\Scans;
-use FernleafSystems\Wordpress\Services\Services;
-use FernleafSystems\Wordpress\Services\Utilities\WpOrg;
 
-class Ptg extends BaseForAssets {
+/**
+ * @deprecated 13.0
+ */
+class Ptg extends BaseForFiles {
 
 	const SCAN_SLUG = 'ptg';
+	use PluginCronsConsumer;
 
 	protected function run() {
 		parent::run();
-		( new HackGuard\Scan\Utilities\PtgAddReinstallLinks() )
-			->setScanController( $this )
-			->execute();
+	}
+
+	public function onWpLoaded() {
+	}
+
+	public function onModuleShutdown() {
+	}
+
+	public function runHourlyCron() {
 	}
 
 	/**
-	 * @return Scans\Ptg\ResultsSet
+	 * @param Scans\Ptg\ResultItem $item
 	 */
-	protected function getItemsToAutoRepair() {
-		/** @var HackGuard\Options $opts */
-		$opts = $this->getOptions();
-
-		/** @var Scans\Ptg\ResultsSet $results */
-		$results = parent::getItemsToAutoRepair();
-
-		if ( !$opts->isRepairFilePlugin() || !$opts->isRepairFileTheme() ) {
-			if ( $opts->isRepairFileTheme() ) {
-				$results = $results->getResultsForThemesContext();
-			}
-			elseif ( $opts->isRepairFilePlugin() ) {
-				$results = $results->getResultsForPluginsContext();
-			}
-		}
-
-		return $results;
-	}
-
-	public function isCronAutoRepair() :bool {
-		/** @var HackGuard\Options $opts */
-		$opts = $this->getOptions();
-		return $opts->isRepairFilePlugin() || $opts->isRepairFileTheme();
-	}
-
-	/**
-	 * @param Scans\Mal\ResultItem $item
-	 * @return bool
-	 */
-	protected function isResultItemStale( $item ) :bool {
-		$asset = ( new WpOrg\Plugin\Files() )->findPluginFromFile( $item->path_full );
-		if ( empty( $asset ) ) {
-			$asset = ( new WpOrg\Theme\Files() )->findThemeFromFile( $item->path_full );
-		}
-		return empty( $asset );
+	public function cleanStaleResultItem( $item ) {
 	}
 
 	/**
@@ -65,42 +40,17 @@ class Ptg extends BaseForAssets {
 		return new Scans\Ptg\Utilities\ItemActionHandler();
 	}
 
-	public function actionPluginReinstall( string $file ) :bool {
-		$success = false;
-		$WPP = Services::WpPlugins();
-		$plugin = $WPP->getPluginAsVo( $file );
-		if ( $plugin->isWpOrg() && $WPP->reinstall( $plugin->file ) ) {
-			try {
-				( new HackGuard\Lib\Snapshots\StoreAction\Build() )
-					->setMod( $this->getMod() )
-					->setAsset( $plugin )
-					->run();
-				$success = true;
-			}
-			catch ( \Exception $e ) {
-			}
-		}
-		return $success;
-	}
-
-	public function isEnabled() :bool {
-		return $this->getOptions()->isOpt( 'ptg_enable', 'Y' ) && $this->getOptions()->isOptReqsMet( 'ptg_enable' );
-	}
-
-	public function isScanningAvailable() :bool {
-		return parent::isScanningAvailable()
-			   && $this->getOptions()->isOptReqsMet( 'ptg_enable' )
-			   && $this->getMod()->canCacheDirWrite();
+	public function isReady() :bool {
+		return parent::isReady() && $this->getCon()->hasCacheDir();
 	}
 
 	/**
-	 * Since we can't track site assets while the plugin is inactive, our snapshots and results
-	 * are unreliable once the plugin has been deactivated.
+	 * @return Scans\Ptg\ScanActionVO
 	 */
-	public function purge() {
-		parent::purge();
-		( new HackGuard\Lib\Snapshots\StoreAction\DeleteAll() )
-			->setMod( $this->getMod() )
-			->run();
+	public function buildScanAction() {
+		return ( new Scans\Ptg\BuildScanAction() )
+			->setScanController( $this )
+			->build()
+			->getScanActionVO();
 	}
 }

@@ -3,7 +3,7 @@
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\SecurityAdmin\WpCli;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\WpCli\BaseWpCliCmd;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\SecurityAdmin\Lib\Actions;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\SecurityAdmin\Lib\SecurityAdmin\Ops;
 use WP_CLI;
 
 class Pin extends BaseWpCliCmd {
@@ -40,7 +40,7 @@ class Pin extends BaseWpCliCmd {
 	 */
 	public function cmdPin( array $null, array $aA ) {
 
-		$newPIN = isset( $aA[ 'set' ] ) ? $aA[ 'set' ] : null;
+		$newPIN = $aA[ 'set' ] ?? null;
 		$isRemove = WP_CLI\Utils\get_flag_value( $aA, 'remove', false );
 
 		if ( !empty( $newPIN ) && !empty( $isRemove ) ) {
@@ -51,14 +51,14 @@ class Pin extends BaseWpCliCmd {
 		}
 
 		if ( $isRemove ) {
-			( new Actions\RemoveSecAdmin() )
+			( new Ops\RemoveSecAdmin() )
 				->setMod( $this->getMod() )
 				->remove();
 			WP_CLI::success( __( 'Security admin pin removed.', 'wp-simple-firewall' ) );
 		}
 		else {
 			try {
-				( new Actions\SetSecAdminPin() )
+				( new Ops\SetSecAdminPin() )
 					->setMod( $this->getMod() )
 					->run( $newPIN );
 				WP_CLI::success(

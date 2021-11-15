@@ -4,16 +4,10 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Databases\Base;
 
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\Common\AlignTableWithSchema;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\Common\TableSchema;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Class Handler
- * @package FernleafSystems\Wordpress\Plugin\Shield\Databases\Base
- */
-abstract class Handler {
-
-	use ModConsumer;
+abstract class Handler extends ExecOnceModConsumer {
 
 	/**
 	 * @var string
@@ -25,63 +19,119 @@ abstract class Handler {
 	 */
 	private $bIsReady;
 
-	public function __construct() {
+	/**
+	 * @var string
+	 */
+	protected $slug;
+
+	/**
+	 * @var TableSchema
+	 */
+	protected $schema;
+
+	public function __construct( $slug = '' ) {
+		$this->slug = $slug;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	protected function run() {
+		$this->tableInit();
+	}
+
+	/**
+	 * @return $this
+	 * @throws \Exception
+	 */
+	public function tableInit() {
+
+		$this->setupTableSchema();
+
+		if ( !$this->isReady() ) {
+
+			$this->tableCreate();
+
+			if ( !$this->isReady( true ) ) {
+				$this->tableDelete();
+				$this->tableCreate();
+			}
+		}
+		return $this;
+	}
+
+	private function setupTableSchema() :TableSchema {
+		$this->schema = new TableSchema();
+
+		$this->schema->applyFromArray( array_merge(
+			[
+				'slug'            => $this->slug,
+				'primary_key'     => 'id',
+				'cols_custom'     => [],
+				'cols_timestamps' => [],
+				'has_updated_at'  => false,
+				'col_older_than'  => 'created_at',
+				'autoexpire'      => 0,
+				'has_ip_col'      => false,
+			],
+			$this->getOptions()->getDef( 'db_table_'.$this->slug )
+		) );
+
+		$this->schema->table = $this->getTable();
+
+		return $this->schema;
 	}
 
 	public function autoCleanDb() {
 	}
 
-	/**
-	 * @param int $nAutoExpireDays
-	 * @return $this
-	 */
-	public function tableCleanExpired( $nAutoExpireDays ) {
-		$nAutoExpire = $nAutoExpireDays*DAY_IN_SECONDS;
-		if ( $nAutoExpire > 0 ) {
-			$this->deleteRowsOlderThan( Services::Request()->ts() - $nAutoExpire );
+	public function tableCleanExpired( int $autoExpireDays ) {
+		if ( $autoExpireDays > 0 ) {
+			$this->deleteRowsOlderThan( Services::Request()->ts() - $autoExpireDays*DAY_IN_SECONDS );
 		}
-		return $this;
 	}
 
 	/**
-	 * @param int $nTimeStamp
+	 * @param int $timestamp
 	 * @return bool
 	 */
-	public function deleteRowsOlderThan( $nTimeStamp ) {
-		return $this->isReady() && $this->getQueryDeleter()
-										->addWhereOlderThan( $nTimeStamp )
-										->query();
+	public function deleteRowsOlderThan( $timestamp ) :bool {
+		return $this->isReady() &&
+			   $this->getQueryDeleter()
+					->addWhereOlderThan( $timestamp, $this->getTableSchema()->col_older_than ?? 'created_at' )
+					->query();
 	}
 
 	public function getTable() :string {
 		return Services::WpDb()->getPrefix()
-			   .esc_sql( $this->getCon()->prefixOption( $this->getTableSlug() ) );
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function getTableSlug() {
-		return empty( $this->sTable ) ? $this->getDefaultTableName() : $this->sTable;
+			   .esc_sql( $this->getCon()->prefixOption( $this->getTableSchema()->slug ) );
 	}
 
 	/**
 	 * @return Insert|mixed
 	 */
 	public function getQueryInserter() {
-		$sClass = $this->getNamespace().'Insert';
+		$class = $this->getNamespace().'Insert';
 		/** @var Insert $o */
-		$o = new $sClass();
+		$o = new $class();
 		return $o->setDbH( $this );
+	}
+
+	/**
+	 * @return Iterator
+	 */
+	public function getIterator() {
+		$o = new Iterator();
+		return $o->setDbHandler( $this );
 	}
 
 	/**
 	 * @return Delete|mixed
 	 */
 	public function getQueryDeleter() {
-		$sClass = $this->getNamespace().'Delete';
+		$class = $this->getNamespace().'Delete';
 		/** @var Delete $o */
-		$o = new $sClass();
+		$o = new $class();
 		return $o->setDbH( $this );
 	}
 
@@ -89,9 +139,9 @@ abstract class Handler {
 	 * @return Select|mixed
 	 */
 	public function getQuerySelector() {
-		$sClass = $this->getNamespace().'Select';
+		$class = $this->getNamespace().'Select';
 		/** @var Select $o */
-		$o = new $sClass();
+		$o = new $class();
 		return $o->setDbH( $this )
 				 ->setResultsAsVo( true );
 	}
@@ -100,9 +150,9 @@ abstract class Handler {
 	 * @return Update|mixed
 	 */
 	public function getQueryUpdater() {
-		$sClass = $this->getNamespace().'Update';
+		$class = $this->getNamespace().'Update';
 		/** @var Update $o */
-		$o = new $sClass();
+		$o = new $class();
 		return $o->setDbH( $this );
 	}
 
@@ -110,12 +160,8 @@ abstract class Handler {
 	 * @return EntryVO|mixed
 	 */
 	public function getVo() {
-		$sClass = $this->getNamespace().'EntryVO';
-		return new $sClass();
-	}
-
-	public function hasColumn( string $col ) :bool {
-		return in_array( strtolower( $col ), $this->getTableSchema()->getColumnNames() );
+		$class = $this->getNamespace().'EntryVO';
+		return new $class();
 	}
 
 	/**
@@ -140,33 +186,13 @@ abstract class Handler {
 		return $mResult !== false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function tableExists() {
+	public function tableExists() :bool {
 		return Services::WpDb()->getIfTableExists( $this->getTable() );
 	}
 
-	/**
-	 * @return $this
-	 * @throws \Exception
-	 */
-	public function tableInit() {
-		if ( !$this->isReady() ) {
-
-			$this->tableCreate();
-
-			if ( !$this->isReady( true ) ) {
-				$this->tableDelete();
-				$this->tableCreate();
-			}
-		}
-		return $this;
-	}
-
-	public function tableTrimExcess( int $nRowsLimit ) :self {
+	public function tableTrimExcess( int $rowsLimit ) :self {
 		try {
-			$this->getQueryDeleter()->deleteExcess( $nRowsLimit );
+			$this->getQueryDeleter()->deleteExcess( $rowsLimit );
 		}
 		catch ( \Exception $e ) {
 		}
@@ -174,11 +200,11 @@ abstract class Handler {
 	}
 
 	/**
-	 * @param bool $bReTest
+	 * @param bool $reTest
 	 * @return bool
 	 */
-	public function isReady( $bReTest = false ) {
-		if ( $bReTest ) {
+	public function isReady( bool $reTest = false ) {
+		if ( $reTest ) {
 			$this->reset();
 		}
 
@@ -196,35 +222,8 @@ abstract class Handler {
 		return $this->bIsReady;
 	}
 
-	public function setTable( string $sTable ) :self {
-		$this->sTable = $sTable;
-		return $this;
-	}
-
-	protected function getDefaultTableName() :string {
-		throw new \Exception( 'No table name' );
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function getCustomColumns() :array {
-		return [];
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function getTimestampColumns() :array {
-		return [];
-	}
-
 	public function getTableSchema() :TableSchema {
-		$sch = new TableSchema();
-		$sch->table = $this->getTable();
-		$sch->cols_custom = $this->getCustomColumns();
-		$sch->cols_timestamps = $this->getTimestampColumns();
-		return $sch;
+		return $this->schema;
 	}
 
 	private function getNamespace() :string {

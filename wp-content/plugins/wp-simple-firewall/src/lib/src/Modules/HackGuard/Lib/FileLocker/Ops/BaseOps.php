@@ -19,28 +19,28 @@ class BaseOps {
 	/**
 	 * @var FileLocker\File
 	 */
-	protected $oFile;
+	protected $file;
 
 	/**
 	 * @return Databases\FileLocker\EntryVO|null
 	 */
 	protected function findLockRecordForFile() {
-		$oTheRecord = null;
-		foreach ( $this->oFile->getPossiblePaths() as $sPath ) {
-			foreach ( $this->getFileLocks() as $oRecord ) {
-				if ( $oRecord->file === $sPath ) {
-					$oTheRecord = $oRecord;
+		$theLock = null;
+		foreach ( $this->file->getPossiblePaths() as $path ) {
+			foreach ( $this->getFileLocks() as $maybeLock ) {
+				if ( $maybeLock->file === $path ) {
+					$theLock = $maybeLock;
 					break;
 				}
 			}
 		}
-		return $oTheRecord;
+		return $theLock;
 	}
 
 	/**
-	 * @return Databases\FileLocker\EntryVO[]|null
+	 * @return Databases\FileLocker\EntryVO[]
 	 */
-	protected function getFileLocks() {
+	protected function getFileLocks() :array {
 		return ( new LoadFileLocks() )
 			->setMod( $this->getMod() )
 			->loadLocks();
@@ -50,14 +50,14 @@ class BaseOps {
 	 * @return array
 	 * @throws \ErrorException
 	 */
-	protected function getPublicKey() {
-		$aPublicKey = ( new GetPublicKey() )
+	protected function getPublicKey() :array {
+		$key = ( new GetPublicKey() )
 			->setMod( $this->getMod() )
 			->retrieve();
-		if ( empty( $aPublicKey ) ) {
+		if ( empty( $key ) || !is_array( $key ) ) {
 			throw new \ErrorException( 'Cannot encrypt without a public key' );
 		}
-		return $aPublicKey;
+		return $key;
 	}
 
 	/**
@@ -71,11 +71,11 @@ class BaseOps {
 	}
 
 	/**
-	 * @param FileLocker\File $oFile
+	 * @param FileLocker\File $file
 	 * @return $this
 	 */
-	public function setWorkingFile( FileLocker\File $oFile ) {
-		$this->oFile = $oFile;
+	public function setWorkingFile( FileLocker\File $file ) {
+		$this->file = $file;
 		return $this;
 	}
 }

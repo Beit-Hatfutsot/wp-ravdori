@@ -17,15 +17,15 @@ class Versions extends PluginThemeVersionsBase {
 	}
 
 	/**
-	 * @param string $sVersion
-	 * @param bool   $bVerifyUrl
+	 * @param string $version
+	 * @param bool   $verifyUrl
 	 * @return bool
 	 */
-	public function exists( $sVersion, $bVerifyUrl = false ) {
-		$bExists = in_array( $sVersion, $this->all() );
-		if ( $bExists && $bVerifyUrl ) {
+	public function exists( $version, $verifyUrl = false ) {
+		$bExists = in_array( $version, $this->all() );
+		if ( $bExists && $verifyUrl ) {
 			try {
-				( new HttpUtil() )->checkUrl( Repo::GetUrlForPluginVersion( $this->getWorkingSlug(), $sVersion ) );
+				( new HttpUtil() )->checkUrl( Repo::GetUrlForPluginVersion( $this->getWorkingSlug(), $version ) );
 			}
 			catch ( \Exception $oE ) {
 				$bExists = false;

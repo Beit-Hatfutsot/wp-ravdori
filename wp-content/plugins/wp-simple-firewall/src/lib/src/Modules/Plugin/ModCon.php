@@ -68,10 +68,9 @@ class ModCon extends BaseShield\ModCon {
 		$con = $this->getCon();
 		$wpCrons = Services::WpCron();
 
-		foreach ( $wpCrons->getCrons() as $nKey => $aCronArgs ) {
-			foreach ( $aCronArgs as $hook => $aCron ) {
-				if ( strpos( (string)$hook, $con->prefix() ) === 0
-					 || strpos( (string)$hook, $con->prefixOption() ) === 0 ) {
+		foreach ( $wpCrons->getCrons() as $key => $cronArgs ) {
+			foreach ( $cronArgs as $hook => $cron ) {
+				if ( strpos( (string)$hook, $con->prefix() ) === 0 || strpos( (string)$hook, $con->prefixOption() ) === 0 ) {
 					$wpCrons->deleteCronJob( $hook );
 				}
 			}
@@ -79,9 +78,11 @@ class ModCon extends BaseShield\ModCon {
 	}
 
 	public function onPluginShutdown() {
-		$preferred = Services::IP()->getIpDetector()->getLastSuccessfulSource();
-		if ( !empty( $preferred ) ) {
-			$this->getOptions()->setOpt( 'last_ip_detect_source', $preferred );
+		if ( !$this->getCon()->plugin_deleting ) {
+			$preferred = Services::IP()->getIpDetector()->getLastSuccessfulSource();
+			if ( !empty( $preferred ) ) {
+				$this->getOptions()->setOpt( 'last_ip_detect_source', $preferred );
+			}
 		}
 		parent::onPluginShutdown();
 	}
@@ -104,16 +105,19 @@ class ModCon extends BaseShield\ModCon {
 		}
 	}
 
-	protected function handleModAction( string $action ) {
-		switch ( $action ) {
-
-			case 'export_file_download':
-				header( 'Set-Cookie: fileDownload=true; path=/' );
+	protected function handleFileDownload( string $downloadID ) {
+		switch ( $downloadID ) {
+			case 'plugin_export':
 				( new Lib\ImportExport\Export() )
 					->setMod( $this )
 					->toFile();
 				break;
+		}
+	}
 
+	protected function handleModAction( string $action ) {
+
+		switch ( $action ) {
 			case 'import_file_upload':
 				try {
 					( new Lib\ImportExport\Import() )
@@ -133,30 +137,42 @@ class ModCon extends BaseShield\ModCon {
 				break;
 
 			default:
+				parent::handleModAction( $action );
 				break;
 		}
 	}
 
-	public function getCanSiteCallToItself() :bool {
-		$oHttp = Services::HttpRequest();
-		return $oHttp->get( Services::WpGeneral()->getHomeUrl(), [ 'timeout' => 20 ] )
-			   && $oHttp->lastResponse->getCode() < 400;
+	/**
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function canSiteLoopback() :bool {
+		$canLoopback = false;
+		if ( class_exists( '\WP_Site_Health' ) && method_exists( '\WP_Site_Health', 'get_instance' ) ) {
+			$canLoopback = \WP_Site_Health::get_instance()->get_test_loopback_requests()[ 'status' ] === 'good';
+		}
+		if ( !$canLoopback ) {
+			$canLoopback = Services::HttpRequest()->post( site_url( 'wp-cron.php' ), [
+				'timeout' => 10
+			] );
+		}
+		return $canLoopback;
 	}
 
 	public function getActivePluginFeatures() :array {
-		$aActiveFeatures = $this->getDef( 'active_plugin_features' );
+		$features = $this->getOptions()->getDef( 'active_plugin_features' );
 
-		$aPluginFeatures = [];
-		if ( !empty( $aActiveFeatures ) && is_array( $aActiveFeatures ) ) {
+		$available = [];
+		if ( is_array( $features ) ) {
 
-			foreach ( $aActiveFeatures as $nPosition => $aFeature ) {
-				if ( isset( $aFeature[ 'hidden' ] ) && $aFeature[ 'hidden' ] ) {
+			foreach ( $features as $feature ) {
+				if ( isset( $feature[ 'hidden' ] ) && $feature[ 'hidden' ] ) {
 					continue;
 				}
-				$aPluginFeatures[ $aFeature[ 'slug' ] ] = $aFeature;
+				$available[ $feature[ 'slug' ] ] = $feature;
 			}
 		}
-		return $aPluginFeatures;
+		return $available;
 	}
 
 	public function getLinkToTrackingDataDump() :string {
@@ -318,15 +334,6 @@ class ModCon extends BaseShield\ModCon {
 		return Services::Request()->ts() - (int)$this->getOptions()->getOpt( 'activated_at', 0 );
 	}
 
-	/**
-	 * hidden 20200121
-	 * @return bool
-	 */
-	public function getIfShowIntroVideo() :bool {
-		return false && ( $this->getActivateLength() < 8 )
-			   && ( Services::Request()->ts() - $this->getInstallDate() < 15 );
-	}
-
 	public function getTourManager() :Lib\TourManager {
 		return ( new Lib\TourManager() )->setMod( $this );
 	}
@@ -470,7 +477,7 @@ class ModCon extends BaseShield\ModCon {
 	 * @param string $sId
 	 * @return bool
 	 */
-	protected function isValidInstallId( $sId ) {
+	protected function isValidInstallId( $sId ) :bool {
 		return !empty( $sId ) && is_string( $sId ) && strlen( $sId ) == 40;
 	}
 
@@ -483,30 +490,17 @@ class ModCon extends BaseShield\ModCon {
 	}
 
 	public function getScriptLocalisations() :array {
-		$con = $this->getCon();
 		$locals = parent::getScriptLocalisations();
 
-		if ( Services::WpPost()->isCurrentPage( 'plugins.php' ) ) {
-			$file = $con->base_file;
-			$locals[] = [
-				'global-plugin',
-				'icwp_wpsf_vars_plugin',
-				[
-					'file'  => $file,
-					'ajax'  => [
-						'send_deactivate_survey' => $this->getAjaxActionData( 'send_deactivate_survey' ),
-					],
-					'hrefs' => [
-						'deactivate' => Services::WpPlugins()->getUrl_Deactivate( $file ),
-					],
-				]
-			];
-		}
-
+		$tourManager = $this->getTourManager();
 		$locals[] = [
-			'plugin',
-			'icwp_wpsf_vars_tourmanager',
-			[ 'ajax' => $this->getAjaxActionData( 'mark_tour_finished' ) ]
+			'shield/tours',
+			'shield_vars_tourmanager',
+			[
+				'ajax'        => $this->getAjaxActionData( 'mark_tour_finished' ),
+				'tour_states' => $tourManager->getUserTourStates(),
+				'tours'       => $tourManager->getAllTours(),
+			]
 		];
 
 		$locals[] = [
@@ -515,7 +509,7 @@ class ModCon extends BaseShield\ModCon {
 			[
 				'strings' => [
 					'downloading_file'         => __( 'Downloading file, please wait...', 'wp-simple-firewall' ),
-					'problem_downloading_file' => __( 'There was a problem downloading the file.', 'wp-simple-firewall' ),
+					'downloading_file_problem' => __( 'There was a problem downloading the file.', 'wp-simple-firewall' ),
 				],
 			]
 		];
@@ -536,10 +530,6 @@ class ModCon extends BaseShield\ModCon {
 		return $enqs;
 	}
 
-	public function getDbHandler_GeoIp() :Shield\Databases\GeoIp\Handler {
-		return $this->getDbH( 'geoip' );
-	}
-
 	public function getDbHandler_Notes() :Shield\Databases\AdminNotes\Handler {
 		return $this->getDbH( 'notes' );
 	}
@@ -553,12 +543,5 @@ class ModCon extends BaseShield\ModCon {
 
 	protected function getNamespaceBase() :string {
 		return 'Plugin';
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getSurveyEmail() {
-		return base64_decode( $this->getDef( 'survey_email' ) );
 	}
 }

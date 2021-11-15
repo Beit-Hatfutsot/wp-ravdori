@@ -22,23 +22,17 @@ class Solicit extends Base {
 		return $this->query();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	protected function getApiUrl() {
-		/** @var RequestVO $oReq */
-		$oReq = $this->getRequestVO();
-		return sprintf( '%s/%s/%s', parent::getApiUrl(), $oReq->action, $oReq->install_id );
+	protected function getApiUrl() :string {
+		/** @var RequestVO $req */
+		$req = $this->getRequestVO();
+		return sprintf( '%s/%s/%s', parent::getApiUrl(), $req->action, $req->install_id );
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	protected function getQueryData() {
-		/** @var RequestVO $oReq */
-		$oReq = $this->getRequestVO();
-		$aData = parent::getQueryData();
-		$aData[ 'url' ] = $oReq->url;
-		return $aData;
+	protected function getQueryData() :array {
+		/** @var RequestVO $req */
+		$req = $this->getRequestVO();
+		$data = parent::getQueryData();
+		$data[ 'url' ] = $req->url;
+		return $data;
 	}
 }

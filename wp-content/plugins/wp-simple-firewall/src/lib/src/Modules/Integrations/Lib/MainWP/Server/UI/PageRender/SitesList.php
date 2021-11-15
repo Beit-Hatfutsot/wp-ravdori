@@ -28,7 +28,7 @@ class SitesList extends BaseRender {
 			$sync = LoadShieldSyncData::Load( $mwpSite );
 			$meta = $sync->meta;
 
-			$shd = $sync->getRawDataAsArray();
+			$shd = $sync->getRawData();
 			$status = ( new ClientPluginStatus() )
 				->setMod( $this->getMod() )
 				->setMwpSite( $mwpSite )
@@ -132,7 +132,7 @@ class SitesList extends BaseRender {
 		return str_replace(
 			$WP->getAdminUrl(),
 			'',
-			$this->getCon()->getModule_Insights()->getUrl_SubInsightsPage( 'scans' )
+			$this->getCon()->getModule_Insights()->getUrl_ScansResults()
 		);
 	}
 

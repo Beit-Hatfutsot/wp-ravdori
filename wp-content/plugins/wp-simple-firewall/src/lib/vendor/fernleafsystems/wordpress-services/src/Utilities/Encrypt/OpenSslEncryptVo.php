@@ -2,65 +2,65 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Encrypt;
 
-use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+use FernleafSystems\Utilities\Data\Adapter\DynPropertiesClass;
 
 /**
  * Class EncryptVo
  * @package FernleafSystems\Wordpress\Services\Utilities\Encrypt
- * @property bool   $success
- * @property int    $result
- * @property string $message
- * @property bool   $json_encoded
- * @property string $sealed_data
- * @property string $sealed_password
+ * @property bool             $success
+ * @property int              $result
+ * @property string           $cipher
+ * @property string           $message
+ * @property bool             $json_encoded
+ * @property string           $sealed_data
+ * @property string           $sealed_password
+ * @property OpenSslEncryptVo $rc4_fallback
  */
-class OpenSslEncryptVo {
-
-	use StdClassAdapter {
-		__get as __adapterGet;
-		__set as __adapterSet;
-	}
+class OpenSslEncryptVo extends DynPropertiesClass {
 
 	/**
-	 * @param string $sProperty
-	 * @return mixed
+	 * @inheritDoc
 	 */
-	public function __get( $sProperty ) {
+	public function __get( string $key ) {
 
-		$mVal = $this->__adapterGet( $sProperty );
+		$value = parent::__get( $key );
 
-		switch ( $sProperty ) {
+		switch ( $key ) {
 
 			case 'sealed_data':
 			case 'sealed_password':
-				$mVal = base64_decode( $mVal );
+				$value = base64_decode( $value );
+				break;
+
+			case 'cipher':
+				if ( empty( $value ) ) {
+					$value = 'rc4'; // The default
+				}
 				break;
 
 			default:
 				break;
 		}
 
-		return $mVal;
+		return $value;
 	}
 
 	/**
-	 * @param string $sProperty
-	 * @param mixed  $mValue
-	 * @return $this
+	 * @inheritDoc
 	 */
-	public function __set( $sProperty, $mValue ) {
+	public function __set( string $key, $value ) {
 
-		switch ( $sProperty ) {
+		switch ( $key ) {
 
 			case 'sealed_data':
 			case 'sealed_password':
-				$mValue = base64_encode( $mValue );
+				$value = base64_encode( $value );
 				break;
 
 			default:
 				break;
 		}
 
-		return $this->__adapterSet( $sProperty, $mValue );
+		parent::__set( $key, $value );
 	}
 }

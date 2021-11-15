@@ -10,132 +10,124 @@ class Db {
 	/**
 	 * @var \wpdb
 	 */
-	protected $oWpdb;
+	protected $wpdb;
 
 	/**
-	 * @param string $sSQL
+	 * @param string $sql
 	 * @return array
 	 */
-	public function dbDelta( $sSQL ) {
+	public function dbDelta( string $sql ) {
 		require_once( ABSPATH.'wp-admin/includes/upgrade.php' );
-		return dbDelta( $sSQL );
+		return dbDelta( $sql );
 	}
 
 	/**
-	 * @param string $sTable
-	 * @param array  $aWhere - delete where (associative array)
+	 * @param string $table
+	 * @param array  $where - delete where (associative array)
 	 * @return false|int
 	 */
-	public function deleteRowsFromTableWhere( $sTable, $aWhere ) {
-		return $this->loadWpdb()->delete( $sTable, $aWhere );
+	public function deleteRowsFromTableWhere( string $table, array $where ) {
+		return $this->loadWpdb()->delete( $table, $where );
 	}
 
 	/**
 	 * Will completely remove this table from the database
 	 *
-	 * @param string $sTable
+	 * @param string $table
 	 * @return bool|int
 	 */
-	public function doDropTable( $sTable ) {
-		$sQuery = sprintf( 'DROP TABLE IF EXISTS `%s`', $sTable );
-		return $this->doSql( $sQuery );
+	public function doDropTable( string $table ) {
+		return $this->doSql( sprintf( 'DROP TABLE IF EXISTS `%s`', $table ) );
 	}
 
 	/**
 	 * Alias for doTruncateTable()
 	 *
-	 * @param string $sTable
+	 * @param string $table
 	 * @return bool|int
 	 */
-	public function doEmptyTable( $sTable ) {
-		return $this->doTruncateTable( $sTable );
+	public function doEmptyTable( string $table ) {
+		return $this->doTruncateTable( $table );
 	}
 
 	/**
 	 * Given any SQL query, will perform it using the WordPress database object.
 	 *
-	 * @param string $sSqlQuery
-	 * @return int|bool (number of rows affected or just true/false)
+	 * @param string $sqlQuery
+	 * @return mixed|int|bool (number of rows affected or just true/false)
 	 */
-	public function doSql( $sSqlQuery ) {
-		return $this->loadWpdb()->query( $sSqlQuery );
+	public function doSql( string $sqlQuery ) {
+		return $this->loadWpdb()->query( $sqlQuery );
 	}
 
 	/**
-	 * @param string $sTable
+	 * @param string $table
 	 * @return bool|int
 	 */
-	public function doTruncateTable( $sTable ) {
-		if ( !$this->getIfTableExists( $sTable ) ) {
-			return false;
-		}
-		$sQuery = sprintf( 'TRUNCATE TABLE `%s`', $sTable );
-		return $this->doSql( $sQuery );
+	public function doTruncateTable( string $table ) {
+		return $this->getIfTableExists( $table ) ?
+			$this->doSql( sprintf( 'TRUNCATE TABLE `%s`', $table ) )
+			: false;
 	}
 
-	public function getCharCollate() {
+	public function getCharCollate() :string {
 		return $this->getWpdb()->get_charset_collate();
 	}
 
-	/**
-	 * @param string $sTable
-	 * @return bool
-	 */
-	public function getIfTableExists( $sTable ) {
-		$sQuery = sprintf( "SHOW TABLES LIKE '%s'", $sTable );
-		$mResult = $this->loadWpdb()->get_var( $sQuery );
+	public function getIfTableExists( string $table ) :bool {
+		$mResult = $this->loadWpdb()->get_var( sprintf( "SHOW TABLES LIKE '%s'", $table ) );
 		return !is_null( $mResult );
 	}
 
 	/**
-	 * @param string $sTableName
-	 * @param string $sArrayMapCallBack
+	 * @param string   $tableName
+	 * @param callable $callBack
 	 * @return array
 	 */
-	public function getColumnsForTable( $sTableName, $sArrayMapCallBack = '' ) {
-		$aColumns = $this->loadWpdb()->get_col( "DESCRIBE ".$sTableName, 0 );
+	public function getColumnsForTable( $tableName, $callBack = '' ) :array {
+		$columns = $this->loadWpdb()->get_col( "DESCRIBE ".$tableName, 0 );
 
-		if ( !empty( $sArrayMapCallBack ) && function_exists( $sArrayMapCallBack ) ) {
-			return array_map( $sArrayMapCallBack, $aColumns );
+		if ( !empty( $callBack ) && function_exists( $callBack ) ) {
+			return array_map( $callBack, $columns );
 		}
-		return $aColumns;
+		return is_array( $columns ) ? $columns : [];
 	}
 
-	/**
-	 * @param bool $bSiteBase
-	 * @return string
-	 */
-	public function getPrefix( $bSiteBase = true ) {
-		$oDb = $this->loadWpdb();
-		return $bSiteBase ? $oDb->base_prefix : $oDb->prefix;
+	public function getPrefix( bool $siteBase = true ) :string {
+		return $siteBase ? $this->loadWpdb()->base_prefix : $this->loadWpdb()->prefix;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTable_Comments() {
+	public function getAllTables( string $filter = '' ) :array {
+		$showRes = $this->selectCustom( sprintf( "SHOW TABLES%s", empty( $filter ) ? '' : 'LIKE '.$filter ) );
+		return array_map(
+			function ( $res ) {
+				return array_pop( $res );
+			},
+			is_array( $showRes ) ? $showRes : []
+		);
+	}
+
+	public function getTable_Comments() :string {
 		return $this->loadWpdb()->comments;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTable_Options() {
+	public function getTable_Options() :string {
 		return $this->loadWpdb()->options;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTable_Posts() {
+	public function getTable_Posts() :string {
 		return $this->loadWpdb()->posts;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTable_Users() {
+	public function getTable_Users() :string {
 		return $this->loadWpdb()->users;
+	}
+
+	public function getMysqlServerInfo() :string {
+		$db = $this->loadWpdb();
+		$info = method_exists( $db, 'db_server_info' ) ?
+			$db->db_server_info() : \mysqli_get_server_info( $db->dbh );
+		return (string)$info;
 	}
 
 	/**
@@ -147,65 +139,61 @@ class Db {
 	}
 
 	/**
-	 * @param string $sTable
-	 * @param array  $aData
+	 * @param string $table
+	 * @param array  $data
 	 * @return int|bool
 	 */
-	public function insertDataIntoTable( $sTable, $aData ) {
-		return $this->loadWpdb()->insert( $sTable, $aData );
+	public function insertDataIntoTable( $table, $data ) {
+		return $this->loadWpdb()->insert( $table, $data );
 	}
 
 	/**
-	 * @param string $sTable
-	 * @param string $nFormat
+	 * @param string $table
+	 * @param string $format
 	 * @return mixed
 	 */
-	public function selectAllFromTable( $sTable, $nFormat = ARRAY_A ) {
-		$sQuery = sprintf( "SELECT * FROM `%s` WHERE `deleted_at` = 0", $sTable );
-		return $this->loadWpdb()->get_results( $sQuery, $nFormat );
+	public function selectAllFromTable( string $table, $format = ARRAY_A ) {
+		return $this->loadWpdb()
+					->get_results( sprintf( "SELECT * FROM `%s` WHERE `deleted_at` = 0", $table ), $format );
 	}
 
 	/**
-	 * @param string $sQuery
-	 * @param        $nFormat
+	 * @param string $query
+	 * @param        $format
 	 * @return array|bool
 	 */
-	public function selectCustom( $sQuery, $nFormat = ARRAY_A ) {
-		return $this->loadWpdb()->get_results( $sQuery, $nFormat );
+	public function selectCustom( $query, $format = ARRAY_A ) {
+		return $this->loadWpdb()->get_results( $query, $format );
 	}
 
 	/**
-	 * @param        $sQuery
-	 * @param string $nFormat
+	 * @param string $query
+	 * @param string $format
 	 * @return null|object|array
 	 */
-	public function selectRow( $sQuery, $nFormat = ARRAY_A ) {
-		return $this->loadWpdb()->get_row( $sQuery, $nFormat );
+	public function selectRow( string $query, $format = ARRAY_A ) {
+		return $this->loadWpdb()->get_row( $query, $format );
 	}
 
 	/**
-	 * @param string $sTable
-	 * @param array  $aData  - new insert data (associative array, column=>data)
-	 * @param array  $aWhere - insert where (associative array)
+	 * @param string $table
+	 * @param array  $data  - new insert data (associative array, column=>data)
+	 * @param array  $where - insert where (associative array)
 	 * @return int|bool (number of rows affected)
 	 */
-	public function updateRowsFromTableWhere( $sTable, $aData, $aWhere ) {
-		return $this->loadWpdb()->update( $sTable, $aData, $aWhere );
+	public function updateRowsFromTableWhere( string $table, array $data, array $where ) {
+		return $this->loadWpdb()->update( $table, $data, $where );
 	}
 
-	/**
-	 * Loads our WPDB object if required.
-	 *
-	 * @return \wpdb
-	 */
-	protected function loadWpdb() {
-		if ( is_null( $this->oWpdb ) ) {
-			$this->oWpdb = $this->getWpdb();
+	public function loadWpdb() :\wpdb {
+		if ( !$this->wpdb instanceof \wpdb ) {
+			$this->wpdb = $this->getWpdb();
 		}
-		return $this->oWpdb;
+		return $this->wpdb;
 	}
 
 	/**
+	 * @return \wpdb
 	 */
 	private function getWpdb() {
 		global $wpdb;

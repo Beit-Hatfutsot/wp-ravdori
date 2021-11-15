@@ -6,32 +6,23 @@ use FernleafSystems\Wordpress\Plugin\Shield;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Plugin;
 use FernleafSystems\Wordpress\Services\Services;
 use FernleafSystems\Wordpress\Services\Utilities\Ssl;
+use ZxcvbnPhp\Zxcvbn;
 
 class OverviewCards extends Shield\Modules\Base\Insights\OverviewCards {
 
-	public function build() :array {
+	protected function buildModCards() :array {
 		/** @var Plugin\ModCon $mod */
 		$mod = $this->getMod();
 		/** @var Plugin\Options $opts */
 		$opts = $this->getOptions();
 
-		$cardSection = [
-			'title'        => __( 'General Settings', 'wp-simple-firewall' ),
-			'subtitle'     => sprintf( __( 'General %s Settings', 'wp-simple-firewall' ),
-				$this->getCon()->getHumanName() ),
-			'href_options' => $mod->getUrl_AdminPage()
-		];
-
 		$cards = [];
 
-		if ( !$mod->isModuleEnabled() ) {
-			$cards[] = $this->getModDisabledCard();
-		}
-		else {
+		if ( $mod->isModOptEnabled() ) {
 			$bHasSupportEmail = Services::Data()->validEmail( $opts->getOpt( 'block_send_email_address' ) );
 			$cards[ 'reports' ] = [
 				'name'    => __( 'Reporting Email', 'wp-simple-firewall' ),
-				'state'   => $bHasSupportEmail ? 1 : -1,
+				'state'   => $bHasSupportEmail ? 1 : 0,
 				'summary' => $bHasSupportEmail ?
 					sprintf( __( 'Email address for reports set to: %s', 'wp-simple-firewall' ), $mod->getPluginReportEmail() )
 					: sprintf( __( 'No reporting address provided - defaulting to: %s', 'wp-simple-firewall' ), $mod->getPluginReportEmail() ),
@@ -46,36 +37,42 @@ class OverviewCards extends Shield\Modules\Base\Insights\OverviewCards {
 				'href'    => $mod->getUrl_DirectLinkToOption( 'visitor_address_source' ),
 			];
 
-			$bRecap = $mod->getCaptchaCfg()->ready;
+			$captchaReady = $mod->getCaptchaCfg()->ready;
 			$cards[ 'recap' ] = [
 				'name'    => __( 'CAPTCHA', 'wp-simple-firewall' ),
-				'state'   => $bRecap ? 1 : -1,
-				'summary' => $bRecap ?
+				'state'   => $captchaReady ? 1 : 0,
+				'summary' => $captchaReady ?
 					__( 'CAPTCHA keys have been provided', 'wp-simple-firewall' )
 					: __( "CAPTCHA keys haven't been provided", 'wp-simple-firewall' ),
 				'href'    => $mod->getUrl_DirectLinkToSection( 'section_third_party_captcha' ),
 			];
 		}
 
-		$cards = array_merge(
+		return array_merge(
 			$cards,
 			$this->getNoticesSsl(),
 			$this->getNoticesDb()
 		);
+	}
 
-		$cardSection[ 'cards' ] = $cards;
-		return [ 'plugin' => $cardSection ];
+	protected function getSectionTitle() :string {
+		return __( 'General Settings', 'wp-simple-firewall' );
+	}
+
+	protected function getSectionSubTitle() :string {
+		return sprintf( __( 'General %s Settings', 'wp-simple-firewall' ),
+			$this->getCon()->getHumanName() );
 	}
 
 	private function getNoticesDb() :array {
 		$cards = [];
 
 		// db password strength
-		$bStrong = ( new \ZxcvbnPhp\Zxcvbn() )->passwordStrength( DB_PASSWORD )[ 'score' ] >= 4;
+		$strong = ( new Zxcvbn() )->passwordStrength( DB_PASSWORD )[ 'score' ] >= 4;
 		$cards[ 'db_strength' ] = [
 			'name'    => __( 'DB Password', 'wp-simple-firewall' ),
-			'state'   => $bStrong >= 4 ? 1 : -1,
-			'summary' => $bStrong ?
+			'state'   => $strong >= 4 ? 1 : -1,
+			'summary' => $strong ?
 				__( 'WP Database password is very strong', 'wp-simple-firewall' )
 				: __( "WP Database password appears to be weak", 'wp-simple-firewall' ),
 			'href'    => '',

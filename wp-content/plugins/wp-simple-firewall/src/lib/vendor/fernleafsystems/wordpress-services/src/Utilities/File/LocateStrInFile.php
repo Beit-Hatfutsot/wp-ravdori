@@ -35,6 +35,8 @@ class LocateStrInFile {
 	 */
 	private $isRegExNeedle;
 
+	private $stripPhpFile = true;
+
 	/**
 	 * @return string[]
 	 */
@@ -48,10 +50,10 @@ class LocateStrInFile {
 	protected function runAsRegEx() :array {
 		$lines = [];
 
-		if ( preg_match_all( '/('.$this->getNeedle().')/i', $this->getContent(), $matches, PREG_PATTERN_ORDER ) ) {
+		$content = $this->getContent();
+		if ( !empty( $content ) && preg_match_all( '/('.$this->getNeedle().')/i', $content, $matches, PREG_PATTERN_ORDER ) ) {
 			foreach ( $matches[ 0 ] as $match ) {
-				// use + for numerical index
-				$lines = $lines + $this->findLinesFor( $match );
+				$lines = $lines + $this->findLinesFor( $match ); // use + for numerical index
 			}
 		}
 		return $lines;
@@ -93,18 +95,26 @@ class LocateStrInFile {
 	 */
 	protected function getLines() :array {
 		if ( is_null( $this->lines ) ) {
-			$this->lines = array_filter(
-				array_map( 'trim', preg_split( '/\r\n|\r|\n/', $this->getContent() ) )
-			);
+			$this->lines = array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', $this->getRawContent() ) ) );
 		}
 		return $this->lines;
 	}
 
 	public function getContent() :string {
 		if ( is_null( $this->content ) ) {
-			$this->content = Services::WpFs()->getFileContent( $this->getPath() );
+			$p = $this->getPath();
+			if ( $this->stripPhpFile && in_array( Services::Data()->getExtension( $p ), [ 'php', 'php5', 'php7' ] ) ) {
+				$this->content = php_strip_whitespace( $p );
+			}
+			else {
+				$this->content = $this->getRawContent();
+			}
 		}
 		return $this->content;
+	}
+
+	protected function getRawContent() :string {
+		return (string)Services::WpFs()->getFileContent( $this->getPath() );
 	}
 
 	public function getNeedle() :string {
@@ -116,7 +126,7 @@ class LocateStrInFile {
 	}
 
 	public function isRegEx() :bool {
-		return (bool)$this->isRegExNeedle;
+		return $this->isRegExNeedle ?? false;
 	}
 
 	public function setIsRegEx( bool $isRegEx ) :self {
@@ -126,6 +136,11 @@ class LocateStrInFile {
 
 	public function setNeedle( string $needle ) :self {
 		$this->needle = $needle;
+		return $this;
+	}
+
+	public function setIsStripPhp( bool $strip ) :self {
+		$this->stripPhpFile = $strip;
 		return $this;
 	}
 
@@ -143,7 +158,6 @@ class LocateStrInFile {
 			throw new \Exception( "File isn't readable" );
 		}
 		$this->path = $path;
-		$this->getContent();
 		return $this->reset();
 	}
 

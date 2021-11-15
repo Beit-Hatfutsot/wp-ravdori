@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities;
 
-use FernleafSystems\Utilities\Data\Adapter\StdClassAdapter;
+use FernleafSystems\Utilities\Data\Adapter\DynProperties;
 use FernleafSystems\Wordpress\Services\Services;
 use Html2Text\Html2Text;
 
@@ -22,19 +22,19 @@ use Html2Text\Html2Text;
  */
 class Email {
 
-	use StdClassAdapter;
+	use DynProperties;
 
 	public function __construct() {
 	}
 
 	/**
-	 * @param string $sLine
+	 * @param string $line
 	 * @return $this
 	 */
-	public function addContentLine( $sLine ) {
-		$aC = $this->getContentBody();
-		$aC[] = $sLine;
-		return $this->setContentBody( $aC );
+	public function addContentLine( $line ) {
+		$content = $this->getContentBody();
+		$content[] = $line;
+		return $this->setContentBody( $content );
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Email {
 	 * @return array
 	 */
 	protected function getContentBody() {
-		return $this->getArrayParam( 'content' );
+		return is_array( $this->content ) ? $this->content : [];
 	}
 
 	/**
@@ -165,8 +165,8 @@ class Email {
 	 * @return string
 	 */
 	protected function getTo() {
-		return Services::Data()->validEmail( $this->to_email ) ? $this->to_email : Services::WpGeneral()
-																						   ->getSiteAdminEmail();
+		return Services::Data()->validEmail( $this->to_email ) ? $this->to_email
+			: Services::WpGeneral()->getSiteAdminEmail();
 	}
 
 	/**
@@ -192,14 +192,15 @@ class Email {
 	}
 
 	/**
-	 * @param array $aContent
+	 * @param array $content
 	 * @return Email
 	 */
-	public function setContentBody( $aContent ) {
-		if ( is_string( $aContent ) ) {
-			$aContent = [ $aContent ];
+	public function setContentBody( $content ) {
+		if ( is_string( $content ) ) {
+			$content = [ $content ];
 		}
-		return $this->setParam( 'content', $aContent );
+		$this->content = $content;
+		return $this;
 	}
 
 	/**
@@ -210,14 +211,14 @@ class Email {
 	}
 
 	/**
-	 * @param string $sFrom
+	 * @param string $from
 	 * @return string
 	 */
-	public function filterMailFrom( $sFrom ) {
+	public function filterMailFrom( $from ) {
 		if ( Services::Data()->validEmail( $this->from_email ) ) {
-			$sFrom = $this->from_email;
+			$from = $this->from_email;
 		}
-		return $sFrom;
+		return $from;
 	}
 
 	/**
@@ -241,20 +242,20 @@ class Email {
 	}
 
 	/**
-	 * @param string $sSubject
+	 * @param string $subject
 	 * @return $this
 	 */
-	public function setSubject( $sSubject ) {
-		$this->subject = $sSubject;
+	public function setSubject( $subject ) {
+		$this->subject = $subject;
 		return $this;
 	}
 
 	/**
-	 * @param string $sEmail
+	 * @param string $email
 	 * @return $this
 	 */
-	public function setToEmail( $sEmail ) {
-		$this->to_email = $sEmail;
+	public function setToEmail( $email ) {
+		$this->to_email = $email;
 		return $this;
 	}
 }

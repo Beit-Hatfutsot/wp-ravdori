@@ -4,16 +4,12 @@ namespace FernleafSystems\Wordpress\Services\Utilities\BackgroundProcessing;
 
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Class BackgroundProcess
- * @package FernleafSystems\Wordpress\Services\Utilities\BackgroundProcessing
- */
 abstract class BackgroundProcess extends \WP_Background_Process {
 
 	/**
 	 * @var int
 	 */
-	private $nExpirationInterval;
+	private $expirationInterval;
 
 	/**
 	 * Expired Cron_hook_identifier
@@ -24,12 +20,12 @@ abstract class BackgroundProcess extends \WP_Background_Process {
 	protected $expired_cron_hook_identifier;
 
 	/**
-	 * @param string $sAction
-	 * @param string $sPrefix
+	 * @param string $action
+	 * @param string $prefix
 	 */
-	public function __construct( $sAction = '', $sPrefix = 'apto' ) {
-		$this->setPrefix( $sPrefix )
-			 ->setAction( $sAction );
+	public function __construct( $action = '', $prefix = 'apto' ) {
+		$this->setPrefix( $prefix )
+			 ->setAction( $action );
 
 		parent::__construct();
 
@@ -47,7 +43,7 @@ abstract class BackgroundProcess extends \WP_Background_Process {
 		// A cron that automatically cleans up expired items
 		$this->scheduleExpiredCleanup();
 
-		return parent::dispatch();
+		parent::dispatch();
 	}
 
 	/**
@@ -73,13 +69,17 @@ abstract class BackgroundProcess extends \WP_Background_Process {
 	 * @return array
 	 */
 	protected function get_post_args() {
-		$aArgs = parent::get_post_args();
+		$args = parent::get_post_args();
 
-		if ( isset( $aArgs[ 'body' ] ) ) {
-			$aArgs[ 'body' ] = '';
+		if ( isset( $args[ 'body' ] ) ) {
+			$args[ 'body' ] = '';
 		}
 
-		return $aArgs;
+		return $args;
+	}
+
+	protected function time_exceeded() {
+		return !Services::WpGeneral()->isWpCli() && parent::time_exceeded();
 	}
 
 	protected function scheduleExpiredCleanup() {
@@ -99,46 +99,41 @@ abstract class BackgroundProcess extends \WP_Background_Process {
 		}
 	}
 
-	/**
-	 */
 	public function handleExpiredItems() {
 		// override to handle expired items according to Expiration Interval
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getExpirationInterval() {
-		return (int)$this->nExpirationInterval;
+	public function getExpirationInterval() :int {
+		return (int)$this->expirationInterval;
 	}
 
 	/**
-	 * @param int $sAction
+	 * @param int $action
 	 * @return $this
 	 */
-	public function setAction( $sAction ) {
-		if ( !empty( $sAction ) ) {
-			$this->action = $sAction;
+	public function setAction( $action ) {
+		if ( !empty( $action ) ) {
+			$this->action = $action;
 		}
 		return $this;
 	}
 
 	/**
-	 * @param int $nExpirationInterval - seconds
+	 * @param int $expirationInterval - seconds
 	 * @return $this
 	 */
-	public function setExpirationInterval( $nExpirationInterval ) {
-		$this->nExpirationInterval = $nExpirationInterval;
+	public function setExpirationInterval( $expirationInterval ) {
+		$this->expirationInterval = $expirationInterval;
 		return $this;
 	}
 
 	/**
-	 * @param int $sPrefix
+	 * @param string $prefix
 	 * @return $this
 	 */
-	public function setPrefix( $sPrefix ) {
-		if ( !empty( $sPrefix ) ) {
-			$this->prefix = $sPrefix;
+	public function setPrefix( $prefix ) {
+		if ( !empty( $prefix ) ) {
+			$this->prefix = $prefix;
 		}
 		return $this;
 	}

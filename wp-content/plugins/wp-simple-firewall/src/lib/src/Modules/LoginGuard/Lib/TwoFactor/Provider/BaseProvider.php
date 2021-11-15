@@ -10,9 +10,15 @@ abstract class BaseProvider {
 	use Modules\ModConsumer;
 
 	const SLUG = '';
+
+	/**
+	 * Set to true if this provider can be used to validate 2FA even if MFA is active.
+	 */
+	const BYPASS_MFA = false;
+
 	/**
 	 * Set to true if this provider can be used in isolation. False if there
-	 * must be at least 1 other 2FA provider active.
+	 * must be at least 1 other 2FA provider active alongside it.
 	 */
 	const STANDALONE = true;
 	/**
@@ -23,22 +29,23 @@ abstract class BaseProvider {
 	public function __construct() {
 	}
 
-	public function setupProfile() {
+	public function getJavascriptVars() :array {
+		return [];
 	}
+
+	abstract public function getProviderName() :string;
 
 	/**
 	 * Assumes this is only called on active profiles
-	 * @param \WP_User $user
-	 * @return bool
 	 */
-	public function validateLoginIntent( \WP_User $user ) {
-		$bOtpSuccess = false;
-		$sReqOtpCode = $this->fetchCodeFromRequest();
-		if ( !empty( $sReqOtpCode ) ) {
-			$bOtpSuccess = $this->processOtp( $user, $sReqOtpCode );
-			$this->postOtpProcessAction( $user, $bOtpSuccess );
+	public function validateLoginIntent( \WP_User $user ) :bool {
+		$otpSuccess = false;
+		$OTP = $this->fetchCodeFromRequest();
+		if ( !empty( $OTP ) ) {
+			$otpSuccess = $this->processOtp( $user, $OTP );
+			$this->postOtpProcessAction( $user, $otpSuccess );
 		}
-		return $bOtpSuccess;
+		return $otpSuccess;
 	}
 
 	/**
@@ -108,14 +115,20 @@ abstract class BaseProvider {
 		return $sNewSecret;
 	}
 
+	public function remove( \WP_User $user ) {
+		$meta = $this->getCon()->getUserMeta( $user );
+		$meta->{static::SLUG.'_secret'} = null;
+		$this->setProfileValidated( $user, false );
+	}
+
 	/**
 	 * @param \WP_User $user
-	 * @param bool     $bValidated set true for validated, false for invalidated
+	 * @param bool     $validated set true for validated, false for invalidated
 	 * @return $this
 	 */
-	public function setProfileValidated( $user, $bValidated = true ) {
+	public function setProfileValidated( $user, $validated = true ) {
 		$this->getCon()
-			 ->getUserMeta( $user )->{static::SLUG.'_validated'} = $bValidated;
+			 ->getUserMeta( $user )->{static::SLUG.'_validated'} = $validated;
 		return $this;
 	}
 
@@ -156,22 +169,38 @@ abstract class BaseProvider {
 	 * @return string
 	 */
 	public function renderUserProfileOptions( \WP_User $user ) :string {
-		return '';
+		return $this->getMod()
+					->renderTemplate(
+						sprintf( '/admin/user/profile/mfa/mfa_%s.twig', static::SLUG ),
+						$this->getProfileRenderData( $user )
+					);
 	}
 
 	/**
-	 * ONLY TO BE HOOKED TO USER PROFILE EDIT
+	 * This MUST only ever be hooked into when the User is looking at their OWN profile, so we can use "current user"
+	 * functions.  Otherwise we need to be careful of mixing up users.
 	 * @param \WP_User $user
 	 * @return string
 	 */
-	public function renderUserEditProfileOptions( \WP_User $user ) {
-		return $this->renderUserProfileOptions( $user );
+	public function renderUserProfileCustomForm( \WP_User $user ) :string {
+		$data = $this->getProfileRenderData( $user );
+		$data[ 'flags' ][ 'show_explanatory_text' ] = false;
+		return $this->getMod()
+					->renderTemplate(
+						sprintf( '/user/profile/mfa/provider_%s.twig', static::SLUG ),
+						$data
+					);
 	}
 
-	/**
-	 * @param \WP_User $user
-	 */
-	public function handleEditOtherUserProfileSubmit( \WP_User $user ) {
+	public function getProfileRenderData( \WP_User $user ) :array {
+		return Services::DataManipulation()->mergeArraysRecursive(
+			$this->getCommonData( $user ),
+			$this->getProviderSpecificRenderData( $user )
+		);
+	}
+
+	protected function getProviderSpecificRenderData( \WP_User $user ) :array {
+		return [];
 	}
 
 	/**
@@ -191,14 +220,21 @@ abstract class BaseProvider {
 	public function captureLoginAttempt( \WP_User $user ) {
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getFormField() {
+	public function getFormField() :array {
 		return [];
 	}
 
-	abstract protected function auditLogin( \WP_User $user, bool $bIsSuccess );
+	protected function auditLogin( \WP_User $user, bool $success ) {
+		$this->getCon()->fireEvent(
+			$success ? '2fa_verify_success' : '2fa_verify_fail',
+			[
+				'audit_params' => [
+					'user_login' => $user->user_login,
+					'method'     => $this->getProviderName(),
+				]
+			]
+		);
+	}
 
 	/**
 	 * @param \WP_User $user
@@ -224,25 +260,21 @@ abstract class BaseProvider {
 		return trim( Services::Request()->request( $this->getLoginFormParameter(), false, '' ) );
 	}
 
-	/**
-	 * @param \WP_User $user
-	 * @return array
-	 */
-	protected function getCommonData( \WP_User $user ) {
+	protected function getCommonData( \WP_User $user ) :array {
 		return [
 			'flags'   => [
 				'has_validated_profile' => $this->hasValidatedProfile( $user ),
 				'is_enforced'           => $this->isEnforced( $user ),
 				'is_profile_active'     => $this->isProfileActive( $user ),
-				'is_my_user_profile'    => $user->ID == Services::WpUsers()->getCurrentWpUserId(),
-				'i_am_valid_admin'      => $this->getCon()->isPluginAdmin(),
 				'user_to_edit_is_admin' => Services::WpUsers()->isUserAdmin( $user ),
+				'show_explanatory_text' => true
 			],
 			'vars'    => [
 				'otp_field_name' => $this->getLoginFormParameter(),
 			],
 			'strings' => [
-				'is_enforced' => __( 'This setting is enforced by your security administrator.', 'wp-simple-firewall' ),
+				'is_enforced'   => __( 'This setting is enforced by your security administrator.', 'wp-simple-firewall' ),
+				'provider_name' => $this->getProviderName()
 			],
 		];
 	}

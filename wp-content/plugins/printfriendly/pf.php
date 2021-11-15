@@ -4,7 +4,7 @@
 	Plugin URI: http://www.printfriendly.com
 	Description: PrintFriendly & PDF button for your website. Optimizes your pages and brand for print, pdf, and email.
 	Name and URL are included to ensure repeat visitors and new visitors when printed versions are shared.
-	Version: 4.0.1
+	Version: 5.0
 	Author: Print, PDF, & Email by PrintFriendly
 	Author URI: http://www.printfriendly.com
 	Domain Path: /languages
@@ -32,7 +32,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 		 *
 		 * @var string
 		 */
-		var $plugin_version = '4.0.1';
+		var $plugin_version = '5.0';
 
 		/**
 		 * The hook, used for text domain as well as hooks on pages and in get requests for admin.
@@ -136,6 +136,24 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			// Register a link to the settings page on the plugins overview page
 			add_filter( 'plugin_action_links', array(&$this, 'filter_plugin_actions'), 10, 2 );
 			add_filter( 'plugin_row_meta', array(&$this, 'additional_links'), 10, 2 );
+
+			add_filter( 'wp_dropdown_cats', array( &$this, 'wp_dropdown_cats_multiple' ), 10, 2 );
+		}
+
+		/**
+		 * Adds multiple select support for category dropdown.
+		 *
+		 * @since 4.2
+		 **/
+		function wp_dropdown_cats_multiple( $output, $attributes ) {
+			if ( isset( $attributes['multiple'] ) && $attributes['multiple'] ) {
+				$output = preg_replace( '/^<select/i', '<select multiple', $output );
+				$output = str_replace( "name='{$attributes['name']}'", "name='{$attributes['name']}[]'", $output );
+				foreach ( array_map( 'trim', explode( ',', $attributes['selected'] ) ) as $value ) {
+					$output = str_replace( "value=\"{$value}\"", "value=\"{$value}\" selected", $output );
+				}
+			}
+			return $output;
 		}
 
 		/**
@@ -215,7 +233,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			  .printfriendly {
 				position: relative;
 				  z-index: 1000;
-				margin: <?php echo $this->options['margin_top'] . 'px ' . $this->options['margin_right'] . 'px ' . $this->options['margin_bottom'] . 'px ' . $this->options['margin_left'] . 'px'; ?>;
+				margin: <?php echo sprintf( '%dpx %dpx %dpx %dpx', $this->val( 'margin_top', false, 0 ), $this->val( 'margin_right', false, 0 ), $this->val( 'margin_bottom', false, 0 ), $this->val( 'margin_left', false, 0 ) ); ?>;
 			  }
 			  .printfriendly a, .printfriendly a:link, .printfriendly a:visited, .printfriendly a:hover, .printfriendly a:active {
 				font-weight: 600;
@@ -235,6 +253,11 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			@media print {
 			  .printfriendly {display: none}
 			}
+
+			.pf-button.pf-button-excerpt {
+				display: none;
+			}
+
 		  </style>
 				<?php
 			}
@@ -253,6 +276,8 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				$image_url = '';
 			}
 
+			echo $this->getSelectorsFromCustomCSS();
+
 			// Currently we use v3 for both: normal and password protected sites
 			?>
 		<script type="text/javascript" id="pf_script">
@@ -261,7 +286,8 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 		  var pfdisableClickToDel = '<?php echo esc_js( $this->options['click_to_delete'] ); ?>';
 		  var pfImagesSize = '<?php echo esc_js( $this->options['images-size'] ); ?>';
 		  var pfImageDisplayStyle = '<?php echo esc_js( $this->options['image-style'] ); ?>';
-		  var pfEncodeImages = '<?php echo esc_js( $this->options['password_protected'] === 'yes' ? 1 : 0 ); ?>';
+		  var pfEncodeImages = '<?php echo esc_js( $this->val( 'password_protected', false ) === 'yes' ? 1 : 0 ); ?>';
+		  var pfShowHiddenContent  = '<?php echo esc_js( $this->val( 'show_hidden_content', false ) === 'yes' ? 1 : 0 ); ?>';
 		  var pfDisableEmail = '<?php echo esc_js( $this->options['email'] ); ?>';
 		  var pfDisablePDF = '<?php echo esc_js( $this->options['pdf'] ); ?>';
 		  var pfDisablePrint = '<?php echo esc_js( $this->options['print'] ); ?>';
@@ -283,11 +309,6 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 		 */
 		function show_link_on_content( $content ) {
 			$content = $this->show_link( $content, true );
-
-			$styles = '.pf-button.pf-button-excerpt { display: none; }';
-
-			// hide the excerpt button in case it is available so that 2 buttons do not show.
-			$content .= '<style>' . apply_filters( 'printfriendly_styles', $styles, 'content' ) . '</style>';
 
 			return $content;
 		}
@@ -364,7 +385,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			$onclick = '';
 
 			if ( $this->google_analytics_enabled() ) {
-				$title_var = 'NULL';
+				$title_var = is_singular() ? esc_attr( get_the_title() ) : 'NULL';
 				$analytics_code = "if(typeof(_gaq) != 'undefined') { _gaq.push(['_trackEvent','PRINTFRIENDLY', 'print', '" . $title_var . "']);
           }else if(typeof(ga) != 'undefined') {  ga('send', 'event','PRINTFRIENDLY', 'print', '" . $title_var . "'); }";
 				if ( $js_enabled ) {
@@ -398,8 +419,37 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				$align = ' pf-align' . $this->options['content_position'];
 			}
 			$href = str_replace( '&', '&amp;', $href );
+
 			$button = apply_filters( 'printfriendly_button', '<div class="printfriendly pf-button ' . $add_class . $align . '"><a href="' . $href . '" rel="nofollow" ' . $onclick . ' title="Printer Friendly, PDF & Email">' . $this->button() . '</a></div>' );
 			return $button;
+		}
+
+		/**
+		 * Returns the custom selector CSS to be added.
+		 *
+		 * @since 5.0
+		 * @returns string
+		 */
+		private function getSelectorsFromCustomCSS() {
+			$css = '';
+
+			if ( $this->options['pf_algo'] === 'css' ) {
+				$attributes = array();
+				$names = array( 'author', 'date', 'content', 'title', 'primaryImage' );
+				$data = '';
+				foreach ( $names as $name ) {
+					$selector = $this->val( "css-{$name}", false );
+					$suffix = $name === 'content' ? 'Selectors' : 'Selector';
+					if ( ! empty( $selector ) ) {
+						$data .= "{$name}{$suffix}=$selector;";
+					}
+				}
+				$fallback = $this->options['pf_algo_css_content'];
+				if ( $data ) {
+					$css = sprintf( '<printfriendly-options data-selectors="%s" data-fallback-strategy="%s"></printfriendly-options>', esc_attr( $data ), esc_attr( $fallback ) );
+				}
+			}
+			return $css;
 		}
 
 
@@ -443,7 +493,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			load_plugin_textdomain( 'printfriendly', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 			// Register our option array
-			register_setting( $this->option_name, $this->option_name, array(&$this, 'options_validate') );
+			register_setting( $this->option_name, $this->option_name, array( 'sanitize_callback' => array(&$this, 'options_validate') ) );
 		}
 
 		/**
@@ -595,7 +645,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			}
 
 			if ( ! isset( $input['image-style'] ) || ! in_array( $input['image-style'], array('right', 'left', 'none', 'block'), true ) ) {
-				$valid_input['image-style'] = 'right';
+				$valid_input['image-style'] = 'block';
 			}
 
 			foreach ( array('click_to_delete', 'email', 'pdf', 'print') as $opt ) {
@@ -635,18 +685,35 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 			if ( ! isset( $input['password_protected'] ) || ! in_array( $input['password_protected'], array('no', 'yes'), true ) ) {
 				$valid_input['password_protected'] = 'no';
 			}
+			if ( ! isset( $input['show_hidden_content'] ) || ! in_array( $input['show_hidden_content'], array('no', 'yes'), true ) ) {
+				$valid_input['show_hidden_content'] = 'no';
+			}
 
 			/*Analytics Options */
 			if ( ! isset( $input['enable_google_analytics'] ) || ! in_array( $input['enable_google_analytics'], array('no', 'yes'), true ) ) {
 				$valid_input['enable_google_analytics'] = 'no';
 			}
 
-			if ( ! isset( $input['pf_algo'] ) || ! in_array( $input['pf_algo'], array('wp', 'pf'), true ) ) {
+			if ( ! isset( $input['pf_algo'] ) || ! in_array( $input['pf_algo'], array('wp', 'pf', 'css'), true ) ) {
 				$valid_input['pf_algo'] = 'wp';
+			}
+
+			if ( $valid_input['pf_algo'] === 'css' && empty( $valid_input['pf_algo_css_content'] ) && ! empty( $valid_input['css-content'] ) ) {
+				$valid_input['pf_algo_css_content'] = 'original';
 			}
 
 			/* Database version */
 			$valid_input['db_version'] = $this->db_version;
+
+			// set the current tab from where the settings were saved from
+			if ( isset( $_POST['tab'] ) ) {
+				set_transient( 'pf-tab', $_POST['tab'], 5 );
+			}
+
+			// save the categories as comma-separated
+			if ( isset( $valid_input['show_on_cat'] ) && ! empty( $valid_input['show_on_cat'] ) ) {
+				$valid_input['show_on_cat'] = implode( ',', $valid_input['show_on_cat'] );
+			}
 
 			return $valid_input;
 		}
@@ -683,9 +750,9 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 					wp_enqueue_script( 'select2', plugins_url( 'assets/js/lib/select2.min.js', __FILE__ ) );
 				}
 
-				wp_register_script( 'pf-admin', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-tabs', 'media-upload', 'wp-color-picker', 'clipboard', 'select2' ), $this->plugin_version );
+				wp_register_script( 'pf-admin', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-tabs', 'jquery-ui-accordion', 'media-upload', 'wp-color-picker', 'clipboard', 'select2' ), $this->plugin_version );
 				wp_localize_script(
-					'pf-admin', 'config', array(
+					'pf-admin', 'pf_config', array(
 						'i10n' => array(
 							'upload_window_title' => __( 'Custom Image', 'printfriendly' ),
 							'upload_window_button_title' => __( 'Use Image', 'printfriendly' ),
@@ -697,7 +764,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				wp_register_script( 'pf-admin-pro', plugins_url( 'assets/js/admin_pro.js', __FILE__ ), array( 'pf-admin' ), $this->plugin_version );
 
 				wp_localize_script(
-					'pf-admin-pro', 'config', array(
+					'pf-admin-pro', 'pf_config', array(
 						'nonce' => wp_create_nonce( $this->hook . $this->plugin_version ),
 						'action' => $this->hook,
 						'i10n' => array(
@@ -793,7 +860,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				'tagline' => '',
 				'click_to_delete' => '0', // 0 - allow, 1 - do not allow
 				'hide-images' => '0', // 0 - show images, 1 - hide images
-				'image-style' => 'right', // 'right', 'left', 'none', 'block'
+				'image-style' => 'block', // 'right', 'left', 'none', 'block'
 				'email' => '0', // 0 - allow, 1 - do not allow
 				'pdf' => '0', // 0 - allow, 1 - do not allow
 				'print' => '0', // 0 - allow, 1 - do not allow
@@ -802,6 +869,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				'enable_error_reporting' => 'yes',
 				'pf_algo' => 'wp',
 				'images-size' => 'full-size',
+				'show_hidden_content' => 'no',
 			);
 
 			// Check whether the old badly named singular options are there, if so, use the data and delete them.
@@ -1151,10 +1219,14 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 		 * @since 3.0
 		 * @param string $val value to check.
 		 */
-		function val( $val, $echo = true ) {
+		function val( $val, $echo = true, $default = null ) {
 			$value = '';
 			if ( isset( $this->options[ $val ] ) ) {
 				$value = esc_attr( $this->options[ $val ] );
+			}
+
+			if ( empty( $value ) && ! is_null( $default ) ) {
+				$value = $default;
 			}
 
 			if ( $echo ) {
@@ -1375,7 +1447,7 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 		 */
 		function get_custom_css_upgrade_message() {
 			// upgrading from a version that was using urls instead of the textarea?
-			if ( isset( $this->options['custom_css_url'] ) ) {
+			if ( isset( $this->options['custom_css_url'] ) && ! empty( $this->options['custom_css_url'] ) ) {
 				$css_url = $this->options['custom_css_url'];
 				return sprintf( __( 'You are currently using %1$s%2$s%3$s. You can copy copy its contents into the textbox if you want to update the styles.', 'printfriendly' ), '<a href="' . $css_url . '" target="_blank">', $css_url, '</a>' );
 			}
@@ -1396,8 +1468,21 @@ if ( ! class_exists( 'PrintFriendly_WordPress' ) ) {
 				settings_errors();
 			}
 
+			$customCssOptionCode = $this->getSelectorsFromCustomCSS();
 			include_once PRINTFRIENDLY_BASEPATH . '/views/settings.php';
 		}
+
+		/**
+		 * Returns the current tab to activate.
+		 *
+		 * @since 4.0.1
+		 */
+		function is_tab( $tab_id ) {
+			$tab = get_transient( 'pf-tab' );
+			// phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			return empty( $tab ) && $tab_id == 0 ? true : $tab == $tab_id;
+		}
+
 	}
 	$printfriendly = new PrintFriendly_WordPress();
 }

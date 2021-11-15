@@ -6,31 +6,23 @@ use FernleafSystems\Wordpress\Plugin\Shield\Databases;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\ModCon;
 use FernleafSystems\Wordpress\Services\Services;
 
-/**
- * Class Restore
- * @package FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard\Lib\FileLocker\Ops
- */
 class Restore extends BaseOps {
 
-	/**
-	 * @param Databases\FileLocker\EntryVO $oRecord
-	 * @return mixed
-	 */
-	public function run( $oRecord ) {
-		$bReverted = Services::WpFs()->putFileContent(
-			$oRecord->file,
+	public function run( Databases\FileLocker\EntryVO $record ) :bool {
+		$reverted = Services::WpFs()->putFileContent(
+			$record->file,
 			( new ReadOriginalFileContent() )
 				->setMod( $this->getMod() )
-				->run( $oRecord )
+				->run( $record )
 		);
-		if ( $bReverted ) {
+		if ( $reverted ) {
 			/** @var ModCon $mod */
 			$mod = $this->getMod();
-			/** @var Databases\FileLocker\Update $oUpd */
-			$oUpd = $mod->getDbHandler_FileLocker()->getQueryUpdater();
-			$oUpd->markReverted( $oRecord );
+			/** @var Databases\FileLocker\Update $update */
+			$update = $mod->getDbHandler_FileLocker()->getQueryUpdater();
+			$update->markReverted( $record );
 			$this->clearFileLocksCache();
 		}
-		return $bReverted;
+		return $reverted;
 	}
 }

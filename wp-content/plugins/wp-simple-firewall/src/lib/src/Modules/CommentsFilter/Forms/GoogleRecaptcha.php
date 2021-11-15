@@ -2,17 +2,13 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\CommentsFilter\Forms;
 
-use FernleafSystems\Utilities\Logic\OneTimeExecute;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\CommentsFilter;
-use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
-class GoogleRecaptcha {
+class GoogleRecaptcha extends ExecOnceModConsumer {
 
-	use ModConsumer;
-	use OneTimeExecute;
-
-	protected function canRun() {
+	protected function canRun() :bool {
 		/** @var CommentsFilter\ModCon $mod */
 		$mod = $this->getMod();
 		/** @var CommentsFilter\Options $opts */

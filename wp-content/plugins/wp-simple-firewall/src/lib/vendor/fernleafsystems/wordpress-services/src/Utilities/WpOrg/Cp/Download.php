@@ -8,42 +8,42 @@ use FernleafSystems\Wordpress\Services\Utilities\HttpUtil;
 class Download {
 
 	/**
-	 * @param string $sVersion
+	 * @param string $version
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function version( $sVersion ) {
-		$sTmpFile = null;
+	public function version( $version ) {
+		$tmpFile = null;
 
 		try {
-			$sUrl = $this->getZipDownloadUrl( $sVersion );
-			if ( !empty( $sVersion ) ) {
-				$sTmpFile = ( new HttpUtil() )
-					->downloadUrl( $sUrl );
+			$url = $this->getZipDownloadUrl( $version );
+			if ( !empty( $version ) ) {
+				$tmpFile = ( new HttpUtil() )
+					->downloadUrl( $url );
 			}
 		}
-		catch ( \Exception $oE ) {
+		catch ( \Exception $e ) {
 		}
-		return $sTmpFile;
+		return $tmpFile;
 	}
 
 	/**
-	 * @param $sVersion
+	 * @param $version
 	 * @return string|null
 	 */
-	private function getZipDownloadUrl( $sVersion ) {
-		$sUrl = null;
-		$aVersions = @json_decode( Services::HttpRequest()->getContent( Repo::GetUrlForVersions() ), true );
+	private function getZipDownloadUrl( $version ) {
+		$url = null;
+		$versions = @json_decode( Services::HttpRequest()->getContent( Repo::GetUrlForVersions() ), true );
 
-		if ( is_array( $aVersions ) ) {
-			foreach ( $aVersions as $aVers ) {
-				if ( $aVers[ 'tag_name' ] == $sVersion ) {
-					$sUrl = $aVers[ 'zipball_url' ];
+		if ( is_array( $versions ) ) {
+			foreach ( $versions as $version ) {
+				if ( $version[ 'tag_name' ] == $version ) {
+					$url = $version[ 'zipball_url' ];
 					break;
 				}
 			}
 		}
 
-		return $sUrl;
+		return $url;
 	}
 }

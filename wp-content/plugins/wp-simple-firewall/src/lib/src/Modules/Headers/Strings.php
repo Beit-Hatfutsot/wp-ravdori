@@ -65,87 +65,49 @@ class Strings extends Base\Strings {
 		switch ( $key ) {
 
 			case 'enable_headers' :
-				$sName = sprintf( __( 'Enable %s Module', 'wp-simple-firewall' ), $sModName );
-				$sSummary = sprintf( __( 'Enable (or Disable) The %s Module', 'wp-simple-firewall' ), $sModName );
-				$sDescription = sprintf( __( 'Un-Checking this option will completely disable the %s module.', 'wp-simple-firewall' ), $sModName );
+				$name = sprintf( __( 'Enable %s Module', 'wp-simple-firewall' ), $sModName );
+				$summary = sprintf( __( 'Enable (or Disable) The %s Module', 'wp-simple-firewall' ), $sModName );
+				$description = sprintf( __( 'Un-Checking this option will completely disable the %s module.', 'wp-simple-firewall' ), $sModName );
 				break;
 
 			case 'x_frame' :
-				$sName = __( 'Block iFrames', 'wp-simple-firewall' );
-				$sSummary = __( 'Block Remote iFrames Of This Site', 'wp-simple-firewall' );
-				$sDescription = __( 'The setting prevents any external website from embedding your site in an iFrame.', 'wp-simple-firewall' )
+				$name = __( 'Block iFrames', 'wp-simple-firewall' );
+				$summary = __( 'Block Remote iFrames Of This Site', 'wp-simple-firewall' );
+				$description = __( 'The setting prevents any external website from embedding your site in an iFrame.', 'wp-simple-firewall' )
 								.__( 'This is useful for preventing so-called "ClickJack attacks".', 'wp-simple-firewall' );
 				break;
 
 			case 'x_referrer_policy' :
-				$sName = __( 'Referrer Policy', 'wp-simple-firewall' );
-				$sSummary = __( 'Referrer Policy Header', 'wp-simple-firewall' );
-				$sDescription = __( 'The Referrer Policy Header allows you to control when and what referral information a browser may pass along with links clicked on your site.', 'wp-simple-firewall' );
+				$name = __( 'Referrer Policy', 'wp-simple-firewall' );
+				$summary = __( 'Referrer Policy Header', 'wp-simple-firewall' );
+				$description = __( 'The Referrer Policy Header allows you to control when and what referral information a browser may pass along with links clicked on your site.', 'wp-simple-firewall' );
 				break;
 
 			case 'x_xss_protect' :
-				$sName = __( 'XSS Protection', 'wp-simple-firewall' );
-				$sSummary = __( 'Employ Built-In Browser XSS Protection', 'wp-simple-firewall' );
-				$sDescription = __( 'Directs compatible browsers to block what they detect as Reflective XSS attacks.', 'wp-simple-firewall' );
+				$name = __( 'XSS Protection', 'wp-simple-firewall' );
+				$summary = __( 'Employ Built-In Browser XSS Protection', 'wp-simple-firewall' );
+				$description = __( 'Directs compatible browsers to block what they detect as Reflective XSS attacks.', 'wp-simple-firewall' );
 				break;
 
 			case 'x_content_type' :
-				$sName = __( 'Prevent Mime-Sniff', 'wp-simple-firewall' );
-				$sSummary = __( 'Turn-Off Browser Mime-Sniff', 'wp-simple-firewall' );
-				$sDescription = __( 'Reduces visitor exposure to malicious user-uploaded content.', 'wp-simple-firewall' );
+				$name = __( 'Prevent Mime-Sniff', 'wp-simple-firewall' );
+				$summary = __( 'Turn-Off Browser Mime-Sniff', 'wp-simple-firewall' );
+				$description = __( 'Reduces visitor exposure to malicious user-uploaded content.', 'wp-simple-firewall' );
 				break;
 
 			case 'enable_x_content_security_policy' :
-				$sName = sprintf( __( 'Enable %s', 'wp-simple-firewall' ), 'CSP' );
-				$sSummary = sprintf( __( 'Enable %s', 'wp-simple-firewall' ), __( 'Content Security Policy', 'wp-simple-firewall' ) );
-				$sDescription = __( 'Allows for permission and restriction of all resources loaded on your site.', 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_self' :
-				$sName = __( 'Self', 'wp-simple-firewall' );
-				$sSummary = __( "Allow 'self' Directive", 'wp-simple-firewall' );
-				$sDescription = __( "Using 'self' is generally recommended.", 'wp-simple-firewall' )
-								.__( "It essentially means that resources from your own host:protocol are permitted.", 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_inline' :
-				$sName = __( 'Inline Entities', 'wp-simple-firewall' );
-				$sSummary = __( 'Allow Inline Scripts and CSS', 'wp-simple-firewall' );
-				$sDescription = __( 'Allows parsing of Javascript and CSS declared in-line in your html document.', 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_data' :
-				$sName = __( 'Embedded Data', 'wp-simple-firewall' );
-				$sSummary = __( 'Allow "data:" Directives', 'wp-simple-firewall' );
-				$sDescription = __( 'Allows use of embedded data directives, most commonly used for images and fonts.', 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_eval' :
-				$sName = __( 'Allow eval()', 'wp-simple-firewall' );
-				$sSummary = __( 'Allow Javascript eval()', 'wp-simple-firewall' );
-				$sDescription = __( 'Permits the use of Javascript the eval() function.', 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_https' :
-				$sName = __( 'HTTPS', 'wp-simple-firewall' );
-				$sSummary = __( 'HTTPS Resource Loading', 'wp-simple-firewall' );
-				$sDescription = __( 'Allows loading of any content provided over HTTPS.', 'wp-simple-firewall' );
-				break;
-
-			case 'xcsp_hosts' :
-				$sName = __( 'Permitted Hosts', 'wp-simple-firewall' );
-				$sSummary = __( 'Permitted Hosts and Domains', 'wp-simple-firewall' );
-				$sDescription = __( 'You can explicitly state which hosts/domain from which content may be loaded.', 'wp-simple-firewall' )
-								.' '.__( 'Take great care and test your site as you may block legitimate resources.', 'wp-simple-firewall' )
-								.'<br />- '.__( 'If in-doubt, leave blank or use "*" only.', 'wp-simple-firewall' )
-								.'<br />- '.sprintf( '%s: %s', __( 'Note', 'wp-simple-firewall' ), __( 'You can force only HTTPS for a given domain by prefixing it with "https://".', 'wp-simple-firewall' ) );
+				$name = sprintf( __( 'Enable %s', 'wp-simple-firewall' ), 'CSP' );
+				$summary = sprintf( __( 'Enable %s', 'wp-simple-firewall' ), __( 'Content Security Policy', 'wp-simple-firewall' ) );
+				$description = [
+					__( 'Allows for permission and restriction of all resources loaded on your site.', 'wp-simple-firewall' ),
+					__( 'Use this in conjunction with the Manual Rules section - you must supply your own CSP rules.', 'wp-simple-firewall' ),
+				];
 				break;
 
 			case 'xcsp_custom' :
-				$sName = __( 'Manual Rules', 'wp-simple-firewall' );
-				$sSummary = __( 'Manual CSP Rules', 'wp-simple-firewall' );
-				$sDescription = [
-					__( 'Manual CSP rules which are not covered by the rules above.', 'wp-simple-firewall' ),
+				$name = __( 'Manual Rules', 'wp-simple-firewall' );
+				$summary = __( 'Manual CSP Rules', 'wp-simple-firewall' );
+				$description = [
 					'- '.__( 'Take a new line per rule.', 'wp-simple-firewall' ),
 					'- '.__( 'We provide this feature as-is: to allow you to add custom CSP rules to your site.', 'wp-simple-firewall' ),
 					'- '.__( "We don't provide support for creating CSP rules and whether they're correct for your site.", 'wp-simple-firewall' ),
@@ -158,9 +120,9 @@ class Strings extends Base\Strings {
 		}
 
 		return [
-			'name'        => $sName,
-			'summary'     => $sSummary,
-			'description' => $sDescription,
+			'name'        => $name,
+			'summary'     => $summary,
+			'description' => $description,
 		];
 	}
 }

@@ -12,31 +12,31 @@ use FernleafSystems\Wordpress\Services\Utilities\Encrypt\OpenSslEncryptVo;
 class ReadDataFromFileEncrypted {
 
 	/**
-	 * @param string $sPath
-	 * @param string $sPrivateKey
+	 * @param string $path
+	 * @param string $privateKey
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function run( $sPath, $sPrivateKey ) {
-		$oFs = Services::WpFs();
-		if ( !$oFs->exists( $sPath ) || !$oFs->isFile( $sPath ) ) {
-			throw new \Exception( 'File path does not exist: '.$sPath );
+	public function run( $path, $privateKey ) {
+		$FS = Services::WpFs();
+		if ( !$FS->exists( $path ) || !$FS->isFile( $path ) ) {
+			throw new \Exception( 'File path does not exist: '.$path );
 		}
-		$sRawFile = $oFs->getFileContent( $sPath );
-		if ( empty( $sRawFile ) ) {
-			throw new \Exception( 'Could not read data from file: '.$sRawFile );
+		$rawFile = $FS->getFileContent( $path );
+		if ( empty( $rawFile ) ) {
+			throw new \Exception( 'Could not read data from file: '.$rawFile );
 		}
-		$aRawData = @json_decode( $sRawFile, true );
-		if ( empty( $aRawData ) || !is_array( $aRawData ) ) {
+		$rawData = @json_decode( $rawFile, true );
+		if ( empty( $rawData ) || !is_array( $rawData ) ) {
 			throw new \Exception( 'Parsing raw data from file failed' );
 		}
 
-		$oVo = ( new OpenSslEncryptVo() )->applyFromArray( $aRawData );
+		$VO = ( new OpenSslEncryptVo() )->applyFromArray( $rawData );
 
-		$sData = Services::Encrypt()->openData( $oVo->sealed_data, $oVo->sealed_password, $sPrivateKey );
-		if ( $sData === false ) {
+		$data = Services::Encrypt()->openDataVo( $VO, $privateKey );
+		if ( $data === false ) {
 			throw new \Exception( 'Decrypting sealed data failed.' );
 		}
-		return $sData;
+		return $data;
 	}
 }

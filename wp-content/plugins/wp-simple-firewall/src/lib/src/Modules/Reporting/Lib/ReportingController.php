@@ -2,23 +2,17 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\Reporting\Lib;
 
-use FernleafSystems\Utilities\Logic\OneTimeExecute;
 use FernleafSystems\Wordpress\Plugin\Shield\Crons\PluginCronsConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases\Reports as DBReports;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\Reporting\Lib\Reports\Build;
 use FernleafSystems\Wordpress\Services\Services;
 
-class ReportingController {
+class ReportingController extends Modules\Base\Common\ExecOnceModConsumer {
 
-	use Modules\ModConsumer;
-	use OneTimeExecute;
 	use PluginCronsConsumer;
 
-	/**
-	 * @return bool
-	 */
-	protected function canRun() {
+	protected function canRun() :bool {
 		/** @var Modules\Reporting\Options $opts */
 		$opts = $this->getOptions();
 		return $opts->getFrequencyInfo() !== 'disabled' || $opts->getFrequencyAlert() !== 'disabled';
@@ -40,10 +34,16 @@ class ReportingController {
 
 		if ( $opts->getFrequencyAlert() !== 'disabled' ) {
 			try {
-				$alertReport = $this->buildReportAlerts();
-				if ( !empty( $alertReport->content ) ) {
-					$this->storeReportRecord( $alertReport );
-					$reports[] = $alertReport;
+				$report = $this->buildReportAlerts();
+				if ( !empty( $report->content ) ) {
+					$this->storeReportRecord( $report );
+					$reports[] = $report;
+					$this->getCon()->fireEvent( 'report_generated', [
+						'audit_params' => [
+							'type'     => 'alert',
+							'interval' => $report->interval,
+						]
+					] );
 				}
 			}
 			catch ( \Exception $e ) {
@@ -52,10 +52,16 @@ class ReportingController {
 
 		if ( $opts->getFrequencyInfo() !== 'disabled' ) {
 			try {
-				$infoReport = $this->buildReportInfo();
-				if ( !empty( $infoReport->content ) ) {
-					$this->storeReportRecord( $infoReport );
-					$reports[] = $infoReport;
+				$report = $this->buildReportInfo();
+				if ( !empty( $report->content ) ) {
+					$this->storeReportRecord( $report );
+					$reports[] = $report;
+					$this->getCon()->fireEvent( 'report_generated', [
+						'audit_params' => [
+							'type'     => 'info',
+							'interval' => $report->interval,
+						]
+					] );
 				}
 			}
 			catch ( \Exception $e ) {
@@ -69,7 +75,7 @@ class ReportingController {
 	 * @param Modules\Reporting\Lib\Reports\ReportVO $report
 	 * @return bool
 	 */
-	private function storeReportRecord( Reports\ReportVO $report ) {
+	private function storeReportRecord( Reports\ReportVO $report ) :bool {
 		$record = new DBReports\EntryVO();
 		$record->sent_at = Services::Request()->ts();
 		$record->rid = $report->rid;
@@ -85,10 +91,9 @@ class ReportingController {
 	}
 
 	/**
-	 * @return Modules\Reporting\Lib\Reports\ReportVO
 	 * @throws \Exception
 	 */
-	private function buildReportAlerts() {
+	private function buildReportAlerts() :Reports\ReportVO {
 		$report = ( new Reports\CreateReportVO( DBReports\Handler::TYPE_ALERT ) )
 			->setMod( $this->getMod() )
 			->create();
@@ -99,10 +104,9 @@ class ReportingController {
 	}
 
 	/**
-	 * @return Modules\Reporting\Lib\Reports\ReportVO
 	 * @throws \Exception
 	 */
-	private function buildReportInfo() {
+	private function buildReportInfo() :Reports\ReportVO {
 		$report = ( new Reports\CreateReportVO( DBReports\Handler::TYPE_INFO ) )
 			->setMod( $this->getMod() )
 			->create();
@@ -113,7 +117,7 @@ class ReportingController {
 	}
 
 	/**
-	 * @param Modules\Reporting\Lib\Reports\ReportVO[] $reportVOs
+	 * @param Reports\ReportVO[] $reportVOs
 	 */
 	private function sendEmail( array $reportVOs ) {
 
@@ -156,6 +160,12 @@ class ReportingController {
 							 ]
 						 ]
 					 );
+
+				$this->getCon()->fireEvent( 'report_sent', [
+					'audit_params' => [
+						'medium' => 'email',
+					]
+				] );
 			}
 			catch ( \Exception $e ) {
 				error_log( $e->getMessage() );

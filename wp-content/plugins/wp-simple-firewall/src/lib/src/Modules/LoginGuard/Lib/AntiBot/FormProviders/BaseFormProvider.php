@@ -2,13 +2,13 @@
 
 namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\LoginGuard\Lib\AntiBot\FormProviders;
 
+use FernleafSystems\Utilities\Logic\ExecOnce;
+use FernleafSystems\Wordpress\Plugin\Shield\Modules\Base\Common\ExecOnceModConsumer;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\LoginGuard;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\ModConsumer;
 use FernleafSystems\Wordpress\Services\Services;
 
-abstract class BaseFormProvider {
-
-	use ModConsumer;
+abstract class BaseFormProvider extends ExecOnceModConsumer {
 
 	/**
 	 * @var string
@@ -25,21 +25,21 @@ abstract class BaseFormProvider {
 	 */
 	private static $aProtectionProviders;
 
-	public static function SetProviders( array $aProviders ) {
-		self::$aProtectionProviders = $aProviders;
+	public static function SetProviders( array $providers ) {
+		self::$aProtectionProviders = $providers;
 	}
 
 	/**
-	 * @return true
 	 * @throws \Exception
 	 */
 	protected function checkProviders() {
-		if ( is_array( self::$aProtectionProviders ) ) {
-			foreach ( self::$aProtectionProviders as $oProvider ) {
-				$oProvider->performCheck( $this );
-			}
+		foreach ( $this->getProtectionProviders() as $provider ) {
+			$provider->performCheck( $this );
 		}
-		return true;
+	}
+
+	protected function getProtectionProviders() :array {
+		return is_array( self::$aProtectionProviders ) ? self::$aProtectionProviders : [];
 	}
 
 	protected function checkThenDie() {
@@ -51,7 +51,7 @@ abstract class BaseFormProvider {
 		}
 	}
 
-	public function run() {
+	protected function run() {
 		/** @var LoginGuard\Options $opts */
 		$opts = $this->getOptions();
 		if ( $opts->isProtectLogin() ) {
@@ -79,27 +79,22 @@ abstract class BaseFormProvider {
 	 * @return string
 	 */
 	public function formInsertsAppend( $sToAppend ) {
-		return $sToAppend.$this->formInsertsBuild();
+		return $sToAppend.$this->buildFormInsert();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function formInsertsBuild() {
+	public function buildFormInsert() :string {
 		$aInserts = [];
 		if ( is_array( self::$aProtectionProviders ) ) {
 			foreach ( self::$aProtectionProviders as $oProvider ) {
 				$aInserts[] = $oProvider->buildFormInsert( $this );
+				$oProvider->setAsInsertBuilt();
 			}
 		}
 		return implode( "\n", $aInserts );
 	}
 
-	/**
-	 * @return void
-	 */
-	public function formInsertsPrint() {
-		echo $this->formInsertsBuild();
+	public function printFormInsert() {
+		echo $this->buildFormInsert();
 	}
 
 	/**

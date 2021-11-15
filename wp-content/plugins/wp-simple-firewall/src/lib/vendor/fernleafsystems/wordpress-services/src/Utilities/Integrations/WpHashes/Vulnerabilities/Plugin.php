@@ -2,7 +2,7 @@
 
 namespace FernleafSystems\Wordpress\Services\Utilities\Integrations\WpHashes\Vulnerabilities;
 
-use FernleafSystems\Wordpress\Services;
+use FernleafSystems\Wordpress\Services\Core\VOs\Assets\WpPluginVo;
 
 /**
  * Class Plugin
@@ -13,10 +13,10 @@ class Plugin extends BasePluginTheme {
 	const ASSET_TYPE = 'plugin';
 
 	/**
-	 * @param Services\Core\VOs\WpPluginVo $oPluginVO
+	 * @param WpPluginVo $plugin
 	 * @return array[]|null
 	 */
-	public function getFromVO( Services\Core\VOs\WpPluginVo $oPluginVO ) {
-		return $this->getVulnerabilities( $oPluginVO->slug, $oPluginVO->Version );
+	public function getFromVO( WpPluginVo $plugin ) {
+		return $this->getVulnerabilities( $plugin->slug, $plugin->Version );
 	}
 }

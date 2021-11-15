@@ -4,10 +4,6 @@ namespace FernleafSystems\Wordpress\Services\Utilities\WpOrg\Cp;
 
 use FernleafSystems\Wordpress\Services;
 
-/**
- * Class Repo
- * @package FernleafSystems\Wordpress\Services\Utilities\WpOrg\Cp
- */
 class Repo extends Services\Utilities\WpOrg\Base\RepoBase {
 
 	const URL_VCS_ROOT = 'https://raw.githubusercontent.com/ClassicPress/ClassicPress-release';
@@ -39,43 +35,43 @@ class Repo extends Services\Utilities\WpOrg\Base\RepoBase {
 	}
 
 	/**
-	 * @param string $sFileFragment
-	 * @param string $sVersion
-	 * @param bool   $bUseSiteLocale
+	 * @param string $fileFragment
+	 * @param string $version
+	 * @param bool   $useSiteLocale
 	 * @return string|null
 	 */
-	public function downloadFromVcs( $sFileFragment, $sVersion = null, $bUseSiteLocale = true ) {
-		$sFile = parent::downloadFromVcs( $sFileFragment, $sVersion, $bUseSiteLocale );
-		if ( $bUseSiteLocale && empty( $sFile ) ) {
-			$sFile = parent::downloadFromVcs( $sFileFragment, $sVersion, false );
+	public function downloadFromVcs( $fileFragment, $version = null, $useSiteLocale = true ) {
+		$sFile = parent::downloadFromVcs( $fileFragment, $version, $useSiteLocale );
+		if ( $useSiteLocale && empty( $sFile ) ) {
+			$sFile = parent::downloadFromVcs( $fileFragment, $version, false );
 		}
 		return $sFile;
 	}
 
 	/**
-	 * @param string $sFileFragment
-	 * @param string $sVersion - leave empty to use the current version
-	 * @param bool   $bUseSiteLocale
+	 * @param string $fileFragment
+	 * @param string $version - leave empty to use the current version
+	 * @param bool   $useSiteLocale
 	 * @return bool
 	 */
-	public function existsInVcs( $sFileFragment, $sVersion = null, $bUseSiteLocale = true ) {
-		$sFile = parent::existsInVcs( $sFileFragment, $sVersion, $bUseSiteLocale );
-		if ( $bUseSiteLocale && empty( $sFile ) ) {
-			$sFile = parent::existsInVcs( $sFileFragment, $sVersion, false );
+	public function existsInVcs( $fileFragment, $version = null, $useSiteLocale = true ) {
+		$sFile = parent::existsInVcs( $fileFragment, $version, $useSiteLocale );
+		if ( $useSiteLocale && empty( $sFile ) ) {
+			$sFile = parent::existsInVcs( $fileFragment, $version, false );
 		}
 		return $sFile;
 	}
 
 	/**
-	 * @param string $sFileFragment
-	 * @param string $sVersion
-	 * @param bool   $bUseSiteLocale - not yet used for ClassicPress
+	 * @param string $fileFragment
+	 * @param string $version
+	 * @param bool   $useSiteLocale - not yet used for ClassicPress
 	 * @return string
 	 */
-	protected function getVcsUrlForFileAndVersion( $sFileFragment, $sVersion, $bUseSiteLocale = true ) {
-		if ( empty( $sVersion ) ) {
-			$sVersion = Services\Services::WpGeneral()->getVersion();
+	public function getVcsUrlForFileAndVersion( $fileFragment, $version, $useSiteLocale = true ) {
+		if ( empty( $version ) ) {
+			$version = Services\Services::WpGeneral()->getVersion();
 		}
-		return sprintf( '%s/%s', static::GetUrlForFiles( $sVersion ), ltrim( $sFileFragment, '/' ) );
+		return sprintf( '%s/%s', static::GetUrlForFiles( $version ), ltrim( $fileFragment, '/' ) );
 	}
 }

@@ -5,6 +5,7 @@ namespace FernleafSystems\Wordpress\Plugin\Shield\Modules\HackGuard;
 use FernleafSystems\Wordpress\Plugin\Shield;
 use FernleafSystems\Wordpress\Plugin\Shield\Databases;
 use FernleafSystems\Wordpress\Plugin\Shield\Modules\BaseShield;
+use FernleafSystems\Wordpress\Plugin\Shield\Utilities\CacheDir;
 use FernleafSystems\Wordpress\Services\Services;
 
 class ModCon extends BaseShield\ModCon {
@@ -57,35 +58,52 @@ class ModCon extends BaseShield\ModCon {
 		return $this->scanQueueCon;
 	}
 
+	public function getDbH_Scans() :DB\Scans\Ops\Handler {
+		return $this->getDbHandler()->loadDbH( 'scans' );
+	}
+
+	public function getDbH_ScanItems() :DB\ScanItems\Ops\Handler {
+		$this->getDbH_Scans();
+		return $this->getDbHandler()->loadDbH( 'scanitems' );
+	}
+
+	public function getDbH_ResultItems() :DB\ResultItems\Ops\Handler {
+		return $this->getDbHandler()->loadDbH( 'resultitems' );
+	}
+
+	public function getDbH_ResultItemMeta() :DB\ResultItemMeta\Ops\Handler {
+		$this->getDbH_ResultItems();
+		return $this->getDbHandler()->loadDbH( 'resultitem_meta' );
+	}
+
+	public function getDbH_ScanResults() :DB\ScanResults\Ops\Handler {
+		$this->getDbH_Scans();
+		$this->getDbH_ResultItems();
+		return $this->getDbHandler()->loadDbH( 'scanresults' );
+	}
+
 	/**
-	 * @param string $slug
 	 * @return Scan\Controller\Base|mixed
-	 * @throws \Exception
 	 */
 	public function getScanCon( string $slug ) {
 		return $this->getScansCon()->getScanCon( $slug );
 	}
 
 	public function getMainWpData() :array {
-		$issues = ( new Lib\Reports\Query\ScanCounts() )->setMod( $this );
-		$issues->notified = null;
 		return array_merge( parent::getMainWpData(), [
-			'scan_issues' => array_filter( $issues->all() )
+			'scan_issues' => array_filter( ( new Lib\Reports\Query\ScanCounts() )->setMod( $this )->all() )
 		] );
 	}
 
-	protected function handleModAction( string $action ) {
-		switch ( $action ) {
-			case  'scan_file_download':
-				( new Lib\Utility\FileDownloadHandler() )
-					->setDbHandler( $this->getDbHandler_ScanResults() )
-					->downloadByItemId( (int)Services::Request()->query( 'rid', 0 ) );
-				break;
-			case  'filelocker_download_original':
-			case  'filelocker_download_current':
+	protected function handleFileDownload( string $downloadID ) {
+		switch ( $downloadID ) {
+			case 'filelocker':
 				$this->getFileLocker()->handleFileDownloadRequest();
 				break;
-			default:
+			case 'scan_file':
+				( new Lib\Utility\FileDownloadHandler() )
+					->setMod( $this )
+					->downloadByItemId( (int)Services::Request()->query( 'rid', 0 ) );
 				break;
 		}
 	}
@@ -119,6 +137,31 @@ class ModCon extends BaseShield\ModCon {
 				$con->purge();
 			}
 		}
+
+		$this->cleanScanExclusions();
+	}
+
+	private function cleanScanExclusions() {
+		/** @var Options $opts */
+		$opts = $this->getOptions();
+
+		$specialDirs = array_map( 'trailingslashit', [
+			ABSPATH,
+			path_join( ABSPATH, 'wp-admin' ),
+			path_join( ABSPATH, 'wp-includes' ),
+			untrailingslashit( WP_CONTENT_DIR ),
+			path_join( WP_CONTENT_DIR, 'plugins' ),
+			path_join( WP_CONTENT_DIR, 'themes' ),
+		] );
+
+		$values = $opts->getOpt( 'scan_path_exclusions', [] );
+		$opts->setOpt( 'scan_path_exclusions',
+			( new Shield\Modules\Base\Options\WildCardOptions() )->clean(
+				is_array( $values ) ? $values : [],
+				$specialDirs,
+				Shield\Modules\Base\Options\WildCardOptions::FILE_PATH_REL
+			)
+		);
 	}
 
 	/**
@@ -142,66 +185,63 @@ class ModCon extends BaseShield\ModCon {
 	protected function cleanFileExclusions() {
 		/** @var Options $opts */
 		$opts = $this->getOptions();
-		$aExclusions = [];
+		$excl = [];
 
-		$aToClean = $opts->getOpt( 'ufc_exclusions', [] );
-		if ( is_array( $aToClean ) ) {
-			foreach ( $aToClean as $nKey => $sExclusion ) {
-				$sExclusion = wp_normalize_path( trim( $sExclusion ) );
+		$toClean = $opts->getOpt( 'ufc_exclusions', [] );
+		if ( is_array( $toClean ) ) {
+			foreach ( $toClean as $exclusion ) {
 
-				if ( preg_match( '/^#(.+)#$/', $sExclusion, $aMatches ) ) { // it's regex
-					// ignore it
+				if ( preg_match( '/^#(.+)#$/', $exclusion, $matches ) ) { // it's not regex
+					$exclusion = str_replace( '\\', '\\\\', $exclusion );
 				}
-				elseif ( strpos( $sExclusion, '/' ) === false ) { // filename only
-					$sExclusion = trim( preg_replace( '#[^.0-9a-z_-]#i', '', $sExclusion ) );
+				else {
+					$exclusion = wp_normalize_path( trim( $exclusion ) );
+					if ( strpos( $exclusion, '/' ) === false ) { // filename only
+						$exclusion = trim( preg_replace( '#[^.0-9a-z_-]#i', '', $exclusion ) );
+					}
 				}
 
-				if ( !empty( $sExclusion ) ) {
-					$aExclusions[] = $sExclusion;
+				if ( !empty( $exclusion ) ) {
+					$excl[] = $exclusion;
 				}
 			}
 		}
 
-		$opts->setOpt( 'ufc_exclusions', array_unique( $aExclusions ) );
+		$opts->setOpt( 'ufc_exclusions', array_unique( $excl ) );
 	}
 
-	public function isPtgEnabled() :bool {
-		$opts = $this->getOptions();
-		return $this->isModuleEnabled() && $this->isPremium()
-			   && $opts->isOpt( 'ptg_enable', 'enabled' )
-			   && $opts->isOptReqsMet( 'ptg_enable' )
-			   && $this->canCacheDirWrite();
-	}
-
-	/**
-	 * @return string|false
-	 */
-	public function getPtgSnapsBaseDir() {
-		return $this->getCon()->getPluginCachePath( 'ptguard/' );
+	public function getPtgSnapsBaseDir() :string {
+		return ( new CacheDir() )
+			->setCon( $this->getCon() )
+			->buildSubDir( 'ptguard' );
 	}
 
 	public function hasWizard() :bool {
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTempDir() {
-		$sDir = $this->getCon()->getPluginCachePath( 'scans' );
-		return Services::WpFs()->mkdir( $sDir ) ? $sDir : false;
+	public function getScansTempDir() :string {
+		return ( new CacheDir() )
+			->setCon( $this->getCon() )
+			->buildSubDir( 'scans' );
 	}
 
 	public function getDbHandler_FileLocker() :Databases\FileLocker\Handler {
-		return $this->getDbH( 'file_protect' );
+		return $this->getDbH( 'filelocker' );
 	}
 
+	/**
+	 * @deprecated 12.1
+	 */
 	public function getDbHandler_ScanQueue() :Databases\ScanQueue\Handler {
 		return $this->getDbH( 'scanq' );
 	}
 
+	/**
+	 * @deprecated 12.1
+	 */
 	public function getDbHandler_ScanResults() :Databases\Scanner\Handler {
-		return $this->getDbH( 'scanresults' );
+		return $this->getDbH( 'scanner' );
 	}
 
 	/**
@@ -209,23 +249,28 @@ class ModCon extends BaseShield\ModCon {
 	 * @throws \Exception
 	 */
 	protected function isReadyToExecute() :bool {
-		return ( $this->getDbHandler_ScanQueue() instanceof Databases\ScanQueue\Handler )
-			   && $this->getDbHandler_ScanQueue()->isReady()
-			   && ( $this->getDbHandler_ScanResults() instanceof Databases\Scanner\Handler )
-			   && $this->getDbHandler_ScanQueue()->isReady()
+		return $this->getDbH_ScanResults()->isReady() && $this->getDbH_ScanItems()->isReady()
 			   && parent::isReadyToExecute();
 	}
 
 	public function onPluginDeactivate() {
 		// 1. Clean out the scanners
-		/** @var Options $oOpts */
-		$oOpts = $this->getOptions();
-		foreach ( $oOpts->getScanSlugs() as $slug ) {
+		/** @var Options $opts */
+		$opts = $this->getOptions();
+		foreach ( $opts->getScanSlugs() as $slug ) {
 			$this->getScanCon( $slug )->purge();
 		}
-		$this->getDbHandler_ScanQueue()->tableDelete();
-		$this->getDbHandler_ScanResults()->tableDelete();
+		$this->getDbH_ScanItems()->tableDelete();
+		$this->getDbH_ScanResults()->tableDelete();
 		// 2. Clean out the file locker
 		$this->getFileLocker()->purge();
+	}
+
+	/**
+	 * @inheritDoc
+	 * @deprecated 13.0
+	 */
+	public function getDbHandlers( $bInitAll = false ) {
+		return [];
 	}
 }
