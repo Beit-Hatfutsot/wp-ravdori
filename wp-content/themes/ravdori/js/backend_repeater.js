@@ -48,7 +48,7 @@ var $ = jQuery;
         // Assign event handlers
 
         // Click handler for the remove row button
-        $( repeater_elemt_id + ' a.story-post-edit-remove-row' ).live( 'click' ,
+        $( repeater_elemt_id + ' a.story-post-edit-remove-row' ).on( 'click' ,
         (
             function( e )
             {
@@ -61,7 +61,7 @@ var $ = jQuery;
 
 
         // Click handler for the add row button
-        $( repeater_elemt_id + 'a.story-post-edit-add-row' ).live( 'click' ,
+        $( repeater_elemt_id + 'a.story-post-edit-add-row' ).on( 'click' ,
         (
             function( e )
             {
@@ -243,7 +243,7 @@ var $ = jQuery;
 
 
 
-$(window).load(function(){
+$(window).on('load', function(){
 
 
     $("#dictionary-repeater").BH_BackendRepeater();

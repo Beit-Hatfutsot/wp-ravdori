@@ -543,7 +543,7 @@ get_header();
 
 
 
-        $("textarea[name*='<?php echo IWizardStep4Fields::QUOTES . '['?>']").live('keypress', function(kp_e){
+        $("textarea[name*='<?php echo IWizardStep4Fields::QUOTES . '['?>']").on('keypress', function(kp_e){
 
             var regex = /\s+/gi;
             wordcount = $(this).val().trim().replace(regex, ' ').split(' ').length;
@@ -568,7 +568,7 @@ get_header();
         }); //ready
 
 	
-	$( window ).load(function() {
+	$( window ).on('load', function() {
 		
 		/* Change the tinyMce button accroding to the translation */
 		jQuery('#insert-media-button').get(0).lastChild.nodeValue = "<?php BH__e('הוספת מדיה' , 'BH', $locale); ?>"

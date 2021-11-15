@@ -8,7 +8,7 @@
  */
 ?>
 <script>
-jQuery(window).load(function() {
+jQuery(window).on('load', function() {
 	
   jQuery('#preloader').fadeOut("slow");
   

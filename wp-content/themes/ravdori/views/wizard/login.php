@@ -136,11 +136,11 @@ jQuery(document).ready(function () {
         jQuery("#<?php echo IWizardStep1Fields::COUNTRY ?>").change(function () { updateChosen(); }); // Change event
 
         // The schools select
-        jQuery("#<?php echo IWizardStep1Fields::CITY; ?>").live('change', function () { updateChosen(); });
+        jQuery("#<?php echo IWizardStep1Fields::CITY; ?>").on('change', function () { updateChosen(); });
 
 
         // The schools select
-        jQuery("#<?php echo IWizardStep1Fields::SCHOOL_NAME; ?>").live('change', function () { updateChosen(); });
+        jQuery("#<?php echo IWizardStep1Fields::SCHOOL_NAME; ?>").on('change', function () { updateChosen(); });
 
 
 <?php

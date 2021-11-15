@@ -13,7 +13,7 @@
 
 $ = jQuery;
 
-$(window).load(function () {
+$(window).on('load', function () {
 	
 	// Need to make it more prettier and smart...
 	

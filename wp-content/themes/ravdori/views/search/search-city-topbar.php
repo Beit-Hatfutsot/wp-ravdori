@@ -59,7 +59,7 @@ jQuery('ul.pagination li a').each(function() {
   jQuery(this).attr('href', value);
 });
 
-$('#city-select').live('change', function () {
+$('#city-select').on('change', function () {
 
         // Clean the school field
         $("#school-field").html('');
@@ -117,7 +117,7 @@ $('#city-select').live('change', function () {
 
 	
 	
-	$("#school-select").live('change', function() {
+	$('body').on('change', '#school-select', function() {
 		$('.wizard-form input[type=submit]').click();
 	});
 
@@ -131,7 +131,7 @@ $('#city-select').live('change', function () {
 $('#country-select').chosen( { placeholder_text_single : "בחרו מדינה" , no_results_text: "לא נמצאו תוצאות ל - "  } );
 
 
-$('#country-select').live('change', function () {
+$('#country-select').on('change', function () {
 
 		// Clean the school field
         $("#school-field").html('');

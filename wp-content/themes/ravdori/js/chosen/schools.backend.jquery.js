@@ -43,6 +43,6 @@ jQuery( document ).ready(function() {
 
 
 
-jQuery(window).load(function() {
+jQuery(window).on('load', function() {
  	jQuery("#post_author_override_chosen").css('width','100%');
 }); // Window.load

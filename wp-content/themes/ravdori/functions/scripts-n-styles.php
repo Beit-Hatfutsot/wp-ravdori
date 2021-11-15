@@ -4,7 +4,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.3.2
+ * @version    1.3.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -91,7 +91,7 @@ function BH_register_admin_scripts() {
  * This function registers the styles for the front-end
  */
 function BH_register_styles() {
-		
+
         wp_register_style( 'bootstrap'      ,	CSS_DIR . '/libs/bootstrap.min.css'    ,  array()  ,	VERSION );
 		wp_register_style( 'bootstrap-rtl'  ,	CSS_DIR . '/libs/bootstrap-rtl.min.css'    ,  array('bootstrap')  ,	VERSION );
 		wp_register_style( 'general'        ,	CSS_DIR . '/general.css'                   ,  array('bootstrap')  ,	VERSION );
@@ -124,6 +124,7 @@ function BH_load_theme_styles() {
 function BH_register_scripts() {
 
 		//wp_register_script( 'bootstrap'      ,	'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js'            ,	array('jquery')       , VERSION  ,	true );
+        //wp_deregister_script( 'jquery' );
         //wp_register_script( 'jquery'         ,	JS_DIR . '/jquery.js'                         ,	array()               , VERSION  ,	true );
 		wp_register_script( 'JCycle2'        ,	JS_DIR . '/jquery.cycle2.min.js'              ,	array('jquery') , VERSION  ,	true );
 		wp_register_script( 'JCycle2Swipe'        ,	JS_DIR . '/jquery.cycle2.swipe.min.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
@@ -138,36 +139,36 @@ function BH_register_scripts() {
         wp_register_script( 'select-togglebutton'        ,	JS_DIR . '/select-togglebutton.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
 		wp_register_script( 'running-numbers'        ,	JS_DIR . '/jquery.running-numbers.js'              ,	array(/*'jquery' , 'bootstrap'*/) , VERSION  ,	true );
 		wp_register_script( 'js.cookies'        ,	JS_DIR . '/js.cookie.min.js'              ,	array('jquery') , VERSION  ,	true );
-		
+
 		wp_register_script( 'rtlScroll'         ,	JS_DIR . '/priority-nav-scroller/jquery.rtl-scroll.js'  ,	array('jquery') , VERSION  ,	true );
 		wp_register_script( 'navScroller'       ,	JS_DIR . '/priority-nav-scroller/bundle.js'  ,	array('rtlScroll') , VERSION  ,	true );
-		
-		
-		
+
+
+
 		wp_register_script( 'theme-global'   ,	JS_DIR . '/theme-global.js' ,	array('jquery','JCycle2','chosen'), VERSION  );
 }
 
 function BH_load_theme_scripts() {
 
     //wp_enqueue_script('jquery');
-    
-	
+
+
 	//wp_enqueue_script('bootstrap');
 
-	
+
     // JCycle2 script
     wp_enqueue_script('JCycle2');
     wp_enqueue_script('JCycle2Swipe');
     wp_enqueue_script('jcycle2video');
-	
+
 	wp_enqueue_script('rtlScroll');
     wp_enqueue_script('navScroller');
     wp_enqueue_script('js.cookies');
-	
+
 	// Pushy
 	wp_enqueue_script('Pushy');
-	
-	
+
+
     // JRepeater
     wp_enqueue_script('JRepeater');
 
@@ -185,19 +186,19 @@ function BH_load_theme_scripts() {
     wp_enqueue_script('alphanum');
 
     wp_enqueue_script('select-togglebutton');
-	
-	
-	 
+
+
+
 	// Localize the script with new data
-	
+
 	$story_country_menu_string	= __('חיפוש לפי ארץ מוצא', 'BH');
-	
+
 	$translation_array = array(
 		'search_string' => $story_country_menu_string,
 		'no_results_text' => BH__("לא נמצאו תוצאות ל - " , "BH" , 'he'),
 	);
 	wp_localize_script( 'theme-global', 'rh_translation_arr', $translation_array );
-	
+
 	wp_enqueue_script('theme-global');
 
 }
