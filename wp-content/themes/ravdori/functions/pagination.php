@@ -4,7 +4,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.3.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -83,7 +83,7 @@ function bh_pagination( $html )
 {
 
     global $wp_query;
-	
+
 	$showTextOnTop = $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM];
 	$navStyle      = $GLOBALS[GLBL_WP_NAV__STYLE];
 
@@ -92,17 +92,16 @@ function bh_pagination( $html )
 
     //wrap a's and span's in li's
     $out = str_replace("<div","",$html);
-    $out = str_replace("class='wp-pagenavi'>","",$out);
+    $out = str_replace("class='wp-pagenavi' role='navigation'>","",$out);
     $out = str_replace("<a","<li><a",$out);
     $out = str_replace("</a>","</a></li>",$out);
     $out = str_replace("<span","<li><span",$out);
     $out = str_replace("<span class='current'","<li class='active'><span",$out);
     $out = str_replace("</span>","</span></li>",$out);
     $out = str_replace("</div>","",$out);
-	
+
 	$out = str_replace("<select",'<span class="wizard-select-theme"><select class="chosen-rtl" id="story-archive-page-select" ',$out);
 	$out = str_replace("</select>","</select></span>",$out);
-	
 
     $currentDisplayedPage  = (get_query_var('paged')) ? get_query_var('paged') : 1;
 
@@ -115,32 +114,32 @@ function bh_pagination( $html )
     $showingStoryOutOf .= $postsNumberSoFar . ' ';
     $showingStoryOutOf .= 'מתוך: ';
     $showingStoryOutOf .= $wp_query->found_posts;
-	
+
 	$top_pagintion_margin = '';
-	
+
 	if ( $showTextOnTop ) { $top_pagintion_margin = 'style="margin: 15px 0 30px 0;"'; }
-	
+
 	$retStr  = '<div class="row" ' . $top_pagintion_margin . ' >';
 	$retStr .= '<div class="col-xs-12 text-center">';
-	
-	if ( $showTextOnTop ) {  
-		$retStr .=  '<div class="stories-num-out-of">' .$showingStoryOutOf . '</div>'; 
+
+	if ( $showTextOnTop ) {
+		$retStr .=  '<div class="stories-num-out-of">' .$showingStoryOutOf . '</div>';
 	}
-	
+
 	if ( $navStyle == PAGINATION_STYLE__NUM_LIST )
 		$retStr .= '<ul class="pagination">' . $out . '</ul>';
-	else 
+	else
 	{
 		$total_pages = max( 1, absint( $wp_query->max_num_pages ) );
-		
+
 		$next_page_link = get_next_posts_link('הבא');
 		$next_page_link = ($next_page_link) ? '<span class="next-story-page-link">' . $next_page_link . '</span>' : '<span class="next-story-page-link next-story-page-link--disabled">' . __('הבא') . '</span>';
-		
+
 		$prev_page_link = get_previous_posts_link('הקודם');
 		$prev_page_link = ($prev_page_link) ? '<span class="prev-story-page-link">' . $prev_page_link . '</span>' : '<span class="prev-story-page-link prev-story-page-link--disabled">' . __('הקודם') . '</span>';
-		
-		
-		
+
+
+
 		$retStr .= '<div class="select-pager-container">';
 		$retStr .= '<span class="select-pager-container__page-label">' . __( 'עמוד:' , 'BH' ) . '</span>';
 		$retStr .= $out;
@@ -151,12 +150,12 @@ function bh_pagination( $html )
 		$retStr .= '</span>';
 		$retStr .= '</div>';
 	}
-	
-	if ( !$showTextOnTop ) { 
-		$retStr .=  '<div>' .$showingStoryOutOf . '</div>'; 
+
+	if ( !$showTextOnTop ) {
+		$retStr .=  '<div>' .$showingStoryOutOf . '</div>';
 	}
-	
-	
+
+
 	$retStr .= '</div>';
 	$retStr .= '</div>';
 
@@ -166,15 +165,15 @@ add_filter( 'wp_pagenavi', 'bh_pagination', 10, 2 ); //attach our function to th
 
 
 
-function show_wp_pagenavi( $story_query , $text_on_top = false , $style = PAGINATION_STYLE__NUM_LIST ) 
+function show_wp_pagenavi( $story_query , $text_on_top = false , $style = PAGINATION_STYLE__NUM_LIST )
 {
    if(function_exists('wp_pagenavi')):
-   
+
 		  $GLOBALS[GLBL_WP_NAV_TOP_BOTTOM] = $text_on_top;
 		  $GLOBALS[GLBL_WP_NAV__STYLE] 	   = $style;
-		  
+
           wp_pagenavi( array( 'query' => $story_query, 'options' => ['style' => $style], ) );
-		 
+
    endif;
 }
 
