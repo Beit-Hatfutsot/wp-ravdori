@@ -1068,9 +1068,8 @@ function add_school_id(){
         ?>
             <script type="text/javascript">
                 jQuery(function(){
-                    
 					/* The "ready" state used to be "DOMNodeInserted" in ACF v4 version */
-					jQuery(document).on( 'ready', function(e) { 
+					jQuery(document).ready(function(e) {
                         jQuery('#acf-field_55bf5f841d1b0').attr('placeholder', 'קוד אחרון: ' + '<?php echo $max_code; ?>'  ); // field_55bf5f841d1b0 = acf-school-code
                         jQuery('#acf-field_55bf5f841d1b0').val('<?php echo ($max_code + 1); ?>');
                     });
