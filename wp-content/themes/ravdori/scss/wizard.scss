@@ -1896,21 +1896,11 @@ ul.ead-options {
 }
 
 /* Embedany */
-#embed-popup {
-  background: rgb(255, 255, 255);
-  width: 99%;
-  text-align: left;
-  vertical-align: middle;
-  display: inline-block;
-  position: relative;
-  max-width: 1000px;
-  box-sizing: border-box;
-  box-shadow: 0px 2px 25px #000;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-shadow: 0 2px 25px #000;
-  -moz-box-shadow: 0 2px 25px #000;
+body.ead-popup-on #TB_window {
+  height: 100vh !important;
+}
 
+#embed-popup {
   .ead-section {
     padding: 0px 30px;
     border-top-color: rgb(235, 235, 235);
