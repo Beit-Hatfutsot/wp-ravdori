@@ -87,6 +87,7 @@
 						     <?php 
 							   $facebook_url = get_field( 'acf-options-header-facebook-url', 'options' );
 							   $youtube_url  = get_field( 'acf-options-header-youtube-url', 'options' );
+							   $twitter_url  = get_field( 'acf-options-header-twitter-url', 'options' );
 							 ?>			
                              <ul class="social-links">
 								 
@@ -105,6 +106,15 @@
 										 </a>
 									 </li>
 								<?php endif;?>
+
+								 <?php if ( $twitter_url ): ?>
+									 <li class="social-twitter">
+										 <a href="<?php echo $twitter_url; ?>" target="_blank">
+											<span class="social-icon"></span>
+										 </a>
+									 </li>
+								<?php endif;?>
+
                              </ul>
 
                          </div>

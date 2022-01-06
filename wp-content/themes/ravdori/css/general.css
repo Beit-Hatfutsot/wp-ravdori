@@ -381,7 +381,7 @@ header #header-top ul.social-links {
   list-style: none; }
 header #header-top ul.social-links li {
   display: inline-block;
-  margin-right: 28px;
+  margin-right: 10px;
   margin-top: 11px; }
 header #header-top ul.social-links li a {
   display: block; }
