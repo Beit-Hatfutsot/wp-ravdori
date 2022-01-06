@@ -667,18 +667,6 @@ a.external-link {
 	   /* Header -> Social Icons */	
 	   header #header-top ul.social-links { text-align:left; }
 	   
-	   header #header-top ul.social-links li 
-	     {
-				display: inline-block;
-				margin-right: 0 ;
-				margin-left: 15px; 
-	   }
-	   
-	   header #header-top ul.social-links li:nth-child(2) {
-		   margin-left:25px;
-	   }
-	   
-	   
 	   /* Header -> Menu */
 	   header .navbar nav.main-menu .navbar-nav > li {
 			min-width: 75px;

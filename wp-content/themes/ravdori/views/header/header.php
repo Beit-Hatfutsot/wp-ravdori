@@ -24,16 +24,19 @@
 	<div class="container">
 							
                <div id="header-top" class="row">
-                 <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
+                 <div class="col-xs-7 col-sm-5 col-md-6 col-lg-6">
 
                      <div class="row">
-                         <div class="col-sm-10 col-md-4 col-lg-6 header-logo-container">
-                             <a href="<?php echo HOME?>">
+                         <div class="col-sm-10 col-md-5 col-lg-6 header-logo-container">
+                             <a class="ravdori-logo" style="max-width: 70%; display: inline-block;" href="<?php echo HOME?>">
                                 <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" style="margin-top: 6px;"/>
+                             </a>
+                             <a class="gov-logo" style="max-width: 20%; display: inline-block;" href="<?php echo HOME?>">
+                                <img src="<?php echo IMAGES_DIR . '/general/ministry_for_social_equality.png'?>" style="margin-top: 6px;"/>
                              </a>
                          </div>
 
-                         <div class="visible-lg visible-md col-sm-8 col-lg-6 voffset3">
+                         <div class="visible-lg visible-md col-sm-8 col-lg-6 voffset3 col-md-7">
                              <div class="push-left visible-lg visible-md">
                                 <span style="color:#666766;font-size: 16px;"><?php _e('חפש לפי: ' , 'BH'); ?></span>
 
@@ -71,9 +74,9 @@
 
                  </div>
 
-                 <div class="col-xs-6 col-sm-6">
+                 <div class="col-xs-3 col-sm-5 col-md-6">
                      <div class="row">
-                         <div class="hidden-xs col-sm-12 col-md-7  col-lg-8 header-search-container">
+                         <div class="hidden-xs col-sm-12 col-md-6  col-lg-8 header-search-container">
                             <?php  get_template_part('views/components/search', 'form'); ?>
                             <?php  get_template_part('views/components/advanced-search', 'form'); ?>
                          </div>
@@ -82,7 +85,7 @@
 							<button class="btn btn-mobile-search"><i class="glyphicon glyphicon-search"></i></button>
 						 </div>
 
-                         <div class="col-sm-5 col-lg-4 visible-lg visible-md">
+                         <div class="col-sm-5 col-lg-4 visible-lg visible-md col-md-6">
 								
 						     <?php 
 							   $facebook_url = get_field( 'acf-options-header-facebook-url', 'options' );
@@ -123,7 +126,7 @@
                  </div>
 				
 				
-				 <div class="col-sm-3 col-xs-3 visible-sm visible-xs">
+				 <div class="col-sm-2 col-xs-2 visible-sm visible-xs col-md-2">
 					<a href="#" class="menu-btn">
 						<div class="hamburger-menu-button"></div>
 					</a>
