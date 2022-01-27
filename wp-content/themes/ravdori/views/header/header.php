@@ -28,11 +28,11 @@
 
                      <div class="row">
                          <div class="col-sm-10 col-md-5 col-lg-6 header-logo-container">
-                             <a class="ravdori-logo" style="max-width: 70%; display: inline-block;" href="<?php echo HOME?>">
+                             <a class="ravdori-logo" style="max-width: 68%; display: inline-block;" href="<?php echo HOME?>">
                                 <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" style="margin-top: 6px;"/>
                              </a>
-                             <a class="gov-logo" style="max-width: 20%; display: inline-block;" href="<?php echo HOME?>">
-                                <img src="<?php echo IMAGES_DIR . '/general/ministry_for_social_equality.png'?>" style="margin-top: 6px;"/>
+                             <a class="gov-logo" style="max-width: 29%; display: inline-block;" href="<?php echo HOME?>">
+                                <img src="<?php echo IMAGES_DIR . '/general/ministry_for_social_equality.png'?>" style="margin-top: 6px; max-height: 40px;"/>
                              </a>
                          </div>
 
