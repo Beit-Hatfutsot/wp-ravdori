@@ -32,15 +32,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<?php if ( $school_search_url OR $topics_search_url OR $countries_search_url ): ?>
 				<ul>
 					<?php if ( $school_search_url ): ?>
-						<li class="pushy-link"><a href="<?php echo $school_search_url; ?>"><?php _e('חפשו לפי ביה”ס/ישוב','bhchild'); ?></a></li>
+						<li class="pushy-link"><a href="<?php echo $school_search_url; ?>"><span class="bh-translate"><?php _e('חפשו לפי ','bhchild'); ?></span><span class="bh-translate"><?php _e('ביה”ס / ישוב','bhchild'); ?></span></a></li>
 					<?php endif; ?>
 					
 					<?php if ( $school_search_url ): ?>
-						<li class="pushy-link"><a href="<?php echo $topics_search_url; ?>"><?php _e('חפשו לפי נושאים','bhchild'); ?></a></li>
+						<li class="pushy-link"><a href="<?php echo $topics_search_url; ?>"><span class="bh-translate"><?php _e('חפשו לפי ','bhchild'); ?></span><span class="bh-translate"><?php _e('נושאים','bhchild'); ?></span></a></li>
 					<?php endif; ?>
 					
 					<?php if ( $school_search_url ): ?>
-						<li class="pushy-link"><a href="<?php echo $countries_search_url; ?>"><?php _e('חפשו לפי ארץ מוצא','bhchild'); ?></a></li>
+						<li class="pushy-link"><a href="<?php echo $countries_search_url; ?>"><span class="bh-translate"><?php _e('חפשו לפי ','bhchild'); ?></span><span class="bh-translate"><?php _e('ארץ מוצא','bhchild'); ?></span></a></li>
 					<?php endif; ?>
 				</ul>
 			<?php endif; ?>

@@ -8,7 +8,7 @@
     
                     <div class="row">
                         <div class="col-sm-3">
-                            <h2 class="title red"><?php echo $bh_title; ?></h2>
+                            <h2 class="title red"><span class="bh-translate"><?php echo $bh_title; ?></span></h2>
                         </div>
                     </div>
 
@@ -29,7 +29,7 @@
 
                     <div class="row">
                         <div class="col-sm-3">
-                            <h2 class="title orange"><?php _e( 'מהמילון'  , 'BH'); ?></h2>
+                            <h2 class="title orange"><span class="bh-translate"><?php _e( 'מהמילון'  , 'BH'); ?></span></h2>
                         </div>
                     </div>
 
@@ -66,7 +66,7 @@
 
                         <div class="row">
                             <div class="col-sm-3">
-                                <h2 class="title cyan"><?php _e( 'ציטוט נבחר' , 'BH'); ?></h2>
+                                <h2 class="title cyan"><span class="bh-translate"><?php _e( 'ציטוט נבחר' , 'BH'); ?></span></h2>
                             </div>
                         </div>
 
@@ -116,7 +116,7 @@
 
             <div class="row">
                 <div class="col-sm-3">
-                    <h2 class="title red"><?php _e( 'סיפורים מומלצים' , 'BH'); ?></h2>
+                    <h2 class="title red"><span class="bh-translate"><?php _e( 'פורסמו לאחרונה' , 'BH'); ?></span></h2>
                 </div>
             </div>
 
@@ -168,7 +168,7 @@
 
     <div class="row">
         <div class="col-sm-3">
-            <h2 class="title blue"><?php _e( 'נושאי סיפור' , 'BH'); ?></h2>
+            <h2 class="title blue"><span class="bh-translate"><?php _e( 'נושאי סיפור' , 'BH'); ?></span></h2>
         </div>
     </div>
 

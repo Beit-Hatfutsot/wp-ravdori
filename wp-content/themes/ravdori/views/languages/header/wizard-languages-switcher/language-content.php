@@ -4,7 +4,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.4.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle btn-story-upload" type="button" data-toggle="dropdown" data-hover="dropdown" <?php echo ( $locale[ 'get_param_value' ] == 'ru' ? ' style="font-size: 14px;"' : ''); ?>>
 <?php $locale = get_language_locale_filename_by_get_param(); ?> 
- <?php BH__e('העלאת סיפור','BH',$locale)?>
+ <span class="bh-translate"><?php BH__e('העלאת סיפור','BH',$locale)?></span>
   	<?php
 		/**
 		 * Display the current language flag as the switcher button

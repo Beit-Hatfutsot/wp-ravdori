@@ -4,7 +4,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.4.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -22,7 +22,7 @@ get_header(); ?>
 				</div>
 
 				<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 order-1">
-					<h2 class="title"><?php the_title(); ?></h2>
+					<h2 class="title bh-translate"><?php the_title(); ?></h2>
 
 					<?php while ( have_posts() ) : the_post(); ?>
 						<article class="post" id="post-<?php the_ID(); ?>">

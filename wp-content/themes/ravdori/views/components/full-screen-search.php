@@ -5,7 +5,7 @@
  * @author		HTMLine
  * @package		htmline-starter-child/views/components
  * @since		1.0.0
- * @version		1.0.0
+ * @version		1.4.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Variables
  */
-$search_string = __(' חיפוש חופשי', 'BH');
+$search_string = __('חיפוש חופשי / Search', 'BH');
 
 ?>
 

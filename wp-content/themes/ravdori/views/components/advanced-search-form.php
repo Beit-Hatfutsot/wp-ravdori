@@ -8,14 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $advanced_search_string 		= __('חיפוש מתקדם', 'BH');
 $close_menu_string				= __('סגור תפריט', 'BH');
-$story_name_menu_string			= __('שם הסיפור', 'BH');
-$story_adult_menu_string		= __('שם המבוגר', 'BH');
-$story_student_menu_string		= __('שם תלמיד', 'BH');
-$story_teacher_menu_string		= __('שם מורה', 'BH');
-$story_word_menu_string			= __('לפי מילה', 'BH');
-$story_quote_menu_string		= __('לפי ציטוט', 'BH');
+$story_name_menu_string			= __('שם הסיפור / Story’s Title', 'BH');
+$story_adult_menu_string		= __('שם המבוגר / Name of Interviewee', 'BH');
+$story_student_menu_string		= __('שם תלמיד / Student’s Name', 'BH');
+$story_teacher_menu_string		= __('שם מורה / Teacher’s Name', 'BH');
+$story_word_menu_string			= __('לפי מילה / Key Word/Phrase', 'BH');
+$story_quote_menu_string		= __('לפי ציטוט / By Quote', 'BH');
 $story_country_menu_string		= __('חיפוש לפי ארץ מוצא', 'BH');
-$story_default_country_menu_string = __('בחרו מדינה', 'BH');
+$story_default_country_menu_string = __('בחרו מדינה / Select Country of Origin', 'BH');
 $clear_search_fields = __('ניקוי כל השדות', 'BH');
 $exact_search = __('חיפוש מדויק', 'BH');
 
@@ -81,7 +81,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 ?>
 <div class="nav navbar-nav navbar-right advanced-search-container">
 		<div class="dropdown advanced-search-dropdown">
-			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $advanced_search_string; ?> <span class="caret"></span></a>
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="bh-translate"><?php echo $advanced_search_string; ?></span> <span class="caret"></span></a>
 				  <div class="dropdown-menu">
 				  
 					<form action="<?php echo $advnaced_search_page; ?>" role="search" method="get" id="advanced-search-form" class="wizard-form">
@@ -89,14 +89,14 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__story_name"   placeholder="<?php echo $story_name_menu_string;  ?>" name="advanced_search__story_name" value="<?php echo $query_story_name; ?>">
 						
 						<div class="checkbox-container">
-							<label for="story-name-exact"><?php echo $exact_search;?></label>
+							<label for="story-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="story-name-exact" name="story-name-exact"  <?php echo $story_checkbox_is_on;?>>
 						</div>
 						
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__adult_name"   placeholder="<?php echo $story_adult_menu_string; ?>" name="advanced_search__adult_name" value="<?php echo $query_adult_name; ?>">
 						
 						<div class="checkbox-container">
-							<label for="adult-name-exact"><?php echo $exact_search;?></label>
+							<label for="adult-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="adult-name-exact" name="adult-name-exact" <?php echo $adult_checkbox_is_on;?>>
 						</div>
 						
@@ -104,7 +104,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__student_name" placeholder="<?php echo $story_student_menu_string; ?>" name="advanced_search__student_name" value="<?php echo $query_student_name; ?>">
 						
 						<div class="checkbox-container">
-							<label for="student-name-exact"><?php echo $exact_search;?></label>
+							<label for="student-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="student-name-exact" name="student-name-exact" <?php echo $student_checkbox_is_on;?>>
 						</div>
 						
@@ -112,7 +112,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__teacher_name"  placeholder="<?php echo $story_teacher_menu_string; ?>" name="advanced_search__teacher_name"  value="<?php echo $query_teacher_name; ?>"  >
 						
 						<div class="checkbox-container">
-							<label for="teacher-name-exact"><?php echo $exact_search;?></label>
+							<label for="teacher-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="teacher-name-exact" name="teacher-name-exact" <?php echo $teacher_checkbox_is_on;?>>
 						</div>
 						
@@ -140,23 +140,23 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__word_name"    placeholder="<?php echo $story_word_menu_string;  ?>" name="advanced_search__word_name" value="<?php echo $query_word_name; ?>">
 						
 						<div class="checkbox-container">
-							<label for="word-name-exact"><?php echo $exact_search;?></label>
+							<label for="word-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="word-name-exact" name="word-name-exact" <?php echo $word_checkbox_is_on;?>>
 						</div>
 						
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__quote_name"   placeholder="<?php echo $story_quote_menu_string; ?>" name="advanced_search__quote_name" value="<?php echo $query_quote_name; ?>">
 						
 						<div class="checkbox-container">
-							<label for="quote-name-exact"><?php echo $exact_search;?></label>
+							<label for="quote-name-exact"><span class="bh-translate"><?php echo $exact_search;?></span></label>
 							<input type="checkbox" id="quote-name-exact" name="quote-name-exact" <?php echo $quote_checkbox_is_on;?>>
 						</div>
 						
-						<input type="submit" name="submit" value="חפש" class="advanced-search-form-submit" style="margin-right: 0;">
+						<input type="submit" name="submit" value="חפש / Search" class="advanced-search-form-submit" style="margin-right: 0;">
 						
 						<div role="separator" class="divider"></div>
 						
 						<div class="advanced-search-form-additonal-buttons-container">
-							<a class="clean-adv-form-btn"><?php echo $clear_search_fields; ?></a>
+							<a class="clean-adv-form-btn"><span class="bh-translate"><?php echo $clear_search_fields; ?></span></a>
 						</div>
 						
 					</form>

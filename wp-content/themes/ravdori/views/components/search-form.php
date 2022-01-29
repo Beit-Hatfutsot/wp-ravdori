@@ -1,4 +1,4 @@
-<?php $search_string = __(' חיפוש חופשי', 'BH'); ?>
+<?php $search_string = __('חיפוש חופשי / Search', 'BH'); ?>
 
 <form id="search-form" class="navbar-form voffset3" role="search" method="get" action="<?php echo HOME; ?>">
 

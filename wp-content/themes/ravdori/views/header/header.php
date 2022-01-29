@@ -7,6 +7,7 @@
 		'items_wrap'			=> '%3$s',
 		'link_before'			=> '<span>',
 		'link_after'			=> '</span>',
+		'walker'				=> new BH_main_walker_nav_menu,
 		'echo'				    => 0
 	);
 	
@@ -38,12 +39,12 @@
 
                          <div class="visible-lg visible-md col-sm-8 col-lg-6 voffset3 col-md-7">
                              <div class="push-left visible-lg visible-md">
-                                <span style="color:#666766;font-size: 16px;"><?php _e('חפש לפי: ' , 'BH'); ?></span>
+                                <span style="color:#666766;font-size: 16px;"><span class="bh-translate"><?php _e('חפש לפי' , 'BH'); ?></span>:</span>
 
                                  <a href="<?php echo $school_search_url;?>" class="no-underline">
                                      <div class="search-button">
                                              <div class="search-button-caption">
-                                                     <?php _e( 'ביה"ס/  ישוב' , 'BH' ); ?>
+                                                    <span class="bh-translate"><?php _e( 'ביה”ס / ישוב' , 'BH' ); ?></span>
                                              </div>
                                      </div>
                                  </a>
@@ -52,7 +53,7 @@
                                      <div class="search-button">
 
                                             <div class="search-button-caption voffset1">
-                                                    <?php _e( 'נושאים' , 'BH' ); ?>
+                                                    <span class="bh-translate"><?php _e( 'נושאים' , 'BH' ); ?></span>
                                             </div>
                                      </div>
                                  </a>
@@ -60,7 +61,7 @@
                                  <a href="<?php echo $countries_search_url;?>" class="no-underline">
                                      <div class="search-button origin-country">
                                              <div class="search-button-caption voffset1">
-                                                    <?php _e( 'ארץ מוצא' , 'BH' ); ?>
+                                                    <span class="bh-translate"><?php _e( 'ארץ מוצא' , 'BH' ); ?></span>
                                              </div>
 
                                      </div>
@@ -182,8 +183,8 @@
 
             <?php if ( !is_page_template( 'wizard.php' ) ): ?>
                 <div class="homepage-title-container row">
-                    <h2><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></h2>
-                    <h3><?php _e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH'); ?></h3>
+                    <h2><span class="bh-translate"><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></span></h2>
+                    <h3><span class="bh-translate"><?php _e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH'); ?></span></h3>
                 </div>
             <?php endif; ?>
 		
@@ -199,3 +200,5 @@
 ?>	
 	
 </header>
+
+<?php get_template_part( 'views/header/language-switcher' ); ?>

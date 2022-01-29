@@ -4,7 +4,7 @@
  *
  * @author     Htmline (Roy Hizkya)
  * @copyright  Copyright (c) 2015 Beit Hatfutsot Israel. (http://www.bh.org.il)
- * @version    1.0
+ * @version    1.4.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -381,7 +381,7 @@ class BH_main_walker_nav_menu extends Walker_Nav_Menu {
 			$args->before,
 			$attributes,
 			$args->link_before,
-			apply_filters( 'the_title', $item->title, $item->ID ),
+			'<span class="bh-translate">' . apply_filters( 'the_title', $item->title, $item->ID ) . '</span>',
 			$args->link_after,
 			$args->after
 		);
