@@ -14,11 +14,13 @@
                <div class="col-xs-12 col-sm-12 col-md-5 footer-logos-wrapper" style="padding:0;">
 				<div class="nadav-logo">
                         
+						<?php /*
 						<div style="width:25%;float:right;">
 									<a href="https://www.seeingthevoices.com/skn/c82/%D7%A8%D7%95%D7%90%D7%99%D7%9D_%D7%90%D7%AA_%D7%94%D7%A7%D7%95%D7%9C%D7%95%D7%AA"  target="_blank">
 										<img src="<?php echo IMAGES_DIR?>/general/footer/voices-logo.png" alt=""/>
 									</a>
 						</div>
+						*/ ?>
 
 						
 						<div style="width:25%;float:right;">
