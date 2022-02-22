@@ -1,7 +1,7 @@
 <?php
 
-include_once path_join( WPCF7_PLUGIN_MODULES_DIR, 'stripe/service.php' );
-include_once path_join( WPCF7_PLUGIN_MODULES_DIR, 'stripe/api.php' );
+wpcf7_include_module_file( 'stripe/service.php' );
+wpcf7_include_module_file( 'stripe/api.php' );
 
 
 add_action(
@@ -15,10 +15,6 @@ add_action(
  */
 function wpcf7_stripe_register_service() {
 	$integration = WPCF7_Integration::get_instance();
-
-	$integration->add_category( 'payments',
-		__( 'Payments', 'contact-form-7' )
-	);
 
 	$integration->add_service( 'stripe',
 		WPCF7_Stripe::get_instance()
@@ -213,7 +209,7 @@ add_filter(
 /**
  * Registers the [_stripe_payment_link] special mail-tag.
  */
-function wpcf7_stripe_smt( $output, $tag_name, $html, $mail_tag ) {
+function wpcf7_stripe_smt( $output, $tag_name, $html, $mail_tag = null ) {
 	if ( '_stripe_payment_link' === $tag_name ) {
 		$submission = WPCF7_Submission::get_instance();
 

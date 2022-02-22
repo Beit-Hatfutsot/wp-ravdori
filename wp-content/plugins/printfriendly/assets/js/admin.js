@@ -86,62 +86,6 @@
     }
 
     function initMisc() {
-        $('.show_list').change(function() {
-            if ($('.show_list:checked').length == 0) {
-              $('.content_placement').hide('slow');
-              $('.content_placement input').prop('disabled', true);
-              $('.show_template').prop('checked', true);
-            } else {
-              $('.show_template').prop('checked', false);
-              $('.content_placement').show('slow');
-              $('.content_placement input').prop('disabled', false);
-            }
-
-            var postName = 'printfriendly_option[show_on_posts]';
-            var homeName = 'printfriendly_option[show_on_homepage]';
-
-            var optionName = $(this).attr('name');
-            if (optionName == homeName || optionName == postName){
-              if($(this).is(':checked')) {
-                $('#pf-categories').show('slow');
-              } else if(!$('input[name="' + homeName + '"]').is(':checked') && !$('input[name="' + postName + '"]').is(':checked')) {
-                $('#pf-categories').hide('slow');
-              }
-            }
-          }).change();
-
-          $('.show_template').change(function() {
-            if($(this).is(':checked')) {
-              $('.show_list').prop('checked', false);
-              $('.show_list').prop('disabled', true);
-              $('.content_placement').hide('slow');
-              $('.content_placement input').prop('disabled',true);
-              $('#pf-categories-metabox').hide('slow');
-              $('#pf-snippet').show('slow');
-            } else {
-              $('.show_list').prop('disabled', false);
-              $('.content_placement').show('slow');
-              $('.content_placement input').prop('disabled', false);
-              $('#pf-snippet').hide('slow');
-            }
-          }).change();
-
-          $('#toggle-categories').click(function() {
-            if($('#pf-categories-metabox').is(':visible')) {
-              $('#pf-categories-metabox').hide('slow');
-            } else {
-              $('#pf-categories-metabox').show('slow');
-            }
-          });
-
-          $(document).mouseup(function (e) {
-            var container = $("#pf-categories");
-
-            if (container.has(e.target).length === 0) {
-              $('#pf-categories-metabox').hide('slow');
-            }
-          });
-
           $('.pf-color-picker').wpColorPicker({
             change: function (event, ui) {
               var hex = ui.color.toString();
@@ -168,59 +112,17 @@
           }).change();
 
           $('#custom_text').on('change keyup', function(){
-            pf_custom_text_change();
+            custom_text_change();
           });
 
           $("[name='printfriendly_option[custom_button_text]']").change(function(){
-            pf_custom_text_change();
+            custom_text_change();
           });
 
-          function pf_custom_text_change(){
-            $('#buttongroup3 span:not(.printandpdf)').text( $('#custom_text').val() );
-            var newText = $('#custom-text-no').prop('checked') ? '' : $('#custom_text').val();
-            $('#printfriendly-text2').text( newText );
-            $('#printfriendly-text2').css('color','#' + $('#text_color').val());
-          }
+          initialize_preview('#custom_image', '#pf-custom-button');
+          initialize_preview("[name='printfriendly_option[custom_button_icon]']", '#pf-custom-button');
+          initialize_preview('#upload-an-image', '#pf-image');
 
-          function pf_initialize_preview(urlInputSelector, previewSelector) {
-            var el = $(urlInputSelector);
-            var imgUrl = $.trim(el.val());
-            var preview = $(previewSelector + '-preview');
-            var error = $(previewSelector + '-error');
-
-            el.on('input paste change keyup', function() {
-              setTimeout(function() {
-                // ie shows error if we try to merge the two below into a single statement
-                var img = $('<img/>');
-                var customButtonIcon = $("[name='printfriendly_option[custom_button_icon]']:checked").val();
-
-                if (customButtonIcon === 'custom-image') {
-                  imgUrl = $('#custom_image').val();
-                } else if (customButtonIcon === 'no-image') {
-                  imgUrl = '';
-                } else {
-                  imgUrl = customButtonIcon;
-                }
-
-                preview.html('');
-                error.html('');
-                if(imgUrl != '') {
-                  img.on('load', function(){
-                    preview.html('').append(img);
-                  });
-                  img.on('error', function(){
-                    error.html('<div class="error settings-error"><p><strong>' + pf_config.i10n.invalid_image_url + '</strong></p></div>');
-                  });
-                  img.attr('src',imgUrl);
-                }
-              }, 100);
-            });
-          }
-
-          pf_initialize_preview('#custom_image', '#pf-custom-button');
-          pf_initialize_preview("[name='printfriendly_option[custom_button_icon]']", '#pf-custom-button');
-          pf_initialize_preview('#upload-an-image', '#pf-image');
-          //$('#custom_image, #upload-an-image').change();
           $('#custom_image').on('focus', function() {
             $('#custom-image').prop('checked', true);
             $('#pf-custom-button-error').show();
@@ -322,6 +224,72 @@
             $("#custom-text-rb").trigger("change");
           });
 
+        $('.pf-show-element').on('click', function(e){
+            e.preventDefault();
+            var that = $(this);
+            that.hide('slow');
+            $(that.attr('data-element')).show('slow');
+        });
+
+    }
+
+    function custom_text_change(){
+        $('#buttongroup3 span:not(.printandpdf)').text( $('#custom_text').val() );
+        var newText = $('#custom-text-no').prop('checked') ? '' : $('#custom_text').val();
+        $('#printfriendly-text2').html( newText );
+        $('#printfriendly-text2').css('color','#' + $('#text_color').val());
+    }
+
+    function initialize_preview(urlInputSelector, previewSelector) {
+        var el = $(urlInputSelector);
+        var imgUrl = $.trim(el.val());
+        var preview = $(previewSelector + '-preview');
+        var error = $(previewSelector + '-error');
+
+        // set the dimensions of the image
+        if(urlInputSelector === '#custom_image'){
+            $('#custom-img-width, #custom-img-height').on('change', function(ewh){
+                var _width = $('#custom-img-width').val();
+                var _height = $('#custom-img-height').val();
+                var _img = preview.find('img');
+                _img.css('width', '');
+                _img.css('height', '');
+                if(_img.length > 0 && parseInt(_width) > 0){
+                    _img.css('width', _width + 'px');
+                }
+                if(_img.length > 0 && parseInt(_height) > 0){
+                    _img.css('height', _height + 'px');
+                }
+            });
+        }
+
+        el.on('input paste change keyup', function() {
+          setTimeout(function() {
+            // ie shows error if we try to merge the two below into a single statement
+            var img = $('<img/>');
+            var customButtonIcon = $("[name='printfriendly_option[custom_button_icon]']:checked").val();
+
+            if (customButtonIcon === 'custom-image') {
+              imgUrl = $('#custom_image').val();
+            } else if (customButtonIcon === 'no-image') {
+              imgUrl = '';
+            } else {
+              imgUrl = customButtonIcon;
+            }
+
+            preview.html('');
+            error.html('');
+            if(imgUrl != '') {
+              img.on('load', function(){
+                preview.html('').append(img);
+              });
+              img.on('error', function(){
+                error.html('<div class="error settings-error"><p><strong>' + pf_config.i10n.invalid_image_url + '</strong></p></div>');
+              });
+              img.attr('src',imgUrl);
+            }
+          }, 100);
+        });
     }
 
     function initCustomCssSelectors() {

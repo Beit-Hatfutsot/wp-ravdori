@@ -339,6 +339,33 @@ code ~ p.description {
 	margin-top: 10px;
 }
 
+.pf-button-img {
+	border: none;
+	-webkit-box-shadow: none; 
+	-moz-box-shadow: none; 
+	box-shadow: none; 
+	padding: 0; 
+	margin: 0;
+	display: inline; 
+	vertical-align: middle;
+}
+
+.pf-button-img:not(:empty) ~ .pf-button-text {
+	margin-left: 6px;
+}
+
+#custom-img-sizes {
+	margin-top: 10px;
+}
+
+#custom_image_label img {
+	max-width: 200px;
+}
+
+.small-text {
+	font-size: smaller;
+}
+
 /* do not show any notices that do not belong to us */
 .notice:not(.pf-notice) {
 	display: none;

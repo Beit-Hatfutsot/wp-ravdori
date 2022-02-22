@@ -3,7 +3,7 @@ Contributors: printfriendly, joostdevalk, jrf, rozroz
 Tags: print, pdf, email, woocommerce print, woocommerce pdf, print plugin, print button, pdf plugin, pdf button
 Requires at least: 4.9
 Tested up to: 5.8
-Stable tag: 5.0
+Stable tag: 5.2.2
 
 
 The #1 Print, PDF, Email button. Stylish, full featured, customizable. Add custom header, footer, and more.
@@ -143,6 +143,19 @@ You can [hide the Print, PDF, and Email button](https://support.printfriendly.co
 
 
 == Changelog ==
+
+= 5.2.2 =
+* Better detection of Google Analytics
+
+= 5.2.1 =
+* Fix: Allow HTML in button custom text
+
+= 5.2.0 =
+* Fix PHP Notice
+
+= 5.1 =
+* In category pages, the default behaviour of button added by shortcode/template is to link to a printable version of the individual posts. Sometimes, it is desirable to print the category page itself and not the individual posts. Added new template function/shortcode to always print the current page to use in this scenario.
+* Add support for newer google analytics versions and google tag manager
 
 = 5.0 =
 * Add support for custom CSS selectors

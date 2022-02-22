@@ -103,7 +103,7 @@ if ( ! defined( 'WPINC' ) ) {
 							<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
 							<p>
 								<?php
-								$support_url = WP_Smush::is_pro() ? 'https://wpmudev.com/hub2/support/#get-support' : 'https://wordpress.org/support/plugin/wp-smushit/';	 		  		  	 	  		 	 	
+								$support_url = WP_Smush::is_pro() ? 'https://wpmudev.com/hub2/support/#get-support' : 'https://wordpress.org/support/plugin/wp-smushit/';
 
 								printf(
 									/* translators: error message placeholder */

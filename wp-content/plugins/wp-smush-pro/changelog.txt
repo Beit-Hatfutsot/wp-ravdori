@@ -1,14 +1,46 @@
 Plugin Name: WP Smush Pro
 Author: WPMU DEV
-Tested up to: 5.8
+Tested up to: 5.9
 
 Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
+= 3.9.6 ( 2022-02-09 ) =
+
+- Enhance: Do not close the Directory Smush modal in case of error
+- Enhance: Tooltips in CDN module
+- Fix: Compatibility issue with PHP 8.1
+- Fix: "Choose Directory" button loading state in case of error
+- Fix: PNG to JPG conversion leaves behind some thumbnails after deleting the image
+- Fix: PNG images that need resizing don't get converted to JPG
+- Fix: Issue creating the WebP test files
+- Fix: Incorrect unique file names during PNG to JPG conversion
+- Fix: Duplicate thumbnails while converting PNG to JPG
+- Fix: Auto refresh API status when updating to Pro version
+
+= 3.9.5 ( 2022-01-25 ) =
+
+- Fix: Translation strings
+- Fix: Remove upsells
+- Enhance: Update admin menu icon
+
+= 3.9.4 ( 2021-11-29 ) =
+
+- Fix: Errors in media library with WP Offload Media and backups
+- Fix: CDN not activated if the WPMU DEV Dashboard plugin folder is renamed
+- Fix: Missing hover effect for video on the Smush Pro page
+- Fix: Incorrect number of compressed images when WooCommerce plugin is active
+- Fix: View stats not working when adding an image from a page/post
+- Fix: Wrong "Images smushed" count on NextGen Gallery Smush page
+- Fix: Duplicate stats are added by WPML media translations.
+- Fix: Regenerated thumbnails not detected as pending for Smush
+- Fix: CDN status when pushing production to staging on WPMU DEV hosting
+- Fix: Translation strings
+
 = 3.9.3 ( 2021-11-04 ) =
 
-Enhance: White label support
+- Enhance: White label support
 
 = 3.9.2 ( 2021-11-01 ) =
 
@@ -127,4 +159,4 @@ Enhance: White label support
 
 
 
-555537-1636969825-au
+555537-1645537748-au

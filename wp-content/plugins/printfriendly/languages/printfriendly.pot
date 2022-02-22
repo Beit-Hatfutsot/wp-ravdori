@@ -2,112 +2,124 @@
 # This file is distributed under the same license as the Print, PDF & Email by PrintFriendly package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Print, PDF & Email by PrintFriendly 4.2\n"
+"Project-Id-Version: Print, PDF & Email by PrintFriendly 5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-printfriendly\n"
-"POT-Creation-Date: 2021-11-11 05:58:00+00:00\n"
+"POT-Creation-Date: 2021-12-29 15:35:50+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Last-Translator: PrintFriendly Translate Team <support@printfriendly.com>\n"
 "Language-Team: PrintFriendly Translate Team <support@printfriendly.com>\n"
 
-#: pf.php:568
+#: pf.php:652
 msgid ""
 "No valid custom image url received, please enter a valid url to use a "
 "custom image."
 msgstr ""
 
-#: pf.php:576
+#: pf.php:660
 msgid "The text size you entered is invalid, please stay between 9px and 25px"
 msgstr ""
 
-#: pf.php:584
+#: pf.php:668
 msgid ""
 "The color you entered is not valid, it must be a valid hexadecimal RGB font "
 "color."
 msgstr ""
 
-#: pf.php:644
+#: pf.php:723
 msgid ""
 "No valid custom logo url received, please enter a valid url to use a custom "
 "logo."
 msgstr ""
 
-#: pf.php:727
+#: pf.php:820
 msgid "PrintFriendly Options"
 msgstr ""
 
-#: pf.php:727
+#: pf.php:820
 msgid "Print Friendly & PDF"
 msgstr ""
 
-#: pf.php:757 views/tabs.php:383
+#: pf.php:853 views/tabs.php:433
 msgid "Custom Image"
 msgstr ""
 
-#: pf.php:758
+#: pf.php:854
 msgid "Use Image"
 msgstr ""
 
-#: pf.php:759
+#: pf.php:855
 msgid "Invalid Image URL"
 msgstr ""
 
-#: pf.php:771
+#: pf.php:869
 msgid "Activation"
 msgstr ""
 
-#: pf.php:772
+#: pf.php:870
 msgid "Checking status"
 msgstr ""
 
-#: pf.php:773 views/pro.php:45
+#: pf.php:871 views/pro.php:45
 msgid "Activate"
 msgstr ""
 
-#: pf.php:774
+#: pf.php:872
 msgid "Active Trial"
 msgstr ""
 
-#: pf.php:775
+#: pf.php:873
 msgid "Active"
 msgstr ""
 
-#: pf.php:776
+#: pf.php:874
 msgid "Expired"
 msgstr ""
 
-#: pf.php:777
+#: pf.php:875
 msgid "Please check Internet connection."
 msgstr ""
 
-#: pf.php:805
+#: pf.php:904
 msgid "Settings"
 msgstr ""
 
-#: pf.php:828 views/tabs.php:108 views/tabs.php:311 views/tabs.php:424
+#: pf.php:928 views/tabs.php:108 views/tabs.php:361 views/tabs.php:474
 msgid "Documentation"
 msgstr ""
 
-#: pf.php:1175 views/tabs.php:164
+#: pf.php:1299 views/tabs.php:165
 msgid "Custom Button"
 msgstr ""
 
-#: pf.php:1360
+#: pf.php:1497
 msgid "Only display when post is in:"
 msgstr ""
 
-#: pf.php:1452
+#: pf.php:1593
 msgid ""
 "You are currently using %1$s%2$s%3$s. You can copy copy its contents into "
 "the textbox if you want to update the styles."
+msgstr ""
+
+#: test/wp/category-cat.php:53 test/wp/category-dog.php:52
+msgid "Previous page"
+msgstr ""
+
+#: test/wp/category-cat.php:54 test/wp/category-dog.php:53
+msgid "Next page"
+msgstr ""
+
+#: test/wp/category-cat.php:55 test/wp/category-dog.php:54
+msgid "Page"
 msgstr ""
 
 #: views/pro.php:18
 msgid "Learn more"
 msgstr ""
 
-#: views/pro.php:30 views/tabs.php:484
+#: views/pro.php:30 views/tabs.php:534
 msgid "Email"
 msgstr ""
 
@@ -275,7 +287,8 @@ msgstr ""
 msgid "Show Options Code"
 msgstr ""
 
-#: views/tabs.php:96
+#: views/tabs.php:96 views/tabs.php:323 views/tabs.php:331 views/tabs.php:345
+#: views/tabs.php:353
 msgid "Copy Code"
 msgstr ""
 
@@ -287,294 +300,294 @@ msgstr ""
 msgid "Button Style"
 msgstr ""
 
-#: views/tabs.php:169
+#: views/tabs.php:170
 msgid "Image"
 msgstr ""
 
-#: views/tabs.php:176
+#: views/tabs.php:184
 msgid "Use Your Image"
 msgstr ""
 
-#: views/tabs.php:179 views/tabs.php:389
+#: views/tabs.php:187 views/tabs.php:439
 msgid "Select Image"
 msgstr ""
 
-#: views/tabs.php:192
-msgid "No Image"
+#: views/tabs.php:195
+msgid "Width"
 msgstr ""
 
 #: views/tabs.php:197
+msgid "Height"
+msgstr ""
+
+#: views/tabs.php:206
+msgid "No Image"
+msgstr ""
+
+#: views/tabs.php:211
 msgid "Text"
 msgstr ""
 
-#: views/tabs.php:205
+#: views/tabs.php:219
 msgid "Text Size"
 msgstr ""
 
-#: views/tabs.php:215
+#: views/tabs.php:229
 msgid "No Text"
 msgstr ""
 
-#: views/tabs.php:221
+#: views/tabs.php:235
 msgid "Preview"
 msgstr ""
 
-#: views/tabs.php:233
+#: views/tabs.php:247
 msgid "Button Position"
 msgstr ""
 
-#: views/tabs.php:239
+#: views/tabs.php:253
 msgid "Alignment"
 msgstr ""
 
-#: views/tabs.php:242
+#: views/tabs.php:256
 msgid "Left Align"
 msgstr ""
 
-#: views/tabs.php:243
+#: views/tabs.php:257
 msgid "Right Align"
 msgstr ""
 
-#: views/tabs.php:244
+#: views/tabs.php:258
 msgid "Center"
 msgstr ""
 
-#: views/tabs.php:245
+#: views/tabs.php:259
 msgid "None"
 msgstr ""
 
-#: views/tabs.php:251
+#: views/tabs.php:265
 msgid "Placement"
 msgstr ""
 
-#: views/tabs.php:254
+#: views/tabs.php:268
 msgid "Above Content"
 msgstr ""
 
-#: views/tabs.php:255
+#: views/tabs.php:269
 msgid "Below Content"
 msgstr ""
 
-#: views/tabs.php:265
+#: views/tabs.php:279
 msgid "Button Display"
 msgstr ""
 
-#: views/tabs.php:270
+#: views/tabs.php:284
 msgid "Pages to show on"
 msgstr ""
 
-#: views/tabs.php:272
+#: views/tabs.php:286
 msgid "Posts"
 msgstr ""
 
-#: views/tabs.php:273
+#: views/tabs.php:287
 msgid "Pages"
 msgstr ""
 
-#: views/tabs.php:274
+#: views/tabs.php:288
 msgid "Homepage"
 msgstr ""
 
-#: views/tabs.php:275
+#: views/tabs.php:289
 msgid "Category Pages"
 msgstr ""
 
-#: views/tabs.php:276
+#: views/tabs.php:290
 msgid "Taxonomy Pages"
 msgstr ""
 
-#: views/tabs.php:278
-msgid "Add direct to template"
-msgstr ""
-
-#: views/tabs.php:283
-msgid "Copy Snippet"
-msgstr ""
-
-#: views/tabs.php:286
-msgid "or use the shortcode inside your page/article"
-msgstr ""
-
-#: views/tabs.php:287
-msgid "Copy Shortcode"
-msgstr ""
-
-#: views/tabs.php:291
+#: views/tabs.php:294
 msgid "Specific categories to show on"
 msgstr ""
 
-#: views/tabs.php:319
+#: views/tabs.php:316
+msgid "Add direct to template"
+msgstr ""
+
+#: views/tabs.php:338
+msgid "Use the shortcode"
+msgstr ""
+
+#: views/tabs.php:369
 msgid "Pro Exclusive Features"
 msgstr ""
 
-#: views/tabs.php:325
+#: views/tabs.php:375
 msgid "Encode images"
 msgstr ""
 
-#: views/tabs.php:328 views/tabs.php:339 views/tabs.php:441
+#: views/tabs.php:378 views/tabs.php:389 views/tabs.php:491
 msgid "No"
 msgstr ""
 
-#: views/tabs.php:329 views/tabs.php:340 views/tabs.php:440
+#: views/tabs.php:379 views/tabs.php:390 views/tabs.php:490
 msgid "Yes"
 msgstr ""
 
-#: views/tabs.php:331
+#: views/tabs.php:381
 msgid ""
 "Select \"Yes\" if your site is not publicly accessible or if your provider "
 "blocks image requests from third parties or if images are not present in PDF"
 msgstr ""
 
-#: views/tabs.php:336
+#: views/tabs.php:386
 msgid "Show Hidden Content"
 msgstr ""
 
-#: views/tabs.php:342
+#: views/tabs.php:392
 msgid ""
 "By default PrintFriendly Pro will only show the visible content on the "
 "page. Select \"Yes\", if you want PrintFriendly to show hidden content. "
 "(Ex. Content in hidden tabs)"
 msgstr ""
 
-#: views/tabs.php:348
+#: views/tabs.php:398
 msgid "These features require a Pro subscription."
 msgstr ""
 
-#: views/tabs.php:348
+#: views/tabs.php:398
 msgid "Learn More"
 msgstr ""
 
-#: views/tabs.php:354 views/tabs.php:554
+#: views/tabs.php:404 views/tabs.php:604
 msgid "Save Options"
 msgstr ""
 
-#: views/tabs.php:355 views/tabs.php:555
+#: views/tabs.php:405 views/tabs.php:605
 msgid "Cancel"
 msgstr ""
 
-#: views/tabs.php:367
+#: views/tabs.php:417
 msgid "Page header"
 msgstr ""
 
-#: views/tabs.php:376
+#: views/tabs.php:426
 msgid "My Website Icon"
 msgstr ""
 
-#: views/tabs.php:404
+#: views/tabs.php:454
 msgid "Tagline (optional)"
 msgstr ""
 
-#: views/tabs.php:431
+#: views/tabs.php:481
 msgid "Features"
 msgstr ""
 
-#: views/tabs.php:437
+#: views/tabs.php:487
 msgid "Track in Google Analytics"
 msgstr ""
 
-#: views/tabs.php:447
+#: views/tabs.php:497
 msgid "Click to delete"
 msgstr ""
 
-#: views/tabs.php:450 views/tabs.php:487 views/tabs.php:497 views/tabs.php:508
+#: views/tabs.php:500 views/tabs.php:537 views/tabs.php:547 views/tabs.php:558
 msgid "Allow"
 msgstr ""
 
-#: views/tabs.php:451 views/tabs.php:488 views/tabs.php:498 views/tabs.php:509
+#: views/tabs.php:501 views/tabs.php:538 views/tabs.php:548 views/tabs.php:559
 msgid "Not Allow"
 msgstr ""
 
-#: views/tabs.php:453 views/tabs.php:479
+#: views/tabs.php:503 views/tabs.php:529
 msgid "Read documentation about this feature %1$shere%2$s"
 msgstr ""
 
-#: views/tabs.php:458
+#: views/tabs.php:508
 msgid "Image size"
 msgstr ""
 
-#: views/tabs.php:461
+#: views/tabs.php:511
 msgid "Full Size"
 msgstr ""
 
-#: views/tabs.php:462
+#: views/tabs.php:512
 msgid "Large"
 msgstr ""
 
-#: views/tabs.php:463
+#: views/tabs.php:513
 msgid "Medium"
 msgstr ""
 
-#: views/tabs.php:464
+#: views/tabs.php:514
 msgid "Small"
 msgstr ""
 
-#: views/tabs.php:465
+#: views/tabs.php:515
 msgid "Remove Images"
 msgstr ""
 
-#: views/tabs.php:471
+#: views/tabs.php:521
 msgid "Image style"
 msgstr ""
 
-#: views/tabs.php:474
+#: views/tabs.php:524
 msgid "Center/Block"
 msgstr ""
 
-#: views/tabs.php:475
+#: views/tabs.php:525
 msgid "Align Right"
 msgstr ""
 
-#: views/tabs.php:476
+#: views/tabs.php:526
 msgid "Align Left"
 msgstr ""
 
-#: views/tabs.php:477
+#: views/tabs.php:527
 msgid "Align None"
 msgstr ""
 
-#: views/tabs.php:494
+#: views/tabs.php:544
 msgid "PDF"
 msgstr ""
 
-#: views/tabs.php:500
+#: views/tabs.php:550
 msgid "Developer Note"
 msgstr ""
 
-#: views/tabs.php:500
+#: views/tabs.php:550
 msgid ""
 "On localhost the images can not be included in the PDF. Once the website is "
 "live/public images will be included in the PDF."
 msgstr ""
 
-#: views/tabs.php:505
+#: views/tabs.php:555
 msgid "Print"
 msgstr ""
 
-#: views/tabs.php:520
+#: views/tabs.php:570
 msgid "Custom CSS"
 msgstr ""
 
-#: views/tabs.php:527
+#: views/tabs.php:577
 msgid "Custom CSS URL"
 msgstr ""
 
-#: views/tabs.php:542
+#: views/tabs.php:592
 msgid ""
 "Customize the styles of the printed/pdf page using your own CSS. Create "
 "your custom CSS, and put the URL to your Custom CSS file in the box above"
 msgstr ""
 
-#: views/tabs.php:544
+#: views/tabs.php:594
 msgid ""
 "Customize the styles of the printed/pdf page using your own CSS. Add your "
 "custom CSS (without the %s tags) in the box above"
 msgstr ""
 
-#: views/tabs.php:569
+#: views/tabs.php:619
 msgid "Debug options"
 msgstr ""
 
-#: views/tabs.php:578
+#: views/tabs.php:628
 msgid "Currently in Debug Mode. This tab is visible in debug mode only"
 msgstr ""
 

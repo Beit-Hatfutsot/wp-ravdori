@@ -13,6 +13,7 @@
 namespace Smush\Core;
 
 use WP_Smush;
+use Smush\Core\Helper;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -72,25 +73,22 @@ class Rest {
 	 * @return array|string
 	 */
 	public function register_image_stats( $image ) {
-		if ( get_option( 'smush-in-progress-' . $image['id'], false ) ) {
-			$status_txt = __( 'Smushing in progress', 'wp-smushit' );
-			return $status_txt;
+		if ( Helper::file_in_progress( $image['id'], 'smush' ) ) {
+			return __( 'Smushing in progress', 'wp-smushit' );
 		}
 
 		$wp_smush_data = get_post_meta( $image['id'], Modules\Smush::$smushed_meta_key, true );
 
 		if ( empty( $wp_smush_data ) ) {
-			$status_txt = __( 'Not processed', 'wp-smushit' );
-			return $status_txt;
+			return __( 'Not processed', 'wp-smushit' );
 		}
 
 		$wp_resize_savings  = get_post_meta( $image['id'], 'wp-smush-resize_savings', true );
 		$conversion_savings = get_post_meta( $image['id'], 'wp-smush-pngjpg_savings', true );
 
 		$combined_stats = WP_Smush::get_instance()->core()->combined_stats( $wp_smush_data, $wp_resize_savings );
-		$combined_stats = WP_Smush::get_instance()->core()->combine_conversion_stats( $combined_stats, $conversion_savings );
 
-		return $combined_stats;
+		return WP_Smush::get_instance()->core()->combine_conversion_stats( $combined_stats, $conversion_savings );
 	}
 
 	/**
