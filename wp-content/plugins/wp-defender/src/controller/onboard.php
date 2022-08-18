@@ -4,7 +4,7 @@ namespace WP_Defender\Controller;
 
 use Calotes\Helper\Route;
 use WP_Defender\Behavior\WPMUDEV;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Model\Setting\Login_Lockout;
 use WP_Defender\Model\Setting\Notfound_Lockout;
 use WP_Defender\Model\Setting\User_Agent_Lockout;
@@ -16,7 +16,7 @@ use WP_Defender\Model\Setting\User_Agent_Lockout;
  * Class Onboard
  * @package WP_Defender\Controller
  */
-class Onboard extends Controller2 {
+class Onboard extends Controller {
 	public $slug = 'wp-defender';
 
 	public function __construct() {
@@ -79,7 +79,7 @@ class Onboard extends Controller2 {
 	 * Enable blacklist status.
 	 */
 	private function preset_blacklist_monitor() {
-		$ret = $this->make_wpmu_request( WPMUDEV::API_BLACKLIST, [], [
+		$this->make_wpmu_request( WPMUDEV::API_BLACKLIST, [], [
 			'method' => 'POST'
 		] );
 	}
@@ -150,31 +150,13 @@ class Onboard extends Controller2 {
 		if ( ! $this->is_page_active() ) {
 			return;
 		}
-		list( $endpoints, $nonces ) = Route::export_routes( 'onboard' );
+		[$endpoints, $nonces] = Route::export_routes( 'onboard' );
 		wp_localize_script( 'def-onboard', 'onboard', [
 			'endpoints' => $endpoints,
 			'nonces'    => $nonces
 		] );
 		wp_enqueue_script( 'def-onboard' );
 		$this->enqueue_main_assets();
-	}
-
-	/**
-	 * Return icon svg image.
-	 * Todo: now Def has 2 identical methods. After merge with v2.7.0, leave 1 method and transfer to Defender_Dashboard_Client trait.
-	 *
-	 * @return string
-	 */
-	private function get_menu_icon() {
-		ob_start();
-		?>
-		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path fill-rule="evenodd" clip-rule="evenodd" d="M9.99999 2.08899L3 4.21792V9.99502H9.99912V18.001H10C13.47 18.001 17 13.9231 17 11.0045V9.99501H9.99999V2.08899ZM10 0L1 2.73862V11.0045C1 15.1125 5.49 20 10 20C14.51 20 19 15.1225 19 11.0045V2.73862L10 0Z" fill="#F0F6FC" fill-opacity="0.6"/>
-		</svg>
-		<?php
-		$svg = ob_get_clean();
-
-		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
 
 	public function remove_settings() {}

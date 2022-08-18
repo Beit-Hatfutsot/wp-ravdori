@@ -5,6 +5,7 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Config\Config_Hub_Helper;
+use WP_Defender\Controller;
 use WP_Defender\Traits\Hummingbird;
 use WP_Error;
 use WP_User;
@@ -15,13 +16,13 @@ use WP_User;
  * @package WP_Defender\Controller
  * @since 2.5.4
  */
-class Recaptcha extends \WP_Defender\Controller2 {
-	const DEFAULT_LOGIN_FORM       = 'login',
+class Recaptcha extends Controller {
+	public const DEFAULT_LOGIN_FORM       = 'login',
 		DEFAULT_REGISTER_FORM      = 'register',
 		DEFAULT_LOST_PASSWORD_FORM = 'lost_password',
 		DEFAULT_COMMENT_FORM       = 'comments';
 
-	const WOO_LOGIN_FORM       = 'woo_login',
+	public const WOO_LOGIN_FORM       = 'woo_login',
 		WOO_REGISTER_FORM      = 'woo_register',
 		WOO_LOST_PASSWORD_FORM = 'woo_lost_password';
 
@@ -207,6 +208,7 @@ class Recaptcha extends \WP_Defender\Controller2 {
 	 * @return string
 	 */
 	protected function get_api_url() {
+		$api_url = null;
 		if ( isset( $this->recaptcha_type ) &&
 			in_array( $this->recaptcha_type, array( 'v2_checkbox', 'v2_invisible' ), true )
 		) {
@@ -347,6 +349,7 @@ class Recaptcha extends \WP_Defender\Controller2 {
 	 * @return string
 	 */
 	protected function display_recaptcha() {
+		$deps = null;
 		$content = '<div class="recaptcha_wrap wpdef_recaptcha_' . $this->recaptcha_type . '">';
 		if ( ! $this->private_key || ! $this->public_key || empty( $this->recaptcha_type ) ) {
 			// Display nothing.
@@ -358,7 +361,7 @@ class Recaptcha extends \WP_Defender\Controller2 {
 		$api_url = $this->get_api_url();
 
 		// Generate random id value if there's content with pagination plugin for not getting duplicate id values.
-		$id = mt_rand();
+		$id = random_int(0, mt_getrandmax());
 		if ( in_array( $this->recaptcha_type, array( 'v2_checkbox', 'v2_invisible' ), true ) ) {
 			$content .= '<div id="wpdef_recaptcha_' . $id . '" class="wpdef_recaptcha"></div>
 			<noscript>
@@ -738,6 +741,8 @@ class Recaptcha extends \WP_Defender\Controller2 {
 	 * @defender_route
 	 */
 	public function load_recaptcha_preview( Request $request ) {
+		$onload = null;
+		$js = null;
 		$data                 = $request->get_data(
 			array(
 				'captcha_type' => array(

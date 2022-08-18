@@ -1,13 +1,13 @@
-<?php
+<?php // phpcs:ignore PSR1.Files.SideEffects.FoundWithSymbols
 
 /*
     Plugin Name: Print, PDF & Email by PrintFriendly
-    Plugin URI: http://www.printfriendly.com
+    Plugin URI: https://www.printfriendly.com
     Description: PrintFriendly & PDF button for your website. Optimizes your pages and brand for print, pdf, and email.
     Name and URL are included to ensure repeat visitors and new visitors when printed versions are shared.
-    Version: 5.2.2
+    Version: 5.2.4
     Author: Print, PDF, & Email by PrintFriendly
-    Author URI: http://www.printfriendly.com
+    Author URI: https://www.printfriendly.com
     Domain Path: /languages
     Text Domain: printfriendly
 */
@@ -35,13 +35,12 @@ if (! class_exists('PrintFriendly_WordPress')) {
      */
     class PrintFriendly_WordPress
     {
-
         /**
          * Current plugin version.
          *
          * @var string
          */
-        var $plugin_version = '5.2.2';
+        var $plugin_version = '5.2.4';
         /**
          * The hook, used for text domain as well as hooks on pages and in get requests for admin.
          *
@@ -77,7 +76,7 @@ if (! class_exists('PrintFriendly_WordPress')) {
          *
          * @var array
          */
-        private static $_buttons = array(
+        private static $_buttons = array( // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
             'buttons/printfriendly-pdf-email-button.png' => array( 'width' => 170, 'height' => 24 ),
             'buttons/printfriendly-pdf-email-button-md.png' => array( 'width' => 194, 'height' => 30 ),
             'buttons/printfriendly-pdf-email-button-notext.png' => array( 'width' => 110, 'height' => 30 ),
@@ -935,7 +934,7 @@ if (! class_exists('PrintFriendly_WordPress')) {
             }
 
             if ($file === $this_plugin) {
-                $new_links = array( '<a href="https://printfriendly.freshdesk.com/support/solutions/folders/69000070847" target="_new">' . __('Documentation', 'printfriendly') . '</a>' );
+                $new_links = array( '<a href="https://support.printfriendly.com/wordpress/customize-content-selection/" target="_new">' . __('Documentation', 'printfriendly') . '</a>' );
                 $links = array_merge($links, $new_links);
             }
             return $links;
@@ -1299,9 +1298,8 @@ if (! class_exists('PrintFriendly_WordPress')) {
                     $return = '<img src="' . esc_url($this->options['custom_button_icon']) . '" alt="Print Friendly, PDF & Email" class="pf-button-img" style="' . $imgStyle . '"  />';
                 }
 
-                // esc_html is deliberately not used here
                 if ($this->options['custom_button_text'] === 'custom-text') {
-                    $return .= sprintf('<span id="printfriendly-text2" class="pf-button-text">%s</span>', $this->options['custom_text']);
+                    $return .= sprintf('<span id="printfriendly-text2" class="pf-button-text">%s</span>', $this->esc_html_if_needed($this->options['custom_text']));
                 }
 
                 return $return;
@@ -1363,8 +1361,7 @@ if (! class_exists('PrintFriendly_WordPress')) {
                 $style .= 'color: ' . $this->options['text_color'] . ';';
             }
 
-            // esc_html is deliberately not used here
-            $button_preview = sprintf('<span><span id="pf-custom-button-preview" class="pf-button-img">%s</span><span id="printfriendly-text2" class="pf-button-text" style="%s">%s</span></span>', $img, $style, $button_text);
+            $button_preview = sprintf('<span><span id="pf-custom-button-preview" class="pf-button-img">%s</span><span id="printfriendly-text2" class="pf-button-text" style="%s">%s</span></span>', $img, $style, $this->esc_html_if_needed($button_text));
 
             echo $button_preview;
         }
@@ -1507,6 +1504,15 @@ if (! class_exists('PrintFriendly_WordPress')) {
                 wp_enqueue_script('post');
 
                 add_meta_box('categorydiv', __('Only display when post is in:', 'printfriendly'), 'post_categories_meta_box', 'settings_page_' . $this->hook, 'normal', 'core');
+            }
+        }
+
+        function esc_html_if_needed($input)
+        {
+            if (current_user_can('unfiltered_html')) {
+                return $input;
+            } else {
+                return esc_html($input);
             }
         }
 

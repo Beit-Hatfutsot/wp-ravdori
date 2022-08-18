@@ -32,9 +32,10 @@ use WP_Defender\Controller\Blocklist_Monitor;
 use WP_Defender\Controller\Password_Protection as Controller_Password_Protection;
 use WP_Defender\Controller\UA_Lockout as Controller_Ua_Lockout;
 use WP_Defender\Component\Security_Tweaks\Prevent_Enum_Users;
+use WP_Defender\Component\Security_Tweaks\Security_Key;
 
 class Backup_Settings extends Component {
-	const KEY = 'defender_last_settings', INDEXER = 'defender_config_indexer';
+	public const KEY = 'defender_last_settings', INDEXER = 'defender_config_indexer';
 
 	/**
 	 * @param object $notification_object
@@ -70,6 +71,7 @@ class Backup_Settings extends Component {
 	 * @return array
 	 */
 	public function gather_data() {
+		$audit = [];
 		$tweak_class = wd_di()->get( Controller_Security_Tweaks::class );
 		$tweak_class->refresh_tweaks_status();
 		$settings           = new Model_Security_Tweaks();
@@ -84,6 +86,7 @@ class Backup_Settings extends Component {
 			'ignore'              => $settings->ignore,
 			'automate'            => $settings->automate,
 			'enabled_user_enums'  => $this->get_enabled_user_enums(),
+			'security_key'        => $this->get_security_key_all_options(),
 		);
 		$settings           = new Model_Scan();
 		$scan_report        = new Malware_Report();
@@ -306,6 +309,7 @@ class Backup_Settings extends Component {
 	 * @since 2.6.5 Reduce differences between Basic and Default security configs.
 	*/
 	private function create_basic_config() {
+		$configs = [];
 		// @since 2.6.5 Clear recipients.
 		$default_recipients = array();
 		// Init Tweaks class and refresh status.
@@ -564,12 +568,12 @@ class Backup_Settings extends Component {
 	}
 
 	/**
-	 * @param array $data
-	 * @param bool  $is_migration
+	 * @param array  $data           Config data.
+	 * @param string $request_reason Cases: plugin, hub, migration.
 	 *
 	 * @return bool
 	 */
-	public function restore_data( $data, $is_migration = false ) {
+	public function restore_data( $data, $request_reason = 'plugin' ) {
 		$need_reauth = false;
 		foreach ( $data as $module => $module_data ) {
 			if ( ! is_array( $module_data ) ) {
@@ -595,12 +599,12 @@ class Backup_Settings extends Component {
 				}
 
 				if ( 'security_tweaks' === $module ) {
-					if ( ! $is_migration ) {
-						// There is some tweaks that require re-login. If so, then we should output a message.
+					if ( 'migration' !== $request_reason ) {
+						// There is some tweaks that require re-login. Not display error message during since 2.8.1 because it breaks the config flow on the Hub.
 						// If this is combined with mask login, then we need to redirect to new URL.
 						// The automate function should return this.
 						$tweak_class = wd_di()->get( Controller_Security_Tweaks::class );
-						$need_reauth = $tweak_class->automate( $module_data );
+						$need_reauth = $tweak_class->automate( $module_data, $request_reason );
 					}
 					if ( ! empty( $module_data ) && isset( $module_data['notification'] ) ) {
 						$tweak_notification = new Tweak_Reminder();
@@ -1053,7 +1057,7 @@ class Backup_Settings extends Component {
 			if (
 				'security_tweaks' === $key
 				&& 'enabled' === $config['notification']
-				&& 1 === count( $data['strings']['security_tweaks'] )
+				&& 1 === (is_array($data['strings']['security_tweaks']) || $data['strings']['security_tweaks'] instanceof \Countable ? count( $data['strings']['security_tweaks'] ) : 0)
 			) {
 				$data['strings']['security_tweaks'][] = __( 'Email notifications active', 'wpdef' );
 			} elseif ( 'scan' === $key ) {
@@ -1129,6 +1133,7 @@ class Backup_Settings extends Component {
 	 * @return array
 	 */
 	private function get_prev_settings() {
+		$arr = [];
 		if ( ( new \WP_Defender\Behavior\WPMUDEV() )->is_pro() ) {
 			$status         = (string) wd_di()->get( Blocklist_Monitor::class )->get_status();
 			$arr['enabled'] = '1' === $status;
@@ -1365,5 +1370,15 @@ class Backup_Settings extends Component {
 	private function get_enabled_user_enums() {
 		$prevent_enum_users = new Prevent_Enum_Users();
 		return $prevent_enum_users->get_enabled_user_enums();
+	}
+
+	/**
+	 * Security key all option.
+	 *
+	 * @return mixed All value of the "secuirty key" feature of security tweak.
+	 */
+	private function get_security_key_all_options() {
+		$security_key = new Security_Key();
+		return $security_key->get_all_option();
 	}
 }

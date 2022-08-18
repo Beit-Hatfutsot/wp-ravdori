@@ -8,7 +8,9 @@ use WP_Defender\Model\Lockout_Log;
 use WP_Defender\Component\User_Agent;
 
 class Notfound_Lockout extends Component {
-	const SCENARIO_ERROR_404 = 'error_404', SCENARIO_ERROR_404_IGNORE = 'error_404_ignore', SCENARIO_LOCKOUT_404 = '404_lockout';
+	use \WP_Defender\Traits\Country;
+
+	public const SCENARIO_ERROR_404 = 'error_404', SCENARIO_ERROR_404_IGNORE = 'error_404_ignore', SCENARIO_LOCKOUT_404 = '404_lockout';
 	/**
 	 * Use for cache.
 	 *
@@ -141,11 +143,6 @@ class Notfound_Lockout extends Component {
 		if ( ! is_404() ) {
 			return;
 		}
-		$is_logged = is_user_logged_in();
-		if ( $is_logged && current_user_can( 'edit_posts' ) ) {
-			// Only track subscriber.
-			return;
-		}
 
 		$ip = $this->get_user_ip();
 		// Check if this from google,
@@ -157,7 +154,7 @@ class Notfound_Lockout extends Component {
 			return;
 		}
 
-		if ( false === $this->model->detect_logged && $is_logged ) {
+		if ( false === $this->model->detect_logged && is_user_logged_in() ) {
 			return;
 		}
 
@@ -217,7 +214,7 @@ class Notfound_Lockout extends Component {
 
 		// We will get the latest till oldest, limit by attempt.
 		if ( ! is_array( $model->meta['nf'] ) ) {
-			$model->meta['nf'] = [];
+			$model->meta['nf'] = array();
 		}
 
 		$checks = array_slice( $model->meta['nf'], $this->model->attempt * - 1 );
@@ -282,7 +279,7 @@ class Notfound_Lockout extends Component {
 			! isset( $model->meta['nf'] ) ||
 			( isset( $model->meta['nf'] ) && ! is_array( $model->meta['nf'] ) )
 		) {
-			$model->meta['nf'] = [];
+			$model->meta['nf'] = array();
 		}
 
 		$model->meta['nf'][] = time();
@@ -307,6 +304,13 @@ class Notfound_Lockout extends Component {
 		$model->date       = time();
 		$model->tried      = $uri;
 		$model->blog_id    = get_current_blog_id();
+
+		$ip_to_country = $this->ip_to_country( $ip );
+
+		if ( ! empty( $ip_to_country ) && isset( $ip_to_country['iso'] ) ) {
+			$model->country_iso_code = $ip_to_country['iso'];
+		}
+
 		switch ( $scenario ) {
 			case self::SCENARIO_ERROR_404:
 				$model->type = Lockout_Log::ERROR_404;
@@ -323,7 +327,7 @@ class Notfound_Lockout extends Component {
 				break;
 		}
 		$model->save();
-		if ( $model->type === Lockout_Log::LOCKOUT_404 ) {
+		if ( Lockout_Log::LOCKOUT_404 === $model->type ) {
 			do_action( 'defender_notify', 'firewall-notification', $model );
 		}
 	}

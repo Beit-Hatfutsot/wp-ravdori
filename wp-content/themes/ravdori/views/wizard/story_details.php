@@ -11,6 +11,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 get_header();
+
 ?>
 
 
@@ -702,8 +703,28 @@ get_header();
 <?php endif;?>
 
 
+<?php if ( $locale == ISupportedLanguages::ES['locale_file'] ): ?>
+
+	<style>			
+		body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons:before {
+				background: transparent url('/wp-content/themes/ravdori/images/general/story/insert-media-bubble-es.png') 0 0 no-repeat !important;
+		}
+		
+		.wizard-form h2 {
+			font-size: 1.3em;
+		}
+		
+		.story-title-container {
+			float:left;
+		}
+		
+	</style>
+			
+<?php endif;?>
+
 <?php $errors = isset($data['errors']) ? $data['errors'] : null; ?>
 <?php
+
 $isStorySaved = $wizardSessionManager->getField( 'do-saving' );
 
 $wizardSessionManager->setField( 'do-saving' , false );
@@ -751,7 +772,7 @@ $wizardSessionManager->setField( 'do-saving' , false );
 
 
                     <!-- Story Title  -->
-                    <div class="element-input col-sm-6" >
+                    <div class="element-input col-sm-6 story-title-container">
                         <label id="lblStoryTitle" for="<?php echo IWizardStep4Fields::STORY_TITLE ;?>" class="title"><?php BH__e('* שם הסיפור' , 'BH', $locale);?>
                             <?php showBackendErrors( $errors , IWizardStep4Fields::STORY_TITLE ); ?>
                         </label>
@@ -828,22 +849,35 @@ $wizardSessionManager->setField( 'do-saving' , false );
                             $post = get_post( $stepData[ IWizardStep4Fields::POST_ID ] );
                             $editorContent = wpautop($post->post_content);
                         }
-
+						
                         ?>
 
                         <?php
-                            wp_editor ( $editorContent , IWizardStep4Fields::STORY_CONTENT ,
-                                                                                            array(
-                                                                                                    'textarea_rows' => 15,
-                                                                                                    'wpautop'       => true,
-                                                                                                    'tinymce'       => true,
-                                                                                                    'teeny'         => true,
-                                                                                                    'quicktags'     => false,
-                                                                                                    'editor_class'  => 'required',
-                                                                                                    'media_buttons' => true,
-                                                                                                )
-                                      );
-
+					
+							$tinymce_arg = true;
+							
+							if ( $locale == ISupportedLanguages::ES['locale_file'] ):
+								$editor_locale = get_language_locale_filename_by_get_param(true);
+								$editor_lang   = $editor_locale["get_param_value"];
+								$editor_directionality = $editor_locale['dir'];
+								
+								$tinymce_arg = ['language' => $editor_lang,'directionality' => $editor_directionality];
+								
+							endif;
+							
+							
+							wp_editor ( $editorContent , IWizardStep4Fields::STORY_CONTENT ,
+																					array(
+																							'textarea_rows' => 15,
+																							'wpautop'       => true,
+																							'tinymce'       => $tinymce_arg,
+																							'teeny'         => true,
+																							'quicktags'     => false,
+																							'editor_class'  => 'required',
+																							'media_buttons' => true,
+																						)
+							  );
+						
                         ?>
 
                     </div>

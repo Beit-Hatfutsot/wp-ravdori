@@ -6,12 +6,12 @@ use Calotes\Component\Request;
 use Calotes\Component\Response;
 use Calotes\Helper\HTTP;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Traits\Formats;
 use WP_Defender\Traits\User;
 use WP_Defender\Model\Notification as Model_Notification;
 
-class Notification extends Controller2 {
+class Notification extends Controller {
 	use User, Formats;
 
 	public $slug = 'wdf-notification';
@@ -130,7 +130,7 @@ class Notification extends Controller2 {
 				),
 			)
 		);
-		$email = isset( $data['email'] ) ? $data['email'] : false;
+		$email = $data['email'] ?? false;
 		if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 			return new Response(
 				true,
@@ -236,8 +236,7 @@ class Notification extends Controller2 {
 			}
 			$model->save();
 			$this->service->send_subscription_confirm_email(
-				$model,
-				$this->dump_routes_and_nonces()
+				$model
 			);
 			Config_Hub_Helper::set_clear_active_flag();
 
@@ -336,8 +335,7 @@ class Notification extends Controller2 {
 			if ( $model->validate() ) {
 				$model->save();
 				$this->service->send_subscription_confirm_email(
-					$model,
-					$this->dump_routes_and_nonces()
+					$model
 				);
 			}
 		}
@@ -372,8 +370,7 @@ class Notification extends Controller2 {
 			if ( $model->validate() ) {
 				$model->save();
 				$this->service->send_subscription_confirm_email(
-					$model,
-					$this->dump_routes_and_nonces()
+					$model
 				);
 			}
 		}
@@ -626,9 +623,9 @@ class Notification extends Controller2 {
 			)
 		);
 		$paged    = 1;
-		$exclude  = isset( $data['exclude'] ) ? $data['exclude'] : array();
-		$username = isset( $data['search'] ) ? $data['search'] : '';
-		$slug     = isset( $data['module'] ) ? $data['module'] : null;
+		$exclude  = $data['exclude'] ?? array();
+		$username = $data['search'] ?? '';
+		$slug     = $data['module'] ?? null;
 		$role     = '';
 
 		if (

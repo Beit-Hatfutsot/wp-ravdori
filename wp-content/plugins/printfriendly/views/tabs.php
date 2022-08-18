@@ -105,7 +105,7 @@
 
                         <div class="pf-bu-card-footer">
                             <p class="pf-bu-card-footer-item"><?php _e('Change this setting if your content is not showing in the preview.', 'printfriendly'); ?></p>
-                            <p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080285-page-content-not-selected" target="_new"><?php _e('Documentation', 'printfriendly'); ?></a></p>
+                            <p class="pf-bu-card-footer-item"><a href="https://support.printfriendly.com/wordpress/customize-content-selection/" target="_new"><?php _e('Documentation', 'printfriendly'); ?></a></p>
                         </div>
                     </div>
 
@@ -273,7 +273,7 @@
                         </div>
                     </div>
 
-                    <div class="pf-bu-block pf-bu-card">
+                    <div class="pf-bu-block pf-bu-card" id="button-display-setting">
                         <header class="pf-bu-card-header">
                             <p class="pf-bu-card-header-title">
                                 <?php _e('Button Display', 'printfriendly'); ?>
@@ -355,10 +355,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="pf-bu-card-footer">
-                            <p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080457-manual-button-placement-in-wordpress" target="_new"><?php _e('Documentation', 'printfriendly'); ?></a></p>
                         </div>
 
                     </div>
@@ -471,7 +467,7 @@
                         </div>
 
                         <div class="pf-bu-card-footer">
-                            <p class="pf-bu-card-footer-item"><a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080358-create-a-custom-header-in-wordpress" target="_new"><?php _e('Documentation', 'printfriendly'); ?></a></p>
+                            <p class="pf-bu-card-footer-item"><a href="https://support.printfriendly.com/wordpress/custom-header-footer/" target="_new"><?php _e('Documentation', 'printfriendly'); ?></a></p>
                         </div>
                     </div>
 
@@ -500,7 +496,6 @@
                                         <option value="0" <?php selected($this->options['click_to_delete'], '0'); ?>><?php _e('Allow', 'printfriendly'); ?></option>
                                         <option value="1" <?php selected($this->options['click_to_delete'], '1'); ?>><?php _e('Not Allow', 'printfriendly'); ?></option>
                                     </select>
-                                    <p class="description"><?php echo sprintf(__('Read documentation about this feature %1$shere%2$s', 'printfriendly'), '<a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080475-turn-off-the-click-to-delete-option-in-wordpress" target="_new">', '</a>'); ?></p>
                                 </div>
                             </div>
 
@@ -526,7 +521,6 @@
                                         <option value="left" <?php selected($this->options['image-style'], 'left'); ?>><?php _e('Align Left', 'printfriendly'); ?></option>
                                         <option value="none" <?php selected($this->options['image-style'], 'none'); ?>><?php _e('Align None', 'printfriendly'); ?></option>
                                     </select>
-                                    <p class="description"><?php echo sprintf(__('Read documentation about this feature %1$shere%2$s', 'printfriendly'), '<a href="https://printfriendly.freshdesk.com/support/solutions/articles/69000080507-remove-images-option" target="_new">', '</a>'); ?></p>
                                 </div>
                             </div>
 
@@ -586,15 +580,14 @@
                         </div>
 
                         <div class="pf-bu-card-footer">
-                            <p class="pf-bu-card-footer-item">
-                            <?php
-                            if (! $this->is_pro('custom-css')) {
-                                _e('Customize the styles of the printed/pdf page using your own CSS. Create your custom CSS, and put the URL to your Custom CSS file in the box above', 'printfriendly');
-                            } else {
-                                echo sprintf(__('Customize the styles of the printed/pdf page using your own CSS. Add your custom CSS (without the %s tags) in the box above', 'printfriendly'), '<code>&lt;style&gt;</code>');
-                            }
-                            ?>
-                            </p>
+                            <div class="pf-bu-card-footer-item">
+                                <div>
+                                    <p>Customize the styles of the printed/pdf page using your own CSS</p>
+                                    <p>Add your custom CSS (without the <code style="display:inline;padding:3px 2px">&lt;style&gt;</code> tags) in the box above.
+                                    <a href="https://support.printfriendly.com/wordpress/custom-css/" target="_new">Learn More</a>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                     </div>

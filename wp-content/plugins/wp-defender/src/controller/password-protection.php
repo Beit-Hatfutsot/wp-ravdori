@@ -5,14 +5,14 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 
 /**
  * Class Password_Protection
  *
  * @package WP_Defender\Controller
  */
-class Password_Protection extends Controller2 {
+class Password_Protection extends Controller {
 	/**
 	 * Use for cache.
 	 *
@@ -108,7 +108,7 @@ class Password_Protection extends Controller2 {
 				: $this->model->pwned_actions['force_change_message'];
 			$errors->add( 'defender_password_protection', $message );
 			// Remove the one time cookie notice once it's displayed.
-			$this->service->remove_cookie_notice( 'display_pwned_password_warning', true, time() - MINUTE_IN_SECONDS );
+			$this->service->remove_cookie_notice( 'display_pwned_password_warning', true );
 		}
 
 		$login_password = $this->service->get_submitted_password();
@@ -291,7 +291,7 @@ class Password_Protection extends Controller2 {
 		}
 
 		return array(
-			$config['enabled'] && count( $config['user_roles'] ) > 0
+			$config['enabled'] && (is_array($config['user_roles']) || $config['user_roles'] instanceof \Countable ? count( $config['user_roles'] ) : 0) > 0
 				? __( 'Active', 'wpdef' )
 				: __( 'Inactive', 'wpdef' )
 		);

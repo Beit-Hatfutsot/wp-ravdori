@@ -4,7 +4,7 @@ namespace WP_Defender\Controller;
 
 use WP_Defender\Behavior\WPMUDEV;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Model\Lockout_Log;
 use WP_Defender\Model\Notification\Audit_Report;
 use WP_Defender\Model\Notification\Firewall_Notification;
@@ -24,7 +24,7 @@ use WP_Defender\Traits\IO;
  * Class HUB
  * @package WP_Defender\Controller
  */
-class HUB extends Controller2 {
+class HUB extends Controller {
 	use IO, Formats;
 
 	private $view_onboard = false;
@@ -309,7 +309,7 @@ class HUB extends Controller2 {
 			$adapter = wd_di()->get( \WP_Defender\Component\Config\Config_Adapter::class );
 			$configs = $adapter->upgrade( $configs );
 		}
-		$restore_result = $config_component->restore_data( $configs );
+		$restore_result = $config_component->restore_data( $configs, 'hub' );
 		if ( is_string( $restore_result ) ) {
 			wp_send_json_error(
 				array(

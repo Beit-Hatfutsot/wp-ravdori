@@ -14,7 +14,9 @@ use WP_Defender\Component\User_Agent;
  * @package WP_Defender\Component
  */
 class Login_Lockout extends \WP_Defender\Component {
-	const SCENARIO_LOGIN_FAIL = 'login_fail', SCENARIO_LOGIN_LOCKOUT = 'login_lockout', SCENARIO_BAN = 'login_ban';
+	use \WP_Defender\Traits\Country;
+
+	public const SCENARIO_LOGIN_FAIL = 'login_fail', SCENARIO_LOGIN_LOCKOUT = 'login_lockout', SCENARIO_BAN = 'login_ban';
 
 	/**
 	 * @var \WP_Defender\Model\Setting\Login_Lockout
@@ -63,13 +65,14 @@ class Login_Lockout extends \WP_Defender\Component {
 	 */
 	public function show_attempt_left( $user, $username, $password ) {
 		if ( is_wp_error( $user )
-		     && 'POST' == $_SERVER['REQUEST_METHOD']
-		     && ! in_array(
+			&& 'POST' === $_SERVER['REQUEST_METHOD']
+			&& ! in_array(
 				$user->get_error_code(),
 				array(
 					'empty_username',
 					'empty_password',
-				)
+				),
+				true
 			)
 		) {
 			$model = Lockout_Ip::get( $this->get_user_ip() );
@@ -82,7 +85,8 @@ class Login_Lockout extends \WP_Defender\Component {
 					$msg = $this->model->lockout_message;
 				}
 				$user->add(
-					'def_login_attempt', $msg
+					'def_login_attempt',
+					$msg
 				);
 
 				return $user;
@@ -112,7 +116,7 @@ class Login_Lockout extends \WP_Defender\Component {
 	 * @param string $username
 	 */
 	public function process_fail_attempt( $username ) {
-		if ( empty ( $username ) ) {
+		if ( empty( $username ) ) {
 			return;
 		}
 		$ip = $this->get_user_ip();
@@ -176,7 +180,7 @@ class Login_Lockout extends \WP_Defender\Component {
 	 */
 	protected function record_fail_attempt( $ip, $model ) {
 		$model->attempt += 1;
-		$model->ip      = $ip;
+		$model->ip       = $ip;
 		// Cache the time here, so it consumes less memory than query the logs.
 		$model->meta['login'][] = time();
 		$model->save();
@@ -204,6 +208,13 @@ class Login_Lockout extends \WP_Defender\Component {
 		$model->date       = time();
 		$model->tried      = $username;
 		$model->blog_id    = get_current_blog_id();
+
+		$ip_to_country = $this->ip_to_country( $ip );
+
+		if ( ! empty( $ip_to_country ) && isset( $ip_to_country['iso'] ) ) {
+			$model->country_iso_code = $ip_to_country['iso'];
+		}
+
 		switch ( $scenario ) {
 			case self::SCENARIO_LOGIN_FAIL:
 				$model->type = Lockout_Log::AUTH_FAIL;
@@ -223,7 +234,7 @@ class Login_Lockout extends \WP_Defender\Component {
 				break;
 		}
 		$model->save();
-		if ( $model->type === Lockout_Log::AUTH_LOCK ) {
+		if ( Lockout_Log::AUTH_LOCK === $model->type ) {
 			do_action( 'defender_notify', 'firewall-notification', $model );
 		}
 	}

@@ -94,6 +94,14 @@ function wd_central() {
 }
 
 /**
+ * @since 2.8.0
+ * @return string
+ */
+function defender_base_action() {
+	return 'wp_defender/v1/hub/';
+}
+
+/**
  * Get backward compatibility. Forminator uses this method.
  *
  * @return array
@@ -101,12 +109,13 @@ function wd_central() {
 function defender_backward_compatibility() {
 	$wpmu_dev        = new \WP_Defender\Behavior\WPMUDEV();
 	$two_fa_settings = new \WP_Defender\Model\Setting\Two_Fa();
-	$list            = wd_di()->get( \WP_Defender\Controller\Two_Factor::class )->dump_routes_and_nonces();
+	$controller      = wd_di()->get( \WP_Defender\Controller\Two_Factor::class );
+	$list            = $controller->dump_routes_and_nonces();
 	$lost_url        = add_query_arg(
 		array(
-			'action'     => 'wp_defender/v1/hub/',
+			'action'     => defender_base_action(),
 			'_def_nonce' => $list['nonces']['send_backup_code'],
-			'route'      => $list['routes']['send_backup_code'],
+			'route'      => $controller->check_route( $list['routes']['send_backup_code'] ),
 		),
 		admin_url( 'admin-ajax.php' )
 	);
@@ -375,7 +384,7 @@ if ( ! function_exists( 'array_key_first' ) ) {
 	function array_key_first( array $arr ) {
 		$arr_keys = array_keys( $arr );
 
-		return isset( $arr_keys[0] ) ? $arr_keys[0] : null;
+		return $arr_keys[0] ?? null;
 	}
 }
 
@@ -405,7 +414,7 @@ function defender_current_page() {
 		'wdf-setting',
 		'wdf-tutorial',
 	);
-	$page  = isset( $_GET['page'] ) ? $_GET['page'] : null;
+	$page  = $_GET['page'] ?? null;
 
 	return in_array( $page, $pages, true );
 }
@@ -447,7 +456,6 @@ function defender_cron_schedules( $schedules ) {
 			'display'  => __( 'Weekly', 'wpdef' ),
 		);
 	}
-	// Todo: add 'fifteen_days'-schedule to update MaxMind DB.
 	if ( ! isset( $schedules['monthly'] ) ) {
 		$schedules['monthly'] = array(
 			'interval' => MONTH_IN_SECONDS,
@@ -488,4 +496,52 @@ function defender_cron_schedules( $schedules ) {
 	}
 
 	return $schedules;
+}
+
+/**
+ * Generate random string.
+ *
+ * @param int $length Length of random string.
+ * @param string $strings Characters to include in a random string.
+ *
+ * @since 3.0.0
+ * @return string
+ */
+function defender_generate_random_string( $length = 16, $strings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567' ) {
+	if ( defined( 'DEFENDER_2FA_SECRET' ) ) {
+		// Only use in test.
+		return constant( 'DEFENDER_2FA_SECRET' );
+	}
+
+	if ( ! is_string( $strings ) ) {
+		return '';
+	}
+
+	$secret = array();
+	for ( $i = 0; $i < $length; $i ++ ) {
+		$secret[] = $strings[ random_int( 0, strlen( $strings ) - 1 ) ];
+	}
+
+	return implode( '', $secret );
+}
+
+/**
+ * Either return array or echo json.
+ *
+ * @param mixed $data    A Data to be returned or echoed.
+ * @param bool  $success Is it a success or failure.
+ * @param bool  $return  True if data needs to be returned.
+ *
+ * @since 3.0.0
+ * @return array|void
+ */
+function defender_maybe_echo_json( $data, $success, $return ) {
+	if ( true === $return ) {
+		return array(
+			'success' => $success,
+			'data'    => $data,
+		);
+	} else {
+		$success ? wp_send_json_success( $data ) : wp_send_json_error( $data );
+	}
 }

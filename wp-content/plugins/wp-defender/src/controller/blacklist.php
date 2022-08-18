@@ -5,7 +5,7 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Model\Lockout_Ip;
 use WP_Defender\Model\Setting\Blacklist_Lockout as Model_Blacklist_Lockout;
 use WP_Defender\Traits\Country;
@@ -17,7 +17,7 @@ use WP_Defender\Integrations\MaxMind_Geolocation;
  *
  * @package WP_Defender\Controller
  */
-class Blacklist extends Controller2 {
+class Blacklist extends Controller {
 	use IP, Country;
 
 	/**
@@ -41,6 +41,18 @@ class Blacklist extends Controller2 {
 		$this->model   = wd_di()->get( Model_Blacklist_Lockout::class );
 		$this->service = wd_di()->get( \WP_Defender\Component\Blacklist_Lockout::class );
 		add_action( 'wd_blacklist_this_ip', array( &$this, 'blacklist_an_ip' ) );
+		// Update MaxMind's DB.
+		if ( ! empty( $this->model->maxmind_license_key ) ) {
+			if ( ! wp_next_scheduled( 'wpdef_update_geoip' ) ) {
+				wp_schedule_event( strtotime( 'next Thursday' ), 'weekly', 'wpdef_update_geoip' );
+			}
+			// @since 2.8.0 Allows update or remove the database of MaxMind automatic and periodically (MaxMind's TOS).
+			$bind_updater = (bool) apply_filters( 'wd_update_maxmind_database', true );
+			// Bind to the scheduled updater action.
+			if ( $bind_updater ) {
+				add_action( 'wpdef_update_geoip', array( &$this, 'update_database' ) );
+			}
+		}
 	}
 
 	/**
@@ -86,8 +98,6 @@ class Blacklist extends Controller2 {
 					'blacklist_countries' => $blacklist_countries,
 					'whitelist_countries' => $whitelist_countries,
 					'current_country'     => $this->get_current_country( $user_ip ),
-					'geo_requirement'     => version_compare( PHP_VERSION, WP_DEFENDER_MIN_PHP_VERSION, '>=' ),
-					'min_php_version'     => WP_DEFENDER_MIN_PHP_VERSION,
 					'no_ips'              => '' === $arr_model['ip_blacklist'] && '' === $arr_model['ip_whitelist'],
 				),
 			),
@@ -178,13 +188,16 @@ class Blacklist extends Controller2 {
 			$this->model->geodb_path = $path . DIRECTORY_SEPARATOR . $phar->current()->getFileName() . DIRECTORY_SEPARATOR . $service_geo->get_db_full_name();
 			// Save because we'll check for a saved path.
 			$this->model->save();
+
+			if ( file_exists( $tmp ) ) {
+				unlink( $tmp );
+			}
+
 			$country                 = $this->get_current_country( $this->get_user_ip() );
 			$current_country         = '';
 			if ( ! empty( $country ) && ! empty( $country['iso'] ) ) {
 				$current_country = $country['iso'];
-				if ( empty( $this->model->country_whitelist ) ) {
-					$this->model->country_whitelist[] = $country['iso'];
-				}
+				$this->model     = $this->service->add_default_whitelisted_country( $this->model, $country['iso'] );
 			}
 			$this->model->maxmind_license_key = $license_key;
 			$this->model->save();
@@ -196,7 +209,6 @@ class Blacklist extends Controller2 {
 				),
 				'is_geodb_downloaded' => $this->service->is_geodb_downloaded(),
 				'current_country'     => $current_country,
-				'min_php_version'     => WP_DEFENDER_MIN_PHP_VERSION,
 			] );
 		} else {
 			$this->log( 'Error from MaxMind: ' . $tmp->get_error_message() );
@@ -333,7 +345,7 @@ class Blacklist extends Controller2 {
 				$ips = array_slice( $ips, $limit );
 			}
 			// If the queried models are less than the limit it means we are on the last set of IPs.
-			if ( count( $models ) < $limit ) {
+			if ( (is_array($models) || $models instanceof \Countable ? count( $models ) : 0) < $limit ) {
 				return new Response( true, [
 					'status' => 'done'
 				] );
@@ -500,5 +512,35 @@ class Blacklist extends Controller2 {
 				'interval' => 1,
 			)
 		);
+	}
+
+	/**
+	 * Update the geolocation database.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @return void
+	 */
+	public function update_database() {
+		if ( empty( $this->model->maxmind_license_key ) ) {
+			return;
+		}
+
+		$service_geo = wd_di()->get( MaxMind_Geolocation::class );
+		$service_geo->delete_database();
+
+		$tmp = $service_geo->get_downloaded_url( $this->model->maxmind_license_key );
+		if ( is_wp_error( $tmp ) ) {
+			$this->log( 'CRON error downloading from MaxMind: ' . $tmp->get_error_message() );
+			return;
+		}
+
+		$geodb_path = $service_geo->extract_db_archive( $tmp );
+		if ( is_wp_error( $geodb_path ) ) {
+			$this->log( 'CRON error extracting MaxMind archive: ' . $geodb_path->get_error_message() );
+			return;
+		}
+		$this->model->geodb_path = $geodb_path;
+		$this->model->save();
 	}
 }

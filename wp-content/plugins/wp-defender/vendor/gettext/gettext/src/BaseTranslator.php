@@ -34,6 +34,6 @@ abstract class BaseTranslator implements TranslatorInterface
      */
     public static function includeFunctions()
     {
-        include_once __DIR__.'/translator_functions.php';		   					 			   		  
+        include_once __DIR__.'/translator_functions.php';
     }
 }

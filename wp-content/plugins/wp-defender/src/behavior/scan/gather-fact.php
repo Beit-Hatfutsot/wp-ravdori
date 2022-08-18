@@ -15,7 +15,7 @@ use WP_Defender\Model\Setting\Scan;
 class Gather_Fact extends Behavior {
 	use \WP_Defender\Traits\IO;
 
-	const CACHE_CORE = 'wdfcore', CACHE_CONTENT = 'wdfcontent';
+	public const CACHE_CORE = 'wdfcore', CACHE_CONTENT = 'wdfcontent';
 
 	/**
 	 * Gather core files & content files.
@@ -55,7 +55,7 @@ class Gather_Fact extends Behavior {
 			// This mean we are on Windows.
 			$abs_path = str_replace( '/', DIRECTORY_SEPARATOR, $abs_path );
 		}
-		$core = new \Calotes\Base\File(
+		$core = new File(
 			ABSPATH,
 			true,
 			false,

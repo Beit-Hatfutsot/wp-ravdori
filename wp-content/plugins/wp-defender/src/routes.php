@@ -16,8 +16,9 @@ function defender_init_routes() {
 			'update_settings'         => 'save_settings',
 			'send_test_email'         => 'send_test_email',
 			'verify_otp_for_enabling' => 'verify_otp_for_enabling',
-			'disable_2fa'             => 'disable_2fa',
-			'send_backup_code'        => [ 'send_backup_code', true ]
+			'disable_totp'            => 'disable_totp',
+			'send_backup_code'        => [ 'send_backup_code', true ],
+			'generate_backup_codes'   => 'generate_backup_codes',
 		],
 		'security_tweaks'   => [
 			'process'                   => 'process',
@@ -95,7 +96,7 @@ function defender_init_routes() {
 		foreach ( $info as $name => $func ) {
 			$nopriv = false;
 			if ( is_array( $func ) ) {
-				list( $func, $nopriv ) = $func;
+				[$func, $nopriv] = $func;
 			}
 			\Calotes\Helper\Route::register_route( $name, $module, $name, [
 				\Calotes\Helper\Array_Cache::get( $module ),

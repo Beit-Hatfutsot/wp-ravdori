@@ -5,13 +5,13 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Model\Notification\Malware_Report;
 use Valitron\Validator;
 use WP_Defender\Model\Scan as Model_Scan;
 use WP_Defender\Traits\Formats;
 
-class Scan extends Controller2 {
+class Scan extends Controller {
 	use Formats;
 
 	protected $slug = 'wdf-scan';
@@ -213,8 +213,8 @@ class Scan extends Controller2 {
 				),
 			)
 		);
-		$id        = isset( $data['id'] ) ? $data['id'] : false;
-		$intention = isset( $data['intention'] ) ? $data['intention'] : false;
+		$id        = $data['id'] ?? false;
+		$intention = $data['intention'] ?? false;
 		if ( false === $id || false === $intention || ! in_array(
 				$intention,
 				array(
@@ -232,6 +232,7 @@ class Scan extends Controller2 {
 		$item = $scan->get_issue( $id );
 		if ( is_object( $item ) && $item->has_method( $intention ) ) {
 			$result = $item->$intention();
+
 			if ( is_wp_error( $result ) ) {
 				return new Response(
 					false,
@@ -257,6 +258,7 @@ class Scan extends Controller2 {
 
 	/**
 	 * Process for bulk action.
+	 * There is no Update-intention because it is a lengthy process. There may not be enough execution time.
 	 *
 	 * @param Request $request
 	 *
@@ -276,8 +278,8 @@ class Scan extends Controller2 {
 				),
 			)
 		);
-		$items     = isset( $data['items'] ) ? $data['items'] : array();
-		$intention = isset( $data['bulk'] ) ? $data['bulk'] : false;
+		$items     = $data['items'] ?? array();
+		$intention = $data['bulk'] ?? false;
 
 		if (
 			empty( $items )
@@ -690,6 +692,7 @@ class Scan extends Controller2 {
 	 * @return array
 	 */
 	public function config_strings( $config, $is_pro ) {
+		$strings = [];
 		$strings[] = $this->service->is_any_scan_active( $config, $is_pro )
 			? __( 'Active', 'wpdef' )
 			: __( 'Inactive', 'wpdef' );

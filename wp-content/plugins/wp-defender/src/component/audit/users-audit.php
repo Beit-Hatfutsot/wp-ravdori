@@ -11,10 +11,10 @@ use WP_Defender\Model\Audit_Log;
 class Users_Audit extends Audit_Event {
 	use User;
 
-	const ACTION_LOGIN   = 'login', ACTION_LOGOUT = 'logout', ACTION_REGISTERED = 'registered',
+	public const ACTION_LOGIN   = 'login', ACTION_LOGOUT = 'logout', ACTION_REGISTERED = 'registered',
 		ACTION_LOST_PASS = 'lost_password', ACTION_RESET_PASS = 'reset_password';
 
-	const CONTEXT_SESSION = 'session', CONTEXT_USERS = 'users', CONTEXT_PROFILE = 'profile';
+	public const CONTEXT_SESSION = 'session', CONTEXT_USERS = 'users', CONTEXT_PROFILE = 'profile';
 
 	public function get_hooks() {
 
@@ -262,9 +262,7 @@ class Users_Audit extends Audit_Event {
 	 * @return bool|array
 	 */
 	public function remove_user_from_blog_callback() {
-		$action = ! empty( $_POST['action'] ) ? sanitize_text_field( $_POST['action'] ) : false; // phpcs:ignore
-		if ( 'createuser' === $action ) {
-
+		if ( self::is_create_user_action() ) {
 			return false;
 		}
 
@@ -272,7 +270,7 @@ class Users_Audit extends Audit_Event {
 		$user_id              = $args[1]['user_id'];
 		$blog_id              = $args[1]['blog_id'];
 		$user                 = get_user_by( 'id', $user_id );
-		$username             = isset( $user->user_login ) ? $user->user_login : '';
+		$username             = $user->user_login ?? '';
 		$current_user_display = $this->get_user_display( get_current_user_id() );
 		$blog_name            = is_multisite() ? '[' . get_bloginfo( 'name' ) . ']' : '';
 
@@ -294,6 +292,10 @@ class Users_Audit extends Audit_Event {
 	 * @return array
 	 */
 	public function profile_update_callback() {
+		if ( self::is_create_user_action() ) {
+			return false;
+		}
+
 		$args         = func_get_args();
 		$user_id      = $args[1]['user_id'];
 		$current_user = get_user_by( 'id', $user_id );
@@ -346,5 +348,19 @@ class Users_Audit extends Audit_Event {
 		$user = get_user_by( 'id', $user_id );
 
 		return ucfirst( $user->roles[0] );
+	}
+
+	/**
+	 * Check if it is a create new user request.
+	 *
+	 * @since 2.8.0
+	 */
+	public static function is_create_user_action() {
+		$action = ! empty( $_POST['action'] ) ? sanitize_text_field( $_POST['action'] ) : false; // phpcs:ignore
+		if ( 'createuser' === $action ) {
+			return true;
+		}
+
+		return false;
 	}
 }

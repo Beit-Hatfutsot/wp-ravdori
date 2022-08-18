@@ -19,9 +19,9 @@ use WP_Defender\Component\Security_Tweaks\Disable_Trackback;
 use WP_Defender\Component\Security_Tweaks\Prevent_Enum_Users;
 use WP_Defender\Component\Security_Tweaks\Disable_File_Editor;
 use WP_Defender\Component\Security_Tweaks\Protect_Information;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 
-class Security_Tweaks extends Controller2 {
+class Security_Tweaks extends Controller {
 	public $slug = 'wdf-hardener';
 	/**
 	 * @var \WP_Defender\Model\Setting\Security_Tweaks
@@ -55,7 +55,7 @@ class Security_Tweaks extends Controller2 {
 	private $prevent_enum_users;
 
 
-	const STATUS_ISSUES = 'issues', STATUS_RESOLVE = 'fixed', STATUS_IGNORE = 'ignore', STATUS_RESTORE = 'restore';
+	public const STATUS_ISSUES = 'issues', STATUS_RESOLVE = 'fixed', STATUS_IGNORE = 'ignore', STATUS_RESTORE = 'restore';
 
 	public function __construct() {
 		$this->register_page(
@@ -100,7 +100,7 @@ class Security_Tweaks extends Controller2 {
 
 		$var = '$' . uniqid();
 		// This should output a warning.
-		echo $$var;
+		echo ${$var};
 		exit();
 	}
 
@@ -125,7 +125,7 @@ class Security_Tweaks extends Controller2 {
 			)
 		);
 
-		$slug  = isset( $data['slug'] ) ? $data['slug'] : false;
+		$slug  = $data['slug'] ?? false;
 		$tweak = $this->get_tweak( $slug );
 
 		if ( ! is_object( $tweak ) ) {
@@ -138,7 +138,7 @@ class Security_Tweaks extends Controller2 {
 		}
 
 		if ( in_array( $slug, array( 'prevent-php-executed', 'protect-information' ), true ) ) {
-			$current_server = isset( $data['current_server'] ) ? $data['current_server'] : false;
+			$current_server = $data['current_server'] ?? false;
 			if ( ! $current_server ) {
 				return new Response(
 					false,
@@ -190,7 +190,7 @@ class Security_Tweaks extends Controller2 {
 				),
 			)
 		);
-		$slug    = isset( $data['slug'] ) ? $data['slug'] : false;
+		$slug    = $data['slug'] ?? false;
 		$tweak   = $this->get_tweak( $slug );
 		$invalid = array( 'message' => __( 'Invalid request', 'wpdef' ) );
 		if ( ! is_object( $tweak ) ) {
@@ -200,7 +200,7 @@ class Security_Tweaks extends Controller2 {
 			);
 		}
 		if ( in_array( $slug, array( 'prevent-php-executed', 'protect-information' ), true ) ) {
-			$current_server = isset( $data['current_server'] ) ? $data['current_server'] : false;
+			$current_server = $data['current_server'] ?? false;
 			if ( ! $current_server ) {
 				return new Response(
 					false,
@@ -243,7 +243,7 @@ class Security_Tweaks extends Controller2 {
 				),
 			)
 		);
-		$slug  = isset( $data['slug'] ) ? $data['slug'] : false;
+		$slug  = $data['slug'] ?? false;
 		$tweak = $this->get_tweak( $slug );
 		if ( ! is_object( $tweak ) ) {
 			return new Response(
@@ -274,7 +274,7 @@ class Security_Tweaks extends Controller2 {
 				),
 			)
 		);
-		$slug  = isset( $data['slug'] ) ? $data['slug'] : false;
+		$slug  = $data['slug'] ?? false;
 		$tweak = $this->get_tweak( $slug );
 		if ( ! is_object( $tweak ) ) {
 			return new Response(
@@ -311,7 +311,7 @@ class Security_Tweaks extends Controller2 {
 				),
 			)
 		);
-		$slug  = isset( $data['slug'] ) ? $data['slug'] : false;
+		$slug  = $data['slug'] ?? false;
 		$tweak = $this->get_tweak( $slug );
 
 		if ( ! is_object( $tweak ) ) {
@@ -355,7 +355,7 @@ class Security_Tweaks extends Controller2 {
 	 */
 	public function update_security_reminder( Request $request ) {
 		$data        = $request->get_data();
-		$remind_date = isset( $data['remind_date'] ) ? $data['remind_date'] : false;
+		$remind_date = $data['remind_date'] ?? false;
 
 		$is_autogen_flag = isset( $data['is_autogenerate_keys'] ) ?
 			filter_var( $data['is_autogenerate_keys'], FILTER_VALIDATE_BOOLEAN ) :
@@ -500,10 +500,10 @@ class Security_Tweaks extends Controller2 {
 				),
 			)
 		);
-		$slugs     = isset( $data['slugs'] ) ? $data['slugs'] : array();
-		$intention = isset( $data['intention'] ) ? $data['intention'] : false;
+		$slugs     = $data['slugs'] ?? array();
+		$intention = $data['intention'] ?? false;
 		// Get processed and unprocessed tweaks.
-		list( $processed, $unprocessed ) = $this->security_tweaks_auto_action( $slugs, $intention );
+		[$processed, $unprocessed] = $this->security_tweaks_auto_action( $slugs, $intention );
 
 		$message = sprintf(
 		/* translators: ... */
@@ -699,7 +699,7 @@ class Security_Tweaks extends Controller2 {
 	private function get_tweak( $slug ) {
 		$tweaks = Array_Cache::get( 'tweaks', 'tweaks' );
 
-		return isset( $tweaks[ $slug ] ) ? $tweaks[ $slug ] : null;
+		return $tweaks[ $slug ] ?? null;
 	}
 
 	/**
@@ -728,6 +728,10 @@ class Security_Tweaks extends Controller2 {
 		$_POST['current_server'] = Server::get_current_server();
 		foreach ( $tweaks as $tweak ) {
 			$tweak->revert();
+
+			if ( method_exists( $tweak, 'delete_all_option' ) ) {
+				$tweak->delete_all_option();
+			}
 		}
 
 		( new \WP_Defender\Model\Setting\Security_Tweaks() )->delete();
@@ -740,14 +744,15 @@ class Security_Tweaks extends Controller2 {
 	public function remove_data() {}
 
 	/**
-	 * @param array $data
+	 * @param array  $data
+	 * @param string $request_reason
 	 *
 	 * @return bool|string
+	 * @since 2.8.1 Add $request_reason param. If there's a request from Hub the plugin doesn't send the error message.
 	 */
-	public function automate( $data ) {
+	public function automate( $data, $request_reason ) {
 		$this->refresh_tweaks_status();
 		$need_reauth = false;
-
 		// Resolve tweaks.
 		if ( ! empty( $data['fixed'] ) ) {
 			// There are some tweak that need manual apply, as files based, or change admin.
@@ -770,6 +775,9 @@ class Security_Tweaks extends Controller2 {
 					}
 
 					if ( is_wp_error( $ret ) ) {
+						if ( 'hub' === $request_reason ) {
+							continue;
+						}
 						$data = $tweak->to_array();
 
 						return sprintf(
@@ -797,6 +805,9 @@ class Security_Tweaks extends Controller2 {
 					$tweak = $this->get_tweak( $slug );
 					$ret   = $tweak->revert();
 					if ( is_wp_error( $ret ) ) {
+						if ( 'hub' === $request_reason ) {
+							continue;
+						}
 						$data = $tweak->to_array();
 
 						return sprintf(
@@ -835,6 +846,10 @@ class Security_Tweaks extends Controller2 {
 
 		$this->prevent_enum_users
 			->set_enabled_user_enums( $enabled_user_enums );
+
+		if ( ! empty( $data['security_key'] ) && is_array( $data['security_key'] ) ) {
+			$this->security_key->update_all_option( $data['security_key'] );
+		}
 
 		$model = new \WP_Defender\Model\Setting\Security_Tweaks();
 
@@ -876,14 +891,15 @@ class Security_Tweaks extends Controller2 {
 	 * @return array
 	 */
 	public function config_strings( $config, $is_pro ) {
+		$strings = [];
 		if ( empty( $config['issues'] ) ) {
 			$strings[] = __( 'All available recommendations activated', 'wpdef' );
 		} else {
 			$strings[] = sprintf(
 			/* translators: ... */
 				__( '%1$d/%2$d recommendations activated', 'wpdef' ),
-				count( $config['fixed'] ),
-				count( $config['fixed'] ) + count( $config['issues'] ) + count( $config['ignore'] )
+				is_array($config['fixed']) || $config['fixed'] instanceof \Countable ? count( $config['fixed'] ) : 0,
+				(is_array($config['fixed']) || $config['fixed'] instanceof \Countable ? count( $config['fixed'] ) : 0) + (is_array($config['issues']) || $config['issues'] instanceof \Countable ? count( $config['issues'] ) : 0) + (is_array($config['ignore']) || $config['ignore'] instanceof \Countable ? count( $config['ignore'] ) : 0)
 			);
 		}
 		if ( 'enabled' === $config['notification'] ) {

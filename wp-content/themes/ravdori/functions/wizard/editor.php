@@ -41,7 +41,7 @@ function add_contextmenu_plugin($args) {
     array_push($args,'contextmenu','media' , 'paste' );
     return $args;
 }
-add_filter( 'teeny_mce_plugins', 'add_contextmenu_plugin');
+//add_filter( 'teeny_mce_plugins', 'add_contextmenu_plugin');
 
 
 

@@ -14,9 +14,9 @@ use WP_Defender\Traits\Plugin;
 class Plugin_Integrity extends Behavior {
 	use IO, Plugin;
 
-	const URL_PLUGIN_VCS       = 'https://downloads.wordpress.org/plugin-checksums/';
-	const PLUGIN_SLUGS         = 'wd_plugin_slugs_changes';
-	const PLUGIN_PREMIUM_SLUGS = 'wd_plugin_premium_slugs';
+	public const URL_PLUGIN_VCS       = 'https://downloads.wordpress.org/plugin-checksums/';
+	public const PLUGIN_SLUGS         = 'wd_plugin_slugs_changes';
+	public const PLUGIN_PREMIUM_SLUGS = 'wd_plugin_premium_slugs';
 	/**
 	 * List of premium plugin slugs.
 	 *
@@ -118,8 +118,12 @@ class Plugin_Integrity extends Behavior {
 				$base_slug = array_shift( $base_slug );
 			}
 
-			// Todo: fix global case if premium and free plugins has the same slug, e.g. 'forminator'.
+			// Todo: fix a global case where premium and free plugins has the same slug, e.g. 'forminator'.
 			if ( 'forminator' === $base_slug && 'Forminator Pro' === $plugin['Name'] ) {
+				continue;
+			}
+			// The same for Beehive Pro. Template solution will be in the next versions.
+			if ( 'beehive-analytics' === $base_slug && 'Beehive Pro' === $plugin['Name'] ) {
 				continue;
 			}
 			$plugin_hashes = $this->get_plugin_hash( $base_slug, $plugin['Version'] );

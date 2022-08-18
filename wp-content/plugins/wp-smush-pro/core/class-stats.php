@@ -258,11 +258,18 @@ class Stats {
 		// Remove the Filters added by WP Media Folder.
 		do_action( 'wp_smush_remove_filters' );
 
-		$mime = implode( "', '", Core::$mime_types );
-
 		global $wpdb;
 
-		$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type IN ('$mime')" ); // Db call ok.
+		$posts = $wpdb->get_col(
+			$wpdb->prepare(
+				sprintf(
+					'SELECT ID FROM `%s` WHERE post_type = "attachment" AND post_mime_type IN (%s)',
+					$wpdb->posts,
+					implode( ',', array_fill( 0, count( Core::$mime_types ), '%s' ) )
+				),
+				Core::$mime_types
+			)
+		); // Db call ok.
 
 		// Add the attachments to cache.
 		wp_cache_set( 'media_attachments', $posts, 'wp-smush' );
@@ -605,8 +612,10 @@ class Stats {
 			}
 
 			$stats['count_images'] = 0;
-			foreach ( ( is_array( $smush_stats['sizes'] ) ? $smush_stats['sizes'] : array() ) as $image_stats ) {
-				$stats['count_images'] += $image_stats->size_before !== $image_stats->size_after ? 1 : 0;
+			if ( isset( $smush_stats['sizes'] ) && is_array( $smush_stats['sizes'] ) ) {
+				foreach ( $smush_stats['sizes'] as $image_stats ) {
+					$stats['count_images'] += $image_stats->size_before !== $image_stats->size_after ? 1 : 0;
+				}
 			}
 
 			$stats['count_supersmushed'] += ! empty( $smush_stats['stats'] ) && $smush_stats['stats']['lossy'] ? 1 : 0;

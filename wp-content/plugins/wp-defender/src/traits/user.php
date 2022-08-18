@@ -92,7 +92,7 @@ trait User {
 	}
 
 	/**
-	 * @param  null|int|\WP_User  $user_id
+	 * @param null|int|\WP_User $user_id
 	 *
 	 * @return bool|mixed|\WP_User|null
 	 */
@@ -109,11 +109,19 @@ trait User {
 		} else {
 			$cache = Array_Cache::get( $user_id, 'user' );
 			if ( null !== $cache ) {
+				if ( empty( $cache->roles ) ) {
+					$cache_roles = Array_Cache::get( 'roles_' . $user_id, 'user' );
+					if ( null !== $cache_roles ) {
+						$cache->roles = $cache_roles;
+					}
+				}
+
 				$user = $cache;
 			} else {
 				$user = get_user_by( 'id', $user_id );
 				if ( is_object( $user ) ) {
 					Array_Cache::set( $user_id, $user, 'user' );
+					Array_Cache::set( 'roles_' . $user_id, $user->roles, 'user' );
 				}
 			}
 		}
@@ -127,6 +135,10 @@ trait User {
 	 * @return array
 	 */
 	public function get_default_recipient() {
+		// @since 3.0.0 Fix 'Guest'-line.
+		if ( ! is_user_logged_in() ) {
+			return array();
+		}
 		$user_id = get_current_user_id();
 
 		return array(

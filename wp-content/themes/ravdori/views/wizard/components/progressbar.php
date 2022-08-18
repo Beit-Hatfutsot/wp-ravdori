@@ -238,6 +238,19 @@ header .homepage-title-container h3 {
 
 .homepage-title-container.row { text-align:center;}
 
+
+
+.wizard-form input[type=text], 
+.wizard-form input[type=password], 
+.wizard-form input[type=email], 
+.wizard-form input[type=url], 
+.wizard-form input[type=date], 
+.wizard-form input[type=number] {
+	text-align:left;
+}
+
+
+
 /* Step 1 */
 #STEP1_SCHOOL_CODE { float: left; }
 .wizard-form input#agree { left: -26px; right:auto !important; }
@@ -408,9 +421,9 @@ body.page-template-wizard #wizard-form-step4 #wp-STORY_CONTENT-media-buttons::be
     <div class="col-sm-12 disconnect-area">
 		<?php 
 			$wizard_url = get_field('acf-options-wizard-page-url','options'); 
-			$wizard_url = $wizard_url? $wizard_url : home_url();
+			$wizard_url = $wizard_url ? $wizard_url : home_url();
 		?>
-        <a class="logout-link" href="<?php echo wp_logout_url( $wizard_url ); ?>"><?php BH__e('התנתקות / זה לא המשתמש שלי' , 'BH' ,  $locale ); ?></a>
+        <a class="logout-link" href="<?php echo wp_logout_url( $wizard_url . '?lang=' . $lang ); ?>"><?php BH__e('התנתקות / זה לא המשתמש שלי' , 'BH' ,  $locale ); ?></a>
     </div>
 <?php endif; ?>
 </div>

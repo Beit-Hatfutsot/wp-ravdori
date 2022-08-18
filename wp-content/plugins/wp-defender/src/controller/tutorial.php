@@ -4,13 +4,13 @@ namespace WP_Defender\Controller;
 
 use Calotes\Component\Response;
 use Calotes\Helper\Route;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 
 /**
  * Class Tutorial
  * @package WP_Defender\Controller
  */
-class Tutorial extends Controller2 {
+class Tutorial extends Controller {
 	public $slug = 'wdf-tutorial';
 
 	public function __construct() {
@@ -58,7 +58,7 @@ class Tutorial extends Controller2 {
 	 * @return array
 	 */
 	public function to_array() {
-		list( $routes, $nonces ) = Route::export_routes( 'tutorial' );
+		[$routes, $nonces] = Route::export_routes( 'tutorial' );
 
 		return array(
 			'show'      => $this->is_show(),

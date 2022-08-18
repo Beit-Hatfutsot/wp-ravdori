@@ -15,6 +15,7 @@ interface ISupportedLanguages  {
     const HE = array( 'get_param_value' => 'he', 'locale_file' => 'he_IL'  , 'dir' => 'rtl' , 'display_name'  => 'עברית'    , 'upload-story-name' => 'העלאת סיפור' );
 	const EN = array( 'get_param_value' => 'en', 'locale_file' => 'en_GB'  , 'dir' => 'ltr' , 'display_name'  => 'English'  , 'upload-story-name' => 'Upload Story' );
 	const RU = array( 'get_param_value' => 'ru', 'locale_file' => 'ru_RU'  , 'dir'  => 'ltr' , 'display_name' => 'русский'  , 'upload-story-name' => 'Загрузите свою Историю' );
+	const ES = array( 'get_param_value' => 'es', 'locale_file' => 'es_ES'  , 'dir'  => 'ltr' , 'display_name' => 'Español'  , 'upload-story-name' => 'Subir historia' );
 
 }
 
@@ -141,6 +142,7 @@ function theme_change_comment_field_names( $translated_text, $text, $domain ) {
 		
 		   switch ( $translated_text ) {
 
+		   
             case 'בחירת קבצים' : $translated_text = BH__('בחירת קבצים' , "BH" , $locale);
             break;
 			

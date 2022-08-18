@@ -3,6 +3,10 @@
 namespace WP_Defender\Component\Config;
 
 use WP_Defender\Component;
+use WP_Defender\Model\Setting\Blacklist_Lockout as Model_Blacklist_Lockout;
+use WP_Defender\Model\Setting\Login_Lockout as Model_Login_Lockout;
+use WP_Defender\Model\Setting\Notfound_Lockout as Model_Notfound_Lockout;
+use WP_Defender\Model\Setting\User_Agent_Lockout as Model_Ua_Lockout;
 
 /**
  * Class Config_Adapter
@@ -145,9 +149,9 @@ class Config_Adapter extends Component {
 	 */
 	public function update_security_tweaks( $old_tweaks ) {
 		$security_tweaks = array(
-			'issues'              => isset( $old_tweaks['issues'] ) ? $old_tweaks['issues'] : array(),
-			'fixed'               => isset( $old_tweaks['fixed'] ) ? $old_tweaks['fixed'] : array(),
-			'ignore'              => isset( $old_tweaks['ignore'] ) ? $old_tweaks['ignore'] : array(),
+			'issues'              => $old_tweaks['issues'] ?? array(),
+			'fixed'               => $old_tweaks['fixed'] ?? array(),
+			'ignore'              => $old_tweaks['ignore'] ?? array(),
 			'automate'            => isset( $old_tweaks['automate'] )
 				// Sometimes string value from old version.
 				? ( is_bool( $old_tweaks['automate'] ) ? $old_tweaks['automate'] : (bool) $old_tweaks['automate'] )
@@ -159,7 +163,7 @@ class Config_Adapter extends Component {
 			'notification_repeat' => empty( $old_tweaks['notification_repeat'] )
 				? 'weekly'
 				: ( $old_tweaks['notification_repeat'] ? 'daily' : 'weekly' ),
-			'data'                => isset( $old_tweaks['data'] ) ? $old_tweaks['data'] : array(),
+			'data'                => $old_tweaks['data'] ?? array(),
 		);
 		if ( isset( $old_tweaks['last_sent'] ) ) {
 			$security_tweaks['last_sent'] = $old_tweaks['last_sent'];
@@ -202,12 +206,12 @@ class Config_Adapter extends Component {
 				? false
 				: $old_data['always_send_notification'],
 			'error_send'                    => empty( $old_data['error_send'] ) ? false : $old_data['error_send'],
-			'email_subject_issue_found'     => isset( $old_data['email_subject_issue'] ) ? $old_data['email_subject_issue'] : '',
-			'email_subject_issue_not_found' => isset( $old_data['email_subject'] ) ? $old_data['email_subject'] : '',
-			'email_subject_error'           => isset( $old_data['email_subject_error'] ) ? $old_data['email_subject_error'] : '',
-			'email_content_issue_found'     => isset( $old_data['email_has_issue'] ) ? $old_data['email_has_issue'] : '',
-			'email_content_issue_not_found' => isset( $old_data['email_all_ok'] ) ? $old_data['email_all_ok'] : '',
-			'email_content_error'           => isset( $old_data['email_content_error'] ) ? $old_data['email_content_error'] : '',
+			'email_subject_issue_found'     => $old_data['email_subject_issue'] ?? '',
+			'email_subject_issue_not_found' => $old_data['email_subject'] ?? '',
+			'email_subject_error'           => $old_data['email_subject_error'] ?? '',
+			'email_content_issue_found'     => $old_data['email_has_issue'] ?? '',
+			'email_content_issue_not_found' => $old_data['email_all_ok'] ?? '',
+			'email_content_error'           => $old_data['email_content_error'] ?? '',
 			// @since 2.7.0
 			'scheduled_scanning'            => false,
 		);
@@ -235,19 +239,21 @@ class Config_Adapter extends Component {
 	 * @return array
 	*/
 	public function update_ip_lockout( $old_data ) {
-		$merged_bl_file_data = isset( $old_data['detect_404_blacklist'] ) ? $old_data['detect_404_blacklist'] : '';
+		$merged_bl_file_data = $old_data['detect_404_blacklist'] ?? '';
 		// Merge blacklist file & filetype data.
 		if ( isset( $old_data['detect_404_filetypes_blacklist'] ) && '' !== trim( $old_data['detect_404_filetypes_blacklist'] ) ) {
 			$merged_bl_file_data .= PHP_EOL . $old_data['detect_404_filetypes_blacklist'];
 		}
-		$merged_wl_file_data = isset( $old_data['detect_404_whitelist'] ) ? $old_data['detect_404_whitelist'] : '';
+		$merged_wl_file_data = $old_data['detect_404_whitelist'] ?? '';
 		// Merge whitelist file & filetype data.
 		if ( isset( $old_data['detect_404_whitelist'] ) && '' !== trim( $old_data['detect_404_ignored_filetypes'] ) ) {
 			$merged_wl_file_data .= PHP_EOL . $old_data['detect_404_ignored_filetypes'];
 		}
 
-		$model_ua_lockout  = new \WP_Defender\Model\Setting\User_Agent_Lockout();
-		$default_ua_values = $model_ua_lockout->get_default_values();
+		$default_login_lockout_values = ( new Model_Login_Lockout() )->get_default_values();
+		$default_404_lockout_values   = ( new Model_Notfound_Lockout() )->get_default_values();
+		$default_ip_lockout_values    = ( new Model_Blacklist_Lockout() )->get_default_values();
+		$default_ua_lockout_values    = ( new Model_Ua_Lockout() )->get_default_values();
 
 		$iplockout = array(
 			'login_protection'                       => empty( $old_data['login_protection'] )
@@ -263,7 +269,7 @@ class Config_Adapter extends Component {
 			'login_protection_lockout_duration_unit' => empty( $old_data['login_protection_lockout_duration_unit'] )
 				? 'hours' : $old_data['login_protection_lockout_duration_unit'],
 			'login_protection_lockout_message'       => empty( $old_data['login_protection_lockout_message'] )
-				? __( 'You have been locked out due to too many invalid login attempts.', 'wpdef' )
+				? $default_login_lockout_values['message']
 				: $old_data['login_protection_lockout_message'],
 			'username_blacklist'                     => empty( $old_data['username_blacklist'] )
 				? '' : $old_data['username_blacklist'],
@@ -280,7 +286,7 @@ class Config_Adapter extends Component {
 			'detect_404_lockout_duration_unit'       => empty( $old_data['detect_404_lockout_duration_unit'] )
 				? 'hours' : $old_data['detect_404_lockout_duration_unit'],
 			'detect_404_lockout_message'             => empty( $old_data['detect_404_lockout_message'] )
-				? __( "You have been locked out due to too many attempts to access a file that doesn't exist.", 'wpdef' )
+				? $default_404_lockout_values['message']
 				: $old_data['detect_404_lockout_message'],
 			'detect_404_blacklist'                   => $merged_bl_file_data,
 			'detect_404_whitelist'                   => $merged_wl_file_data,
@@ -295,7 +301,7 @@ class Config_Adapter extends Component {
 			'country_whitelist'                      => empty( $old_data['country_whitelist'] )
 				? '' : $old_data['country_whitelist'],
 			'ip_lockout_message'                     => empty( $old_data['ip_lockout_message'] )
-				? __( 'The administrator has blocked your IP from accessing this website.', 'wpdef' )
+				? $default_ip_lockout_values['message']
 				: $old_data['ip_lockout_message'],
 			'login_lockout_notification'             => empty( $old_data['login_lockout_notification'] )
 				? true : $old_data['login_lockout_notification'],
@@ -317,27 +323,16 @@ class Config_Adapter extends Component {
 				? '4:00' : $old_data['report_time'],
 			'storage_days'                           => empty( $old_data['storage_days'] )
 				? '180' : $old_data['storage_days'],
-			'geoIP_db'                               => isset( $old_data['geoIP_db'] ) ? $old_data['geoIP_db'] : '',
+			'geoIP_db'                               => $old_data['geoIP_db'] ?? '',
 			'ip_blocklist_cleanup_interval'          => empty( $old_data['ip_blocklist_cleanup_interval'] )
 				? 'never' : $old_data['ip_blocklist_cleanup_interval'],
 			// For UA Banning.
-			'ua_banning_enabled'                    => isset( $old_data['ua_banning_enabled'] )
-				? $old_data['ua_banning_enabled']
-				: false,
-			'ua_banning_message'                    => isset( $old_data['ua_banning_message'] )
-				? $old_data['ua_banning_message']
-				: $default_ua_values['message'],
-			'ua_banning_blacklist'                  => isset( $old_data['ua_banning_blacklist'] )
-				? $old_data['ua_banning_blacklist']
-				: $default_ua_values['blacklist'],
-			'ua_banning_whitelist'                  => isset( $old_data['ua_banning_whitelist'] )
-				? $old_data['ua_banning_whitelist']
-				: $default_ua_values['whitelist'],
-			'ua_banning_empty_headers'              => isset( $old_data['ua_banning_empty_headers'] )
-				? $old_data['ua_banning_empty_headers']
-				: false,
-			'maxmind_license_key'                   => isset( $old_data['maxmind_license_key'] )
-				? $old_data['maxmind_license_key'] : '',
+			'ua_banning_enabled'                    => $old_data['ua_banning_enabled'] ?? false,
+			'ua_banning_message'                    => $old_data['ua_banning_message'] ?? $default_ua_lockout_values['message'],
+			'ua_banning_blacklist'                  => $old_data['ua_banning_blacklist'] ?? $default_ua_lockout_values['blacklist'],
+			'ua_banning_whitelist'                  => $old_data['ua_banning_whitelist'] ?? $default_ua_lockout_values['whitelist'],
+			'ua_banning_empty_headers'              => $old_data['ua_banning_empty_headers'] ?? false,
+			'maxmind_license_key'                   => $old_data['maxmind_license_key'] ?? '',
 		);
 		if ( isset( $old_data['lastReportSent'] ) && ! empty( $old_data['lastReportSent'] ) ) {
 			$iplockout['last_sent'] = $old_data['lastReportSent'];
@@ -414,10 +409,10 @@ class Config_Adapter extends Component {
 			'user_roles'         => $old_data['user_roles'],
 			'force_auth_roles'   => $old_data['force_auth_roles'],
 			'custom_graphic'     => $old_data['custom_graphic'],
-			'custom_graphic_url' => isset( $old_data['custom_graphic_url'] ) ? $old_data['custom_graphic_url'] : '',
-			'email_subject'      => isset( $old_data['email_subject'] ) ? $old_data['email_subject'] : '',
-			'email_sender'       => isset( $old_data['email_sender'] ) ? $old_data['email_sender'] : '',
-			'email_body'         => isset( $old_data['email_body'] ) ? $old_data['email_body'] : '',
+			'custom_graphic_url' => $old_data['custom_graphic_url'] ?? '',
+			'email_subject'      => $old_data['email_subject'] ?? '',
+			'email_sender'       => $old_data['email_sender'] ?? '',
+			'email_body'         => $old_data['email_body'] ?? '',
 			'app_title'          => '',
 		);
 	}
@@ -441,9 +436,9 @@ class Config_Adapter extends Component {
 
 			return array(
 				'enabled'                  => $old_data['enabled'],
-				'mask_url'                 => isset( $old_data['mask_url'] ) ? $old_data['mask_url'] : '',
+				'mask_url'                 => $old_data['mask_url'] ?? '',
 				'redirect_traffic'         => $old_data['redirect_traffic'] ? 'custom_url' : 'off',
-				'redirect_traffic_url'     => $old_data['redirect_traffic_url'] ? $old_data['redirect_traffic_url'] : '',
+				'redirect_traffic_url'     => $old_data['redirect_traffic_url'] ?: '',
 				'redirect_traffic_page_id' => 0,
 			);
 		}
@@ -486,7 +481,7 @@ class Config_Adapter extends Component {
 				'sh_xframe'                    => (bool) $old_data['sh_xframe'],
 				'sh_xframe_mode'               => $old_data['sh_xframe_mode'],
 				// Leave for migration to 2.5.1.
-				'sh_xframe_urls'               => isset( $old_data['sh_xframe_urls'] ) ? $old_data['sh_xframe_urls'] : '',
+				'sh_xframe_urls'               => $old_data['sh_xframe_urls'] ?? '',
 				'sh_xss_protection'            => (bool) $old_data['sh_xss_protection'],
 				'sh_xss_protection_mode'       => $old_data['sh_xss_protection_mode'],
 				'sh_content_type_options'      => (bool) $old_data['sh_content_type_options'],

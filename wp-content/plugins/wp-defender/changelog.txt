@@ -1,8 +1,70 @@
 Plugin Name: WP Defender
 Author: WPMU DEV
-Tested up to: 5.9
+Tested up to: 6.0
 
 Change Log:
+
+= 3.0.1 ( 2022-06-14 ) =
+
+- Fix: Beehive Pro plugin flagged issues
+
+= 3.0.0 ( 2022-06-06 ) =
+
+- New: Biometric Authentication
+- New: Giveaway Opt-in for Free version
+- Enhance: PHP version upgrade
+- Enhance: Compatibility with WordPress 6.0
+- Enhance: WP-CLI command to show Scan details
+- Enhance: Update SUI to the latest version
+- Fix: Audit events logged not showing after applying some date range
+
+= 2.8.3 ( 2022-05-11 ) =
+
+- Enhance: PHP upgrade notice
+- Fix: Defender country_iso_code column missing from Lockout table
+- Fix: Defender sets all country iso codes as NULL
+
+= 2.8.2 ( 2022-04-08 ) =
+
+- Fix: All site visitors are blocked
+
+= 2.8.1 ( 2022-04-07 ) =
+
+- Enhance: Hide write permissions error notices for Tweaks while applying config
+- Enhance: Update the default Auth method on the Users page
+- Enhance: Singular or plural translation in email templates
+- Enhance: Login Protection and 404 Detection Section Update
+- Enhance: Show country flags for country-based lockouts
+- Fix: Update Firewall's 404 Detection blocklist and allowlist information notice
+- Fix: Firewall not working when Country is added to whitelist
+- Fix: Updating plugins with known vulnerabilities
+- Fix: No passcode when Fallback Email is not the default method
+- Fix: 404 Exclusions Inconsistent Logging
+- Fix: 2FA token issue
+- Fix: Undefined array key "HTTP_HOST"
+- Fix: Duplicate key name 'country_iso_code'
+- Fix: Welcome modal when white-label enabled
+- Fix: Jquery issue on Def's 2FA TOTP page
+
+= 2.8.0 ( 2022-03-07 ) =
+
+- New: Backup codes
+- Enhance: Text version of 2FA code
+- Enhance: Add Update Old Security Keys settings to config
+- Enhance: Automatically check for MaxMind database updates
+- Enhance: WP-CLI command to delete Defender logs
+- Enhance: Delete security tweak settings during uninstallation
+- Fix: IP Lockout issue
+- Fix: Malware Scanning PHP 8.1 error
+- Fix: Native domain mapping doesn't work with login masking
+- Fix: Firewall log export doesn't include all entries
+- Fix: Duplicate configs
+- Fix: Geo DB downloaded to WP-Admin directory
+- Fix: Branda conflict – Update User listed twice in logs
+- Fix: Notifications user search missing some users
+- Fix: When Defender login masking is active, SmartCrawl report URL are broken
+- Fix: User filter dropdown count not updating dynamically
+- Fix: SSO not working with login masking on multisite
 
 = 2.7.1 ( 2022-02-02 ) =
 
@@ -19,107 +81,5 @@ Change Log:
 - Fix: Email text overflows on Notification page
 - Fix: Defender downgrade fails
 
-= 2.7.0 ( 2022-01-18 ) =
 
-- New: Redesigned emails
-- New: Highlight new features in Welcome modal
-- Enhance: Malware Scheduling redesign
-- Enhance: Optimize MySQL queries for Firewall module
-- Enhance: WP-CLI command for User Agent Banning
-- Enhance: Improve Audit Logging with user login status
-- Enhance: Log rotation proof of concept
-- Enhance: Tab styles on Notifications > Recipients
-- Enhance: Geoblocking notifications
-- Enhance: False positive in Advanced Ads plugin code
-- Enhance: Defender Tutorials
-- Enhance: WordPress 5.9 compatibility
-- Enhance: Include plugin/theme name and version in Audit log
-- Enhance: Improve Audit Logging for Hub requested plugin/theme updates
-- Enhance: Prevent user enumeration requests
-- Enhance: Get WP version when core update is dismissed
-- Fix: Cloudflare IPs locked out
-- Fix: Multisite Defender logs not cleared after 30 days
-- Fix: Pwned Passwords bypassed with incorrect 2FA code
-- Fix: Night theme not applied to Suspicious File preview
-- Fix: PHP warnings after update
-- Fix: Invisible reCAPTCHA UI Issue
-
-= 2.6.5 ( 2021-11-29 ) =
-
-- Enhance: Add User Agent Banning to Configs
-- Enhance: Add User Agent ban status to Log filters
-- Enhance: Prevent PHP Execution exceptions
-- Enhance: Modify API logic to work with The Hub
-- Enhance: Proper validation message for Firewall IP list
-- Enhance: Remove outdated scheduled actions
-- Enhance: New WP-CLI commands for scheduled actions
-- Enhance: PHP 8.1 compatibility
-- Enhance: Hide vulnerability warnings after plugin update
-- Enhance: Log improvements
-- Enhance: False positive improvements
-- Fix: Blank dialogue modal shown after login
-- Fix: Staff user role blocked when accessing via WPMU DEV Dashboard
-- Fix: Malware Scanning progress 'undefined' when session expires
-- Fix: Login without completing reCAPTCHA conditions
-- Fix: Unable to upload CSV file on MU site
-- Fix: Error during malware scanning
-- Fix: Typo in Security Recommendations
-
-= 2.6.4 ( 2021-11-15 ) =
-
-- Fix: Allow admin-post.php on Mask Login Area
-
-= 2.6.3 ( 2021-11-03 ) =
-
-- Enhance: White labeling support
-
-= 2.6.2 ( 2021-11-01 ) =
-
-- New: Plugin vulnerability warnings
-- New: Import & export User Agent list
-- New: Highlight new features in Welcome modal
-- Enhance: Update SUI to latest version
-- Enhance: Update Upsell buttons
-- Enhance: Dashboard widget changes
-- Enhance: Update IP Banning Import-Export icon and note
-- Enhance: Replace Login Protection 'Deactivate' icon
-- Fix: Some malicious files not flagged
-- Fix: Malicious plugin not detected
-- Fix: Defender continually creating scheduled actions
-- Fix: Audit Logging creating duplicate post entries
-- Fix: Audit Logging creating user record on multisite
-- Fix: Mask URL not working correctly on WordPress installed in subdirectory
-- Fix: reCAPTCHA error thrown on theme login modal
-
-= 2.6.1 ( 2021-10-18 ) =
-
-- New: Google reCAPTCHA integration with WooCommerce plugin
-- New: "What's New" modal hidden on fresh installs
-- Enhance: Upgrade required minimum PHP version
-- Enhance: Unlock active lockouts using WP CLI
-- Enhance: Show more detailed log with Audit Logging
-- Enhance: Audit Logging on subsites
-- Enhance: Rename Feature Policy header to Permission Policy header
-- Enhance: "Send notifications when Defender couldn't scan the files" not working
-- Enhance: Set a time limit to cancel malware scanning
-- Enhance: Mobile view improvements
-- Enhance: Add log entry when signing in with 2FA
-- Enhance: Change "Basic config" to "Basic Config"
-- Enhance: Save a post as Draft and see 3 entries created in Audit log on multisite
-- Enhance: Add "Activate" button instead of "Continue" when activating the Notification
-- Enhance: Hide malware scan filter when there is no issue
-- Enhance: Remove Academy link
-- Fix: Audit log duplicates when updating menu items
-- Fix: Max countdown showing 24 hours instead of 72 hours
-- Fix: Conflict with WooCommerce Payments
-- Fix: Typo in User Agent Banning Allowlist UI
-- Fix: Issue with 2FA flow
-- Fix: Getting PHP Notice / warming on malware scanning
-- Fix: Google reCAPTCHA for comments doesn't work with HB Lazy Load
-- Fix: Redirect to optimal URL on 2FA OTP success in custom login page
-- Fix: Incorrect Google reCAPTCHA error Code for multisite user registration
-- Fix: PHP version shows null inside the recommendation
-- Fix: Aren't able to explore Recommendations on our hosting
-
-
-555537-1645539043-ai
+555537-1656484335-au

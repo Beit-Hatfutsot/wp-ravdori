@@ -61,6 +61,39 @@ get_header();
 		
 		.wp-caption .wp-caption-text { text-align: left; }
 	</style>
+
+
+<?php elseif ( $locale == ISupportedLanguages::ES['locale_file'] ): ?>
+	
+	<style>		
+
+		.publish-story-caption {
+			left: 0;
+			top: -4px;
+		}
+			
+		.publish-story-caption:after {
+				background: transparent url('/wp-content/themes/ravdori/images/general/story/publish-story-bubble-es.png') 0 0 no-repeat !important;
+				width: 290px;
+				left: 300px;
+		}
+		
+		
+		#story-post .white-shadow-box {
+			    text-align: left;
+				direction: ltr;
+		}
+		
+		#story-post .white-shadow-box article.single-story .subtitle { float: left; }
+		
+		.wp-caption .wp-caption-text { text-align: left; }
+		
+		.mobile-images-container + .col-sm-12.voffset2 {
+			padding: 0;
+		}
+
+	</style>
+
 	
 <?php endif;?>
 

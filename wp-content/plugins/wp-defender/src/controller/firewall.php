@@ -8,8 +8,8 @@ use Calotes\Helper\HTTP;
 use WP_Defender\Behavior\WPMUDEV;
 use WP_Defender\Component\Blacklist_Lockout;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Component\Table_Lockout;
 use WP_Defender\Component\User_Agent as Component_User_Agent;
+use WP_Defender\Controller;
 use WP_Defender\Model\Lockout_Ip;
 use WP_Defender\Model\Lockout_Log;
 use WP_Defender\Model\Notification\Firewall_Report;
@@ -17,11 +17,11 @@ use WP_Defender\Model\Notification\Firewall_Notification;
 use WP_Defender\Model\Setting\Notfound_Lockout;
 use WP_Defender\Model\Setting\User_Agent_Lockout;
 
-class Firewall extends \WP_Defender\Controller2 {
+class Firewall extends Controller {
 	use \WP_Defender\Traits\IP;
 	use \WP_Defender\Traits\Formats;
 
-	const FIREWALL_LOG = 'firewall.log';
+	public const FIREWALL_LOG = 'firewall.log';
 
 	protected $slug = 'wdf-ip-lockout';
 
@@ -271,8 +271,15 @@ class Firewall extends \WP_Defender\Controller2 {
 		$the_list = wd_di()->get( \WP_Defender\Model\Setting\Blacklist_Lockout::class );
 		$service  = wd_di()->get( Blacklist_Lockout::class );
 		$ip       = $this->get_user_ip();
-		// If this IP or country is whitelisted, so we don't need to blacklist this.
-		if ( $service->is_ip_whitelisted( $ip ) || $service->is_country_whitelist( $ip ) ) {
+
+		$model         = Lockout_Ip::get( $ip );
+		$is_lockout_ip = is_object( $model ) && $model->is_locked();
+
+		$is_country_whitelisted = ! $service->is_blacklist( $ip ) &&
+			$service->is_country_whitelist( $ip ) && ! $is_lockout_ip;
+
+		// If this IP is whitelisted, so we don't need to blacklist this.
+		if ( $service->is_ip_whitelisted( $ip ) || $is_country_whitelisted ) {
 			return;
 		}
 		// Green light if access staff is enabled.
@@ -410,14 +417,14 @@ class Firewall extends \WP_Defender\Controller2 {
 			'lockout_last'            => isset( $summary['lockout_last'] ) ?
 				$this->format_date_time( $summary['lockout_last'] ) :
 				__( 'Never', 'wpdef' ),
-			'lockout_today'           => isset( $summary['lockout_today'] ) ? $summary['lockout_today'] : 0,
-			'lockout_this_month'      => isset( $summary['lockout_this_month'] ) ? $summary['lockout_this_month'] : 0,
-			'lockout_login_today'     => isset( $summary['lockout_login_today'] ) ? $summary['lockout_login_today'] : 0,
-			'lockout_login_this_week' => isset( $summary['lockout_login_this_week'] ) ? $summary['lockout_login_this_week'] : 0,
-			'lockout_404_today'       => isset( $summary['lockout_404_today'] ) ? $summary['lockout_404_today'] : 0,
-			'lockout_404_this_week'   => isset( $summary['lockout_404_this_week'] ) ? $summary['lockout_404_this_week'] : 0,
-			'lockout_ua_today'        => isset( $summary['lockout_ua_today'] ) ? $summary['lockout_ua_today'] : 0,
-			'lockout_ua_this_week'    => isset( $summary['lockout_ua_this_week'] ) ? $summary['lockout_ua_this_week'] : 0,
+			'lockout_today'           => $summary['lockout_today'] ?? 0,
+			'lockout_this_month'      => $summary['lockout_this_month'] ?? 0,
+			'lockout_login_today'     => $summary['lockout_login_today'] ?? 0,
+			'lockout_login_this_week' => $summary['lockout_login_this_week'] ?? 0,
+			'lockout_404_today'       => $summary['lockout_404_today'] ?? 0,
+			'lockout_404_this_week'   => $summary['lockout_404_this_week'] ?? 0,
+			'lockout_ua_today'        => $summary['lockout_ua_today'] ?? 0,
+			'lockout_ua_this_week'    => $summary['lockout_ua_this_week'] ?? 0,
 		);
 	}
 
@@ -587,12 +594,12 @@ class Firewall extends \WP_Defender\Controller2 {
 		if ( is_admin() ) {
 			$current_url   = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 			$current_query = wp_parse_url( $current_url, PHP_URL_QUERY );
-			$current_query = null !== $current_query ? $current_query : '';
+			$current_query = $current_query ?? '';
 			$referer_url   = ! empty( $_SERVER['HTTP_REFERER'] ) ?
 				filter_var( $_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL ) :
 				'';
 			$referer_query = wp_parse_url( $referer_url, PHP_URL_QUERY );
-			$referer_query = null !== $referer_query ? $referer_query : '';
+			$referer_query = $referer_query ?? '';
 
 			parse_str( $current_query, $current_queries );
 			parse_str( $referer_query, $referer_queries );

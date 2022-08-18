@@ -75,7 +75,7 @@ if (! empty($license_date)) {
                 <li><?php _e('Works on all sites (Password protected, Angular/React/Ember)', 'printfriendly'); ?></li>
                 <li><?php _e('Email support', 'printfriendly'); ?></li>
               </ol>
-              <p><?php _e('Have a development/staging domain?', 'printfriendly'); ?> <a href="https://support.printfriendly.com/button/pro/development-domain/" target="_blank"><?php _e('Add Free Development Domain', 'printfriendly'); ?></a>.</p>
+              <p><?php _e('Have a development/staging domain?', 'printfriendly'); ?> <a href="https://support.printfriendly.com/pro/staging-development-domain/" target="_blank"><?php _e('Add Free Development Domain', 'printfriendly'); ?></a>.</p>
             </div>
             <br />
           </div>

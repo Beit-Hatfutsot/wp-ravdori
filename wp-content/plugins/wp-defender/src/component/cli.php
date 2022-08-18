@@ -7,7 +7,9 @@ use WP_Defender\Model\Audit_Log;
 use WP_Defender\Model\Lockout_Ip;
 use WP_Defender\Model\Lockout_Log;
 use WP_Defender\Model\Scan_Item;
+use WP_Defender\Model\Scan as Model_Scan;
 use WP_Defender\Traits\Formats;
+use function WP_CLI\Utils\format_items;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -15,6 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Class Cli
+ *
  * @package WP_Defender\Component
  */
 class Cli {
@@ -37,11 +40,12 @@ class Cli {
 	 * This is a helper for scan module.
 	 * #Options
 	 * <command>
-	 * : Value can be run - Perform a scan, or (un)ignore|delete|resolve to do the relevant task,
+	 * : Value can be run - Perform a scan, e.g. 'run'-command or 'run ----type=detailed' for detailed result,
+	 * or (un)ignore|delete|resolve to do the relevant task,
 	 * or clear_logs to remove completed schedule logs.
 	 *
 	 * [--type=<type>]
-	 * : Default is all, or core_integrity|plugin_integrity|vulnerability|suspicious_code
+	 * : Default, without values, is for all items, or core_integrity|plugin_integrity|vulnerability|suspicious_code.
 	 *
 	 * @param $args
 	 * @param $options
@@ -52,10 +56,10 @@ class Cli {
 		if ( empty( $args ) ) {
 			\WP_CLI::error( 'Invalid command' );
 		}
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'run':
-				$this->scan_all();
+				$this->scan_all( $options );
 				break;
 			case 'clear_logs':
 				$this->scan_clear_logs();
@@ -82,10 +86,14 @@ class Cli {
 
 	/**
 	 * Scan different modules with different options.
-	*/
+	 */
 	private function scan_task( $task, $options ) {
-		$type = isset( $options['type'] ) ? $options['type'] : null;
+		$type = $options['type'] ?? null;
 		switch ( $type ) {
+			case null:
+				// All items.
+				$type = null;
+				break;
 			case 'core_integrity':
 				$type = Scan_Item::TYPE_INTEGRITY;
 				break;
@@ -102,11 +110,11 @@ class Cli {
 				\WP_CLI::error( sprintf( 'Unknown scan type %s', $type ) );
 				break;
 		}
-		$active = \WP_Defender\Model\Scan::get_active();
+		$active = Model_Scan::get_active();
 		if ( is_object( $active ) ) {
 			return \WP_CLI::error( 'A scan is running, you need to wait till it complete to continue' );
 		}
-		$model = \WP_Defender\Model\Scan::get_last();
+		$model = Model_Scan::get_last();
 		if ( ! is_object( $model ) ) {
 			return;
 		}
@@ -148,7 +156,7 @@ class Cli {
 					} elseif ( Scan_Item::TYPE_SUSPICIOUS === $item->type ) {
 						// If this is content, we will try to delete them.
 						$whitelist  = array(
-							//wordfence waf
+							// wordfence waf.
 							ABSPATH . '/wordfence-waf.php',
 							// Any files inside plugins, if removed, can cause fatal error.
 							WP_CONTENT_DIR . '/plugins/',
@@ -212,7 +220,7 @@ class Cli {
 		if ( empty( $args ) ) {
 			\WP_CLI::error( 'Invalid command' );
 		}
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'scan:core':
 				file_put_contents( ABSPATH . 'wp-load.php', '//this make different', FILE_APPEND );
@@ -221,7 +229,7 @@ class Cli {
 				$faker = Factory::create();
 				for ( $i = 0; $i < 500; $i ++ ) {
 					$log            = new Audit_Log();
-					$log->timestamp = mt_rand( strtotime( '-31 days' ), time() );
+					$log->timestamp = random_int( strtotime( '-31 days' ), time() );
 				}
 				break;
 			case 'ip:logs':
@@ -253,15 +261,16 @@ class Cli {
 				);
 				$last_lockout = 0;
 				foreach ( $range as $date => $to ) {
-					list( $to, $count ) = $to;
+					[$to, $count] = $to;
 					for ( $i = 0; $i < $count; $i ++ ) {
-						$model          = new Lockout_Log();
-						$model->ip      = $faker->ipv4;
-						$model->type    = $types[ array_rand( $types ) ];
-						$model->log     = $faker->sentence( 20 );
-						$model->date    = $faker->dateTimeBetween( $date, $to )->getTimestamp();
-						$model->blog_id = 1;
-						$model->tried   = $faker->userName;// phpcs:ignore
+						$model                   = new Lockout_Log();
+						$model->ip               = $faker->ipv4;
+						$model->type             = $types[ array_rand( $types ) ];
+						$model->log              = $faker->sentence( 20 );
+						$model->date             = $faker->dateTimeBetween( $date, $to )->getTimestamp();
+						$model->blog_id          = 1;
+						$model->tried            = $faker->userName;// phpcs:ignore
+						$model->country_iso_code = $faker->countryCode;// phpcs:ignore
 						$model->save();
 						if ( ( $model->date > $last_lockout ) ) {
 							$last_lockout = $model->date;
@@ -301,7 +310,7 @@ class Cli {
 		if ( empty( $args ) ) {
 			\WP_CLI::error( 'Invalid command' );
 		}
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'scan:core':
 				$content = file_get_contents( ABSPATH . 'wp-load.php' );
@@ -335,7 +344,7 @@ class Cli {
 
 			return;
 		}
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'reset':
 				Audit_Log::truncate();
@@ -350,21 +359,55 @@ class Cli {
 		}
 	}
 
-	private function scan_all() {
+	/**
+	 * @param array $options
+	*/
+	private function scan_all( $options ) {
+		$type        = $options['type'] ?? null;
+		$is_detailed = false;
+		switch ( $type ) {
+			case null:
+				// All items.
+				$type = null;
+				break;
+			case 'detailed':
+				$is_detailed = true;
+				break;
+			default:
+				\WP_CLI::error( sprintf( 'Unknown scan type %s', $type ) );
+				break;
+		}
 		\WP_CLI::log( 'Check if there is a scan ongoing...' );
-		$scan = \WP_Defender\Model\Scan::get_active();
+		$scan = Model_Scan::get_active();
 		if ( ! is_object( $scan ) ) {
 			\WP_CLI::log( 'No active scan, creating...' );
-			$scan = \WP_Defender\Model\Scan::create();
+			$scan = Model_Scan::create();
 			if ( is_wp_error( $scan ) ) {
 				return \WP_CLI::error( $scan->get_error_message() );
 			}
 		} else {
 			\WP_CLI::log( 'Continue from last scan' );
 		}
+		// Start detailed scan.
+		if ( $is_detailed ) {
+			$start = microtime( true );
+		}
 		$handler = new Scan();
 		$ret     = false;
 		while ( $handler->process() === false ) {}
+		// Finish detailed scan.
+		if ( $is_detailed ) {
+			$scan = Model_Scan::get_last();
+			if ( is_object( $scan ) && ! is_wp_error( $scan ) ) {
+				$results = $scan->to_array();
+				if ( is_array( $results ) && ! empty( $results['issues_items'] ) ) {
+					format_items( 'table', $results['issues_items'], [ 'type', 'short_desc', 'full_path' ] );
+					\WP_CLI::log( sprintf( 'Saved %s items.', is_array($results['issues_items']) || $results['issues_items'] instanceof \Countable ? count( $results['issues_items'] ) : 0 ) );
+				}
+			}
+			$finish = microtime( true ) - $start;
+			\WP_CLI::log( 'Scan take ' . round( $finish, 2 ) . 's to process.' );
+		}
 		\WP_CLI::success( 'All done!' );
 	}
 
@@ -396,7 +439,7 @@ class Cli {
 
 			return;
 		}
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'check':
 				$i = 1;
@@ -447,7 +490,7 @@ class Cli {
 			return;
 		}
 
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'reset':
 				\WP_CLI::confirm(
@@ -502,14 +545,14 @@ class Cli {
 	 * @param $options
 	 */
 	public function firewall( $args, $options ) {
-		if ( count( $args ) <= 2 ) {
+		if ( (is_array($args) || $args instanceof \Countable ? count( $args ) : 0) <= 2 ) {
 			\WP_CLI::log( 'Invalid command, add necessary arguments. See below...' );
 			\WP_CLI::runcommand( 'defender firewall --help' );
 
 			return;
 		}
 
-		list( $command, $type, $field ) = $args;
+		[$command, $type, $field] = $args;
 		if ( empty( $type ) || empty( $field ) ) {
 			\WP_CLI::log( 'Invalid option.' );
 			\WP_CLI::runcommand( 'defender firewall --help' );
@@ -551,14 +594,14 @@ class Cli {
 	 * @param $options
 	 */
 	public function mask_login( $args, $options ) {
-		if ( count( $args ) < 1 ) {
+		if ( (is_array($args) || $args instanceof \Countable ? count( $args ) : 0) < 1 ) {
 			\WP_CLI::log( 'Invalid command, add necessary arguments. See below...' );
 			\WP_CLI::runcommand( 'defender mask_login --help' );
 
 			return;
 		}
 
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'clear':
 				wd_di()->get( \WP_Defender\Model\Setting\Mask_Login::class )->delete();
@@ -600,15 +643,15 @@ class Cli {
 			// Rename the field to match with the appropriate model field name.
 			$mod_field = $this->is_country( $original_field ) ? $original_field : 'ip_' . $original_field;
 			// Reset to default data with correct data type.
-			$default_data       = $this->is_country( $original_field ) ? array() : '';
+			$default_data = $this->is_country( $original_field ) ? array() : '';
 			// Empty the $field option of field data.
 			$data[ $mod_field ] = $default_data;
 			$model->import( $data );
 			$model->save();
 		} elseif ( 'files' === $type ) {
 			// Get the model instance.
-			$model                   = wd_di()->get( \WP_Defender\Model\Setting\Notfound_Lockout::class );
-			$data                    = $model->export();
+			$model = wd_di()->get( \WP_Defender\Model\Setting\Notfound_Lockout::class );
+			$data  = $model->export();
 			// Empty the $field option of field data.
 			$data[ $original_field ] = '';
 			$model->import( $data );
@@ -646,7 +689,7 @@ class Cli {
 		}
 
 		if ( array_key_exists( 'ips', $options ) ) {
-			$ips = array_map( 'trim', explode( ',', $options['ips'] ) );
+			$ips    = array_map( 'trim', explode( ',', $options['ips'] ) );
 			$models = Lockout_Ip::get_bulk( Lockout_Ip::STATUS_BLOCKED, $ips );
 
 			foreach ( $models as $model ) {
@@ -754,7 +797,6 @@ class Cli {
 			}
 		}
 
-
 		\WP_CLI::success( sprintf( 'Firewall "%s" has been %s.', $submodule, $text ) );
 	}
 
@@ -789,19 +831,19 @@ class Cli {
 	 * @param $options
 	 */
 	public function password_reset( $args, $options ) {
-		if ( count( $args ) < 1 ) {
+		if ( (is_array($args) || $args instanceof \Countable ? count( $args ) : 0) < 1 ) {
 			\WP_CLI::log( 'Invalid command.' );
 
 			return;
 		}
 
-		list( $command ) = $args;
+		[$command] = $args;
 		switch ( $command ) {
 			case 'force':
 				// Get the model instance.
-				$model = wd_di()->get( \WP_Defender\Model\Setting\Password_Reset::class );
+				$model               = wd_di()->get( \WP_Defender\Model\Setting\Password_Reset::class );
 				$model->expire_force = true;
-				$model->force_time = time();
+				$model->force_time   = time();
 				$model->save();
 				$message = sprintf(
 					'Passwords created before %s are required to be reset upon next login.',
@@ -810,7 +852,7 @@ class Cli {
 				\WP_CLI::log( $message );
 				break;
 			case 'undo':
-				$model = wd_di()->get( \WP_Defender\Model\Setting\Password_Reset::class );
+				$model               = wd_di()->get( \WP_Defender\Model\Setting\Password_Reset::class );
 				$model->expire_force = false;
 				$model->save();
 				\WP_CLI::log( 'Passwords reset is no longer required.' );
@@ -826,14 +868,41 @@ class Cli {
 	 */
 	private function scan_clear_logs() {
 		$result  = \WP_Defender\Component\Scan::clear_logs();
-		$message = isset( $result['success'] ) ?
-			$result['success'] :
-			(
-				isset( $result['error'] ) ?
-				$result['error'] :
-				'Malware scan logs are cleared'
-			);
+		$message = $result['success'] ?? $result['error'] ?? 'Malware scan logs are cleared';
 
 		\WP_CLI::log( $message );
+	}
+
+	/**
+	 * Delete old logs.
+	 *
+	 * <command> delete
+	 * This command must have this command
+	 *
+	 * syntax: wp defender logs <command>
+	 * example: wp defender logs delete
+	 *
+	 * @param $args
+	 */
+	public function logs( $args ) {
+		if ( (is_array($args) || $args instanceof \Countable ? count( $args ) : 0) < 1 ) {
+			\WP_CLI::log( 'Invalid command, add necessary arguments. See below...' );
+			\WP_CLI::runcommand( 'defender logs --help' );
+
+			return;
+		}
+
+		[$command] = $args;
+
+		switch ( $command ) {
+			case 'delete':
+				$rotation_logger = wd_di()->get( \WP_Defender\Component\Logger\Rotation_Logger::class );
+				$rotation_logger->purge_old_log();
+				\WP_CLI::log( 'Old logs are deleted.' );
+				break;
+			default:
+				\WP_CLI::error( sprintf( 'Unknown command %s', $command ) );
+				break;
+		}
 	}
 }

@@ -25,6 +25,7 @@ use WP_Defender\Controller\WAF;
 use WP_Defender\Controller\Tutorial;
 use WP_Defender\Controller\Blocklist_Monitor;
 use WP_Defender\Controller\Password_Reset;
+use WP_Defender\Controller\Webauthn;
 
 /**
  * Class Bootstrap
@@ -51,6 +52,7 @@ class Bootstrap {
 		wp_clear_scheduled_hook( 'wpdef_sec_key_gen' );
 		wp_clear_scheduled_hook( 'wpdef_clear_scan_logs' );
 		wp_clear_scheduled_hook( 'wpdef_log_rotational_delete' );
+		wp_clear_scheduled_hook( 'wpdef_update_geoip' );
 
 		// Remove old legacy cron jobs if they exist.
 		wp_clear_scheduled_hook( 'lockoutReportCron' );
@@ -148,10 +150,12 @@ class Bootstrap {
  `user_agent` varchar(255) DEFAULT NULL,
  `blog_id` int(11) DEFAULT NULL,
  `tried` varchar(255),
+ `country_iso_code` char(2) DEFAULT NULL,
  PRIMARY KEY  (`id`),
  KEY `ip` (`ip`),
  KEY `type` (`type`),
- KEY `tried` (`tried`)
+ KEY `tried` (`tried`),
+ KEY `country_iso_code` (`country_iso_code`)
 ) $charset_collate;";
 			$wpdb->query( $sql );
 		}
@@ -215,6 +219,7 @@ class Bootstrap {
 		wd_di()->get( Blocklist_Monitor::class );
 		wd_di()->get( Password_Protection::class );
 		wd_di()->get( Password_Reset::class );
+		wd_di()->get( Webauthn::class );
 		$this->init_wpmudev_dashnotice();
 	}
 
@@ -474,10 +479,8 @@ class Bootstrap {
 		add_action( 'init', function () {
 			require_once WP_DEFENDER_DIR . 'src/routes.php';
 		}, 9 );
-		// Include admin class.
-		if ( is_admin() ) {
-			( new \WP_Defender\Admin() )->init();
-		}
+		// Include admin class. Don't use is_admin().
+		add_action( 'admin_init', [ ( new \WP_Defender\Admin() ), 'init' ] );
 		// Add WP-CLI commands.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'defender', Cli::class );

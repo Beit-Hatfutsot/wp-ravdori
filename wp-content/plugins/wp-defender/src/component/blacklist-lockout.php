@@ -30,7 +30,7 @@ class Blacklist_Lockout extends Component {
 		// If MaxMind GeoIP DB is downloaded then display the required data.
 		if ( $exist_geodb ) {
 			$current_country     = $this->get_current_country( $user_ip );
-			$current_country     = isset( $current_country['iso'] ) ? $current_country['iso'] : false;
+			$current_country     = $current_country['iso'] ?? false;
 			$country_list        = $this->countries_list();
 			$blacklist_countries = array_merge( array( 'all' => __( 'Block all', 'wpdef' ) ), $country_list );
 			$whitelist_countries = array_merge( array( 'all' => __( 'Allow all', 'wpdef' ) ), $country_list );
@@ -49,7 +49,6 @@ class Blacklist_Lockout extends Component {
 				'current_country'     => $current_country,
 				'blacklist_countries' => $blacklist_countries,
 				'whitelist_countries' => $whitelist_countries,
-				'geo_requirement'     => version_compare( phpversion(), WP_DEFENDER_MIN_PHP_VERSION, '>=' ),
 				'user_ip'             => $user_ip,
 			),
 			'class'   => Model_Blacklist_Lockout::class,
@@ -64,14 +63,14 @@ class Blacklist_Lockout extends Component {
 	 * @return bool
 	 */
 	public function is_country_whitelist( $ip ) {
+		// Check Firewall > IP Banning > Locations section is activated or not.
+		$country = $this->get_current_country( $ip );
+		if ( false === $country ) {
+			return false;
+		}
 		$model     = new Model_Blacklist_Lockout();
 		$whitelist = $model->get_country_whitelist();
 		if ( empty( $whitelist ) ) {
-			return false;
-		}
-
-		$country = $this->get_current_country( $ip );
-		if ( false === $country ) {
 			return false;
 		}
 		if ( ! empty( $country['iso'] ) && in_array( strtoupper( $country['iso'] ), $whitelist, true ) ) {
@@ -103,7 +102,7 @@ class Blacklist_Lockout extends Component {
 			'127.0.0.1',
 			array_key_exists( 'SERVER_ADDR', $_SERVER )
 				? $_SERVER['SERVER_ADDR']
-				: ( isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : null ),
+				: ( $_SERVER['LOCAL_ADDR'] ?? null ),
 		);
 
 		return apply_filters( 'ip_lockout_default_whitelist_ip', $ips );
@@ -170,11 +169,11 @@ class Blacklist_Lockout extends Component {
 	 * @return bool
 	 */
 	public function is_country_blacklist( $ip ) {
-		// Return if php less than 5.6.20.
-		if ( version_compare( phpversion(), WP_DEFENDER_MIN_PHP_VERSION, '<' ) ) {
+		// Check Firewall > IP Banning > Locations section is activated or not.
+		$country = $this->get_current_country( $ip );
+		if ( false === $country ) {
 			return false;
 		}
-
 		$blacklist_settings = new Model_Blacklist_Lockout();
 		$blacklisted        = $blacklist_settings->get_country_blacklist();
 		if ( empty( $blacklisted ) ) {
@@ -182,10 +181,6 @@ class Blacklist_Lockout extends Component {
 		}
 		if ( in_array( 'all', $blacklisted, true ) ) {
 			return true;
-		}
-		$country = $this->get_current_country( $ip );
-		if ( false === $country ) {
-			return false;
 		}
 		if ( ! empty( $country['iso'] ) && in_array( strtoupper( $country['iso'] ), $blacklisted, true ) ) {
 			return true;
@@ -225,6 +220,23 @@ class Blacklist_Lockout extends Component {
 	}
 
 	/**
+	 * @param Model_Blacklist_Lockout $model
+	 * @param string                  $country_iso
+	 *
+	 * @return object
+	 * @since 2.8.0
+	*/
+	public function add_default_whitelisted_country( Model_Blacklist_Lockout $model, $country_iso ) {
+		if ( empty( $model->country_whitelist ) ) {
+			$model->country_whitelist[] = $country_iso;
+		} elseif ( ! in_array( $country_iso, $model->country_whitelist, true ) ) {
+			$model->country_whitelist[] = $country_iso;
+		}
+
+		return $model;
+	}
+
+	/**
 	 * Like download_geodb.
 	 */
 	public function download_geo_ip() {
@@ -252,13 +264,18 @@ class Blacklist_Lockout extends Component {
 			$model             = new Model_Blacklist_Lockout();
 			$service_geo       = wd_di()->get( MaxMind_Geolocation::class );
 			$model->geodb_path = $path . DIRECTORY_SEPARATOR . $phar->current()->getFileName() . DIRECTORY_SEPARATOR . $service_geo->get_db_full_name();
+
+			if ( file_exists( $tmp ) ) {
+				unlink( $tmp );
+			}
+
 			if ( empty( $model->country_whitelist ) ) {
 				$country = $this->get_current_country( $this->get_user_ip() );
 				if ( false === $country ) {
 					return false;
 				}
 				if ( ! empty( $country['iso'] ) ) {
-					$model->country_whitelist[] = $country['iso'];
+					$model = $this->add_default_whitelisted_country( $model, $country['iso'] );
 				}
 			}
 			$model->save();
@@ -307,13 +324,18 @@ class Blacklist_Lockout extends Component {
 				$model->geodb_path = $path . DIRECTORY_SEPARATOR . $phar->current()->getFileName() . DIRECTORY_SEPARATOR . $service_geo->get_db_full_name();
 				// Save because we'll check for a saved path.
 				$model->save();
+
+				if ( file_exists( $tmp ) ) {
+					unlink( $tmp );
+				}
+
 				if ( empty( $model->country_whitelist ) ) {
 					$country = $this->get_current_country( $this->get_user_ip() );
 					if ( false === $country ) {
 						return false;
 					}
 					if ( ! empty( $country['iso'] ) ) {
-						$model->country_whitelist[] = $country['iso'];
+						$model = $this->add_default_whitelisted_country( $model, $country['iso'] );
 					}
 				}
 				$model->save();

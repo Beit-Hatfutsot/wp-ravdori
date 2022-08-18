@@ -2,8 +2,8 @@
 Contributors: printfriendly, joostdevalk, jrf, rozroz
 Tags: print, pdf, email, woocommerce print, woocommerce pdf, print plugin, print button, pdf plugin, pdf button
 Requires at least: 4.9
-Tested up to: 5.8
-Stable tag: 5.2.2
+Tested up to: 6.0
+Stable tag: 5.2.4
 
 
 The #1 Print, PDF, Email button. Stylish, full featured, customizable. Add custom header, footer, and more.
@@ -38,8 +38,8 @@ PrintFriendly is used by millions of people everyday to help them save paper and
 * Print, PDF, Email, options can be on or off.
 * Custom headers and footers for the print and PDF.
 * Button styles to choose, or use your own text and image/button.
-* [Include a copyright](https://support.printfriendly.com/button/developer-questions/include-copyright/) on print and PDF.
-* [Use your own CSS](https://support.printfriendly.com/button/wordpress/create-custom-css-file/) for complete creative control or the print or PDF page.
+* [Include a copyright](https://support.printfriendly.com/wordpress/customize-content-selection/#copyright) on print and PDF.
+* [Use your own CSS](https://support.printfriendly.com/wordpress/custom-css/) for complete creative control or the print or PDF page.
 * Use the JavaScript or non-JavaScript option.
 
 
@@ -88,7 +88,7 @@ A few of our supported languages:
 
 PrintFriendly and PDF is the #1 print optimization technology, **as featured in [Lifehacker](http://lifehacker.com/5272212/print-friendly-optimizes-web-pages-for-printing "PrintFriendly & PDF in Lifehacker"), [Mashable](http://mashable.com/2009/05/18/print-friendly/ "PrintFriendly & PDF in Mashable") & [makeuseof](http://www.makeuseof.com/dir/printfriendly-save-on-paper-and-ink/#comment-95052)**.
 
-**Give PrintFriendly & PDF a test drive at [PrintFriendly.com](http://www.printfriendly.com "PrintFriendly & PDF")**
+**Give PrintFriendly & PDF a test drive at [PrintFriendly.com](https://www.printfriendly.com "PrintFriendly & PDF")**
 
 
 = Print, PDF, Email Privacy & Data =
@@ -124,13 +124,10 @@ If you’re using the non-JavaScript option in the plugin, then the preview is g
 [How to articles and support](https://support.printfriendly.com) for Print, PDF, and Email button by PrintFriendly
 
 = Content Not Showing =
-Use [PrintFriendly & PDF custom class names](https://support.printfriendly.com/button/developer-questions/include-exclude-content/) to include/exclude content.
+Use [PrintFriendly & PDF custom class names](https://support.printfriendly.com/wordpress/customize-content-selection/) to include/exclude content.
 
 = How to add custom header to Print and PDF =
-Use the option in the Plugin settings. [See how](https://support.printfriendly.com/button/wordpress/custom-header-wp/)
-
-= Hide the button on a specific page=
-You can [hide the Print, PDF, and Email button](https://support.printfriendly.com/button/wordpress/hide-button/) using CSS.
+Use the option in the Plugin settings. [See how](https://support.printfriendly.com/wordpress/custom-header-footer/#using-plugin-settings)
 
 
 
@@ -143,6 +140,13 @@ You can [hide the Print, PDF, and Email button](https://support.printfriendly.co
 
 
 == Changelog ==
+
+= 5.2.4 =
+* Fix documentation links
+
+= 5.2.3 =
+* Escape HTML for custom text if users do not have capability
+* Tested against 6.0
 
 = 5.2.2 =
 * Better detection of Google Analytics

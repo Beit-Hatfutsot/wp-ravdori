@@ -1,125 +1,132 @@
-# Copyright (C) 2021 Print, PDF, & Email by PrintFriendly
-# This file is distributed under the same license as the Print, PDF & Email by PrintFriendly package.
+# Copyright (C) 2022 Print, PDF, & Email by PrintFriendly
+# This file is distributed under the same license as the Print, PDF & Email by PrintFriendly plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Print, PDF & Email by PrintFriendly 5.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-printfriendly\n"
-"POT-Creation-Date: 2021-12-29 15:35:50+00:00\n"
+"Project-Id-Version: Print, PDF & Email by PrintFriendly 5.2.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/printfriendly\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: PrintFriendly Translate Team <support@printfriendly.com>\n"
-"Language-Team: PrintFriendly Translate Team <support@printfriendly.com>\n"
+"POT-Creation-Date: 2022-05-28T06:41:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: printfriendly\n"
 
-#: pf.php:652
-msgid ""
-"No valid custom image url received, please enter a valid url to use a "
-"custom image."
+#. Plugin Name of the plugin
+msgid "Print, PDF & Email by PrintFriendly"
 msgstr ""
 
-#: pf.php:660
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "http://www.printfriendly.com"
+msgstr ""
+
+#. Description of the plugin
+msgid "PrintFriendly & PDF button for your website. Optimizes your pages and brand for print, pdf, and email."
+msgstr ""
+
+#. Author of the plugin
+msgid "Print, PDF, & Email by PrintFriendly"
+msgstr ""
+
+#: pf.php:661
+msgid "No valid custom image url received, please enter a valid url to use a custom image."
+msgstr ""
+
+#: pf.php:669
 msgid "The text size you entered is invalid, please stay between 9px and 25px"
 msgstr ""
 
-#: pf.php:668
-msgid ""
-"The color you entered is not valid, it must be a valid hexadecimal RGB font "
-"color."
+#: pf.php:677
+msgid "The color you entered is not valid, it must be a valid hexadecimal RGB font color."
 msgstr ""
 
-#: pf.php:723
-msgid ""
-"No valid custom logo url received, please enter a valid url to use a custom "
-"logo."
+#: pf.php:732
+msgid "No valid custom logo url received, please enter a valid url to use a custom logo."
 msgstr ""
 
-#: pf.php:820
+#: pf.php:829
 msgid "PrintFriendly Options"
 msgstr ""
 
-#: pf.php:820
+#: pf.php:829
 msgid "Print Friendly & PDF"
 msgstr ""
 
-#: pf.php:853 views/tabs.php:433
+#: pf.php:862
+#: views/tabs.php:433
 msgid "Custom Image"
 msgstr ""
 
-#: pf.php:854
+#: pf.php:863
 msgid "Use Image"
 msgstr ""
 
-#: pf.php:855
+#: pf.php:864
 msgid "Invalid Image URL"
 msgstr ""
 
-#: pf.php:869
+#: pf.php:878
 msgid "Activation"
 msgstr ""
 
-#: pf.php:870
+#: pf.php:879
 msgid "Checking status"
 msgstr ""
 
-#: pf.php:871 views/pro.php:45
+#: pf.php:880
+#: views/pro.php:45
 msgid "Activate"
 msgstr ""
 
-#: pf.php:872
+#: pf.php:881
 msgid "Active Trial"
 msgstr ""
 
-#: pf.php:873
+#: pf.php:882
 msgid "Active"
 msgstr ""
 
-#: pf.php:874
+#: pf.php:883
 msgid "Expired"
 msgstr ""
 
-#: pf.php:875
+#: pf.php:884
 msgid "Please check Internet connection."
 msgstr ""
 
-#: pf.php:904
+#: pf.php:913
 msgid "Settings"
 msgstr ""
 
-#: pf.php:928 views/tabs.php:108 views/tabs.php:361 views/tabs.php:474
+#: pf.php:937
+#: views/tabs.php:108
+#: views/tabs.php:361
+#: views/tabs.php:474
 msgid "Documentation"
 msgstr ""
 
-#: pf.php:1299 views/tabs.php:165
+#: pf.php:1307
+#: views/tabs.php:165
 msgid "Custom Button"
 msgstr ""
 
-#: pf.php:1497
+#: pf.php:1506
 msgid "Only display when post is in:"
 msgstr ""
 
-#: pf.php:1593
-msgid ""
-"You are currently using %1$s%2$s%3$s. You can copy copy its contents into "
-"the textbox if you want to update the styles."
-msgstr ""
-
-#: test/wp/category-cat.php:53 test/wp/category-dog.php:52
-msgid "Previous page"
-msgstr ""
-
-#: test/wp/category-cat.php:54 test/wp/category-dog.php:53
-msgid "Next page"
-msgstr ""
-
-#: test/wp/category-cat.php:55 test/wp/category-dog.php:54
-msgid "Page"
+#: pf.php:1611
+msgid "You are currently using %1$s%2$s%3$s. You can copy copy its contents into the textbox if you want to update the styles."
 msgstr ""
 
 #: views/pro.php:18
 msgid "Learn more"
 msgstr ""
 
-#: views/pro.php:30 views/tabs.php:534
+#: views/pro.php:30
+#: views/tabs.php:534
 msgid "Email"
 msgstr ""
 
@@ -192,15 +199,11 @@ msgid "Print Friendly & PDF Settings"
 msgstr ""
 
 #: views/settings.php:16
-msgid ""
-"If you like <strong>PrintFriendly</strong> please leave us a %s rating. A "
-"huge thanks in advance!"
+msgid "If you like <strong>PrintFriendly</strong> please leave us a %s rating. A huge thanks in advance!"
 msgstr ""
 
 #: views/settings.php:18
-msgid ""
-"Need professional options for your corporate, education, or agency "
-"developed website? Check out"
+msgid "Need professional options for your corporate, education, or agency developed website? Check out"
 msgstr ""
 
 #: views/settings.php:20
@@ -272,22 +275,21 @@ msgid "Show an error message"
 msgstr ""
 
 #: views/tabs.php:88
-msgid ""
-"This setting can be used to configure the behaviour of the plugin, when "
-"content CSS selector does not match any content."
+msgid "This setting can be used to configure the behaviour of the plugin, when content CSS selector does not match any content."
 msgstr ""
 
 #: views/tabs.php:90
-msgid ""
-"We recommend setting this to \"Use existing rules to find content\" in "
-"production and to \"Show an error message\" in development."
+msgid "We recommend setting this to \"Use existing rules to find content\" in production and to \"Show an error message\" in development."
 msgstr ""
 
 #: views/tabs.php:93
 msgid "Show Options Code"
 msgstr ""
 
-#: views/tabs.php:96 views/tabs.php:323 views/tabs.php:331 views/tabs.php:345
+#: views/tabs.php:96
+#: views/tabs.php:323
+#: views/tabs.php:331
+#: views/tabs.php:345
 #: views/tabs.php:353
 msgid "Copy Code"
 msgstr ""
@@ -308,7 +310,8 @@ msgstr ""
 msgid "Use Your Image"
 msgstr ""
 
-#: views/tabs.php:187 views/tabs.php:439
+#: views/tabs.php:187
+#: views/tabs.php:439
 msgid "Select Image"
 msgstr ""
 
@@ -424,18 +427,20 @@ msgstr ""
 msgid "Encode images"
 msgstr ""
 
-#: views/tabs.php:378 views/tabs.php:389 views/tabs.php:491
+#: views/tabs.php:378
+#: views/tabs.php:389
+#: views/tabs.php:491
 msgid "No"
 msgstr ""
 
-#: views/tabs.php:379 views/tabs.php:390 views/tabs.php:490
+#: views/tabs.php:379
+#: views/tabs.php:390
+#: views/tabs.php:490
 msgid "Yes"
 msgstr ""
 
 #: views/tabs.php:381
-msgid ""
-"Select \"Yes\" if your site is not publicly accessible or if your provider "
-"blocks image requests from third parties or if images are not present in PDF"
+msgid "Select \"Yes\" if your site is not publicly accessible or if your provider blocks image requests from third parties or if images are not present in PDF"
 msgstr ""
 
 #: views/tabs.php:386
@@ -443,10 +448,7 @@ msgid "Show Hidden Content"
 msgstr ""
 
 #: views/tabs.php:392
-msgid ""
-"By default PrintFriendly Pro will only show the visible content on the "
-"page. Select \"Yes\", if you want PrintFriendly to show hidden content. "
-"(Ex. Content in hidden tabs)"
+msgid "By default PrintFriendly Pro will only show the visible content on the page. Select \"Yes\", if you want PrintFriendly to show hidden content. (Ex. Content in hidden tabs)"
 msgstr ""
 
 #: views/tabs.php:398
@@ -457,11 +459,13 @@ msgstr ""
 msgid "Learn More"
 msgstr ""
 
-#: views/tabs.php:404 views/tabs.php:604
+#: views/tabs.php:404
+#: views/tabs.php:604
 msgid "Save Options"
 msgstr ""
 
-#: views/tabs.php:405 views/tabs.php:605
+#: views/tabs.php:405
+#: views/tabs.php:605
 msgid "Cancel"
 msgstr ""
 
@@ -489,15 +493,22 @@ msgstr ""
 msgid "Click to delete"
 msgstr ""
 
-#: views/tabs.php:500 views/tabs.php:537 views/tabs.php:547 views/tabs.php:558
+#: views/tabs.php:500
+#: views/tabs.php:537
+#: views/tabs.php:547
+#: views/tabs.php:558
 msgid "Allow"
 msgstr ""
 
-#: views/tabs.php:501 views/tabs.php:538 views/tabs.php:548 views/tabs.php:559
+#: views/tabs.php:501
+#: views/tabs.php:538
+#: views/tabs.php:548
+#: views/tabs.php:559
 msgid "Not Allow"
 msgstr ""
 
-#: views/tabs.php:503 views/tabs.php:529
+#: views/tabs.php:503
+#: views/tabs.php:529
 msgid "Read documentation about this feature %1$shere%2$s"
 msgstr ""
 
@@ -554,9 +565,7 @@ msgid "Developer Note"
 msgstr ""
 
 #: views/tabs.php:550
-msgid ""
-"On localhost the images can not be included in the PDF. Once the website is "
-"live/public images will be included in the PDF."
+msgid "On localhost the images can not be included in the PDF. Once the website is live/public images will be included in the PDF."
 msgstr ""
 
 #: views/tabs.php:555
@@ -572,15 +581,11 @@ msgid "Custom CSS URL"
 msgstr ""
 
 #: views/tabs.php:592
-msgid ""
-"Customize the styles of the printed/pdf page using your own CSS. Create "
-"your custom CSS, and put the URL to your Custom CSS file in the box above"
+msgid "Customize the styles of the printed/pdf page using your own CSS. Create your custom CSS, and put the URL to your Custom CSS file in the box above"
 msgstr ""
 
 #: views/tabs.php:594
-msgid ""
-"Customize the styles of the printed/pdf page using your own CSS. Add your "
-"custom CSS (without the %s tags) in the box above"
+msgid "Customize the styles of the printed/pdf page using your own CSS. Add your custom CSS (without the %s tags) in the box above"
 msgstr ""
 
 #: views/tabs.php:619
@@ -591,8 +596,147 @@ msgstr ""
 msgid "Currently in Debug Mode. This tab is visible in debug mode only"
 msgstr ""
 
-#. Description of the plugin/theme
-msgid ""
-"PrintFriendly & PDF button for your website. Optimizes your pages and brand "
-"for print, pdf, and email."
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Font family name"
+msgid "System Font"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Font family name"
+msgid "Source Serif Pro"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Color name"
+msgid "Foreground"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Color name"
+msgid "Background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Color name"
+msgid "Secondary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Color name"
+msgid "Tertiary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Vertical secondary to tertiary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Vertical secondary to background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Vertical tertiary to background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Diagonal primary to foreground"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Diagonal secondary to background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Diagonal background to secondary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Diagonal tertiary to background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Gradient name"
+msgid "Diagonal background to tertiary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Foreground and background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Foreground and secondary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Foreground and tertiary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Primary and background"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Primary and secondary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Duotone name"
+msgid "Primary and tertiary"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Custom template name"
+msgid "Blank"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Custom template name"
+msgid "Page (Large Header)"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Custom template name"
+msgid "Single Post (No Separators)"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Custom template name"
+msgid "Page (No Separators)"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Template part name"
+msgid "Header (Dark, large)"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Template part name"
+msgid "Header (Dark, small)"
+msgstr ""
+
+#: wp-content/themes/twentytwentytwo/theme.json
+msgctxt "Template part name"
+msgid "Footer"
 msgstr ""

@@ -6,7 +6,7 @@ use Calotes\Component\Request;
 use Calotes\Helper\HTTP;
 use Calotes\Helper\Route;
 use WP_Defender\Component\Config\Config_Hub_Helper;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use Calotes\Component\Response;
 use WP_Defender\Traits\IO;
 use WP_Defender\Traits\Permission;
@@ -27,7 +27,7 @@ use WP_User;
  * Class Mask_Login
  * @package WP_Defender\Controller
  */
-class Mask_Login extends Controller2 {
+class Mask_Login extends Controller {
 	use IO, Permission;
 
 	/**
@@ -59,6 +59,10 @@ class Mask_Login extends Controller2 {
 			$is_jetpack_sso = $auth_component->is_jetpack_sso();
 			$is_tml         = $auth_component->is_tml();
 			if ( ! $is_jetpack_sso && ! $is_tml ) {
+				// Never catch if from cli.
+				if ( 'cli' !== php_sapi_name() ) {
+					add_action( 'init', array( &$this, 'before_mask_login_handle' ), 99 );
+				}
 				// Monitor wp-admin, wp-login.php.
 				add_action( 'init', array( &$this, 'handle_login_request' ), 99 );
 				add_filter( 'wp_redirect', array( &$this, 'filter_wp_redirect' ), 10 );
@@ -89,6 +93,11 @@ class Mask_Login extends Controller2 {
 				} else {
 					// Change password link for exist user.
 					add_filter( 'retrieve_password_message', array( &$this, 'change_password_message' ), 10, 4 );
+				}
+
+				global $pagenow;
+				if ( is_network_admin() && 'sites.php' === $pagenow ) {
+					add_filter( 'admin_url', array( $this, 'change_subsites_admin_url' ), 10, 4 );
 				}
 			} else {
 				if ( $is_jetpack_sso ) {
@@ -138,7 +147,7 @@ class Mask_Login extends Controller2 {
 			foreach ( $matches as $match ) {
 				foreach ( $match as $url ) {
 					$query = wp_parse_url( $url, PHP_URL_QUERY );
-					$query = null !== $query ? $query : '';
+					$query = $query ?? '';
 					parse_str( $query, $queries );
 					if ( is_array( $queries ) && count( $queries ) ) {
 						$new_url = add_query_arg( $queries, $this->get_model()->get_new_login_url() );
@@ -161,6 +170,37 @@ class Mask_Login extends Controller2 {
 		global $error, $interim_login, $action, $user_login, $user, $redirect_to;
 		require_once ABSPATH . 'wp-login.php';
 		die;
+	}
+
+	/**
+	 * Before Mask Login handling.
+	 *
+	 * @since 2.8.0
+	 * @return void
+	 */
+	public function before_mask_login_handle() {
+		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+		$login_url   = $this->get_model()->get_new_login_url( $this->get_site_url() );
+
+		if (
+			! is_user_logged_in() &&
+			'' !== $login_url &&
+			! $this->service->is_land_on_masked_url( $this->model->mask_url ) &&
+			/**
+			 * Filter to redirect current URL to Mask Login URL.
+			 *
+			 * @param bool   $allowed     Should we redirect to Mask Login URL?.
+			 * @param string $current_url Current URL to check.
+			 *
+			 * @since 2.8.0
+			 */
+			true === apply_filters( 'wpdef_maybe_redirect_to_mask_login_url', false, $current_url )
+		) {
+			$modified_url = add_query_arg( 'redirect_to', rawurlencode( $current_url ), $login_url );
+
+			wp_redirect( $modified_url );
+			die();
+		}
 	}
 
 	/**
@@ -324,7 +364,7 @@ class Mask_Login extends Controller2 {
 		if ( false !== stripos( $current_url, 'wp-login.php' ) ) {
 			// This is URL go to old wp-login.php.
 			$query = wp_parse_url( $current_url, PHP_URL_QUERY );
-			$query = null !== $query ? $query : '';
+			$query = $query ?? '';
 			parse_str( $query, $params );
 
 			return add_query_arg( $params, $this->get_model()->get_new_login_url( $this->get_site_url() ) );
@@ -484,7 +524,7 @@ class Mask_Login extends Controller2 {
 	 */
 	public function to_array() {
 		$model                   = new \WP_Defender\Model\Setting\Mask_Login();
-		list( $routes, $nonces ) = Route::export_routes( 'mask_login' );
+		[$routes, $nonces] = Route::export_routes( 'mask_login' );
 
 		return array(
 			'enabled'   => $model->enabled,
@@ -744,7 +784,7 @@ class Mask_Login extends Controller2 {
 			&& in_array( $_GET['action'], array( 'rp', 'resetpass' ), true )
 			&& isset( $value ) && 0 < strpos( $value, ':' )
 		) {
-			list( $login, $key ) = explode( ':', wp_unslash( $value ), 2 );
+			[$login, $key] = explode( ':', wp_unslash( $value ), 2 );
 			$user                = check_password_reset_key( $key, $login );
 			if ( 'resetpass' === $_GET['action'] ) {
 				delete_site_transient( 'wd-rp-' . COOKIEHASH );
@@ -806,8 +846,8 @@ class Mask_Login extends Controller2 {
 			)
 		);
 
-		$per_page = isset( $data['per_page'] ) ? $data['per_page'] : 50;
-		$search   = isset( $data['search'] )   ? $data['search']   : '';
+		$per_page = $data['per_page'] ?? 50;
+		$search   = $data['search'] ?? '';
 
 		add_filter( 'posts_where', array( $this, 'posts_where_title' ), 10, 2 );
 		$post_query  = new \WP_Query(
@@ -853,5 +893,74 @@ class Mask_Login extends Controller2 {
 		}
 
 		return $where;
+	}
+
+	/**
+	 * Update url to masked login url if domain is mapped.
+	 *
+	 * @param string      $url
+	 * @param string      $path
+	 * @param int|null    $blog_id
+	 * @param string|null $scheme
+	 *
+	 * @return string
+	 */
+	public function change_subsites_admin_url( $url, $path, $blog_id, $scheme ) {
+		if ( empty( $path ) && ! empty( $blog_id ) ) {
+			$mask_url = trim( $this->model->mask_url );
+
+			if ( ! empty( $mask_url ) && $this->check_if_domain_is_mapped( $url ) ) {
+				$url = str_replace( 'wp-admin', $mask_url, untrailingslashit( $url ) );
+			}
+		}
+		return $url;
+	}
+
+	/**
+	 * Check if domain is mapped.
+	 *
+	 * @param string $url
+	 *
+	 * @return string
+	 */
+	public function check_if_domain_is_mapped( $url ) {
+		$is_mapped = false;
+
+		if ( ! empty( $url ) ) {
+			$url_arr     = wp_parse_url( $url );
+			$net_url_arr = wp_parse_url( network_site_url() );
+
+			if (
+				! empty( $url_arr['host'] ) &&
+				! empty( $net_url_arr['host'] ) &&
+				$this->get_domain_from_host( $url_arr['host'] ) !== $this->get_domain_from_host( $net_url_arr['host'] )
+			) {
+				$is_mapped = true;
+			}
+		}
+
+		return $is_mapped;
+	}
+
+	/**
+	 * Extract domain from host.
+	 *
+	 * @param string $host
+	 *
+	 * @return string
+	 */
+	public function get_domain_from_host( $host ) {
+		$host = strtolower( trim( $host ) );
+
+		$count = substr_count( $host, '.' );
+		if ( 2 === $count ) {
+			if ( strlen( explode( '.', $host )[1] ) > 3 ) {
+				$host = explode( '.', $host, 2 )[1];
+			}
+		} else if ( $count > 2 ) {
+			$host = $this->get_domain_from_host( explode( '.', $host, 2 )[1] );
+		}
+
+		return $host;
 	}
 }

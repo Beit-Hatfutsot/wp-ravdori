@@ -7,7 +7,7 @@ use Calotes\Component\Response;
 use Calotes\Helper\HTTP;
 use Calotes\Helper\Route;
 use WP_Defender\Behavior\WPMUDEV;
-use WP_Defender\Controller2;
+use WP_Defender\Controller;
 use WP_Defender\Traits\Formats;
 use WP_Defender\Traits\IO;
 use WP_Defender\Component\Feature_Modal;
@@ -19,7 +19,7 @@ use WP_Defender\Component\Feature_Modal;
  * @package WP_Defender\Controller
  * @method bool is_pro
  */
-class Dashboard extends Controller2 {
+class Dashboard extends Controller {
 	use IO, Formats;
 
 	public $slug = 'wp-defender';
@@ -149,30 +149,12 @@ class Dashboard extends Controller2 {
 				),
 			)
 		);
-		$intention = isset( $data['intention'] ) ? $data['intention'] : false;
+		$intention = $data['intention'] ?? false;
 		if ( 'welcome_modal' === $intention ) {
 			delete_site_option( Feature_Modal::FEATURE_SLUG );
 		}
 
 		return new Response( true, array() );
-	}
-
-	/**
-	 * Return icon svg image.
-	 * Todo: now Def has 2 identical methods. After merge with v2.7.0, leave 1 method and transfer to Defender_Dashboard_Client trait.
-	 *
-	 * @return string
-	 */
-	private function get_menu_icon() {
-		ob_start();
-		?>
-		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path fill-rule="evenodd" clip-rule="evenodd" d="M9.99999 2.08899L3 4.21792V9.99502H9.99912V18.001H10C13.47 18.001 17 13.9231 17 11.0045V9.99501H9.99999V2.08899ZM10 0L1 2.73862V11.0045C1 15.1125 5.49 20 10 20C14.51 20 19 15.1225 19 11.0045V2.73862L10 0Z" fill="#F0F6FC" fill-opacity="0.6"/>
-		</svg>
-		<?php
-		$svg = ob_get_clean();
-
-		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
 
 	public function remove_settings() {
@@ -185,7 +167,7 @@ class Dashboard extends Controller2 {
 	 * @return array
 	 */
 	public function data_frontend() {
-		list( $endpoints, $nonces ) = Route::export_routes( 'dashboard' );
+		[$endpoints, $nonces] = Route::export_routes( 'dashboard' );
 
 		return array_merge(
 			wd_di()->get( Feature_Modal::class )->get_dashboard_modals(),

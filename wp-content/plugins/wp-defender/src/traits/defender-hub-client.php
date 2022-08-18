@@ -139,7 +139,7 @@ trait Defender_Hub_Client {
 		if ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
 			return new \WP_Error(
 				wp_remote_retrieve_response_code( $request ),
-				isset( $result['message'] ) ? $result['message'] : wp_remote_retrieve_response_message( $request )
+				$result['message'] ?? wp_remote_retrieve_response_message( $request )
 			);
 		}
 
@@ -185,7 +185,7 @@ trait Defender_Hub_Client {
 				$total_issues = count( $data['issues'] );
 				foreach ( $data['issues'] as $key => $issue ) {
 					$scan_result['scan_items'][] = array(
-						'file'   => isset( $issue['full_path'] ) ? $issue['full_path'] : $issue['file_name'],
+						'file'   => $issue['full_path'] ?? $issue['file_name'],
 						'detail' => $issue['short_desc'],
 					);
 				}
@@ -298,13 +298,14 @@ trait Defender_Hub_Client {
 
 	public function build_2fa_hub_data() {
 		$settings = new Two_Fa();
-
-		$query        = new \WP_User_Query(
+		$service  = wd_di()->get( \WP_Defender\Component\Two_Fa::class );
+		$query    = new \WP_User_Query(
 			array(
 				// Look over the network.
-				'blog_id'    => 0,
-				'meta_key'   => 'defenderAuthOn',
-				'meta_value' => true,
+				'blog_id'      => 0,
+				'meta_key'     => $service::DEFAULT_PROVIDER_USER_KEY,
+				'meta_value'   => array_keys( $service->get_providers() ),
+				'meta_compare' => 'IN',
 			)
 		);
 		$active_users = array();

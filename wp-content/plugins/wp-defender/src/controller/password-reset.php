@@ -5,6 +5,7 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Config\Config_Hub_Helper;
+use WP_Defender\Controller;
 use WP_Defender\Traits\Formats;
 
 /**
@@ -12,7 +13,7 @@ use WP_Defender\Traits\Formats;
  *
  * @package WP_Defender\Controller
  */
-class Password_Reset extends \WP_Defender\Controller2 {
+class Password_Reset extends Controller {
 	use Formats;
 
 	/**
@@ -121,8 +122,7 @@ class Password_Reset extends \WP_Defender\Controller2 {
 			// Remove the one time cookie notice once it's displayed.
 			$this->service->remove_cookie_notice(
 				'display_reset_password_warning',
-				true,
-				time() - MINUTE_IN_SECONDS
+				true
 			);
 
 			return $errors;
@@ -216,6 +216,7 @@ class Password_Reset extends \WP_Defender\Controller2 {
 	 * @return Response
 	 */
 	public function toggle_reset( Request $request ) {
+		$response = [];
 		$data = $request->get_data_by_model( $this->model );
 		if ( isset( $data['expire_force'] ) && true === $data['expire_force'] ) {
 			$data['force_time'] = time();

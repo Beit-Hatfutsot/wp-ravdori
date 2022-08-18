@@ -39,6 +39,11 @@ class BH_Step4Model {
 				// Get the wizard current language
 				global $wizardSessionManager;
 				$currentLanguage = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);	
+				
+				
+				// if the wizard is in Spanish, override and show the English's subjects
+				if ( $currentLanguage["get_param_value"] == 'es')
+					$currentLanguage["get_param_value"] = 'en';
 
 				if ( $currentLanguage["get_param_value"] == $subjectLanguage ) {
 					$subjectsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);
@@ -60,7 +65,7 @@ class BH_Step4Model {
         if ( $taxonomies ) {
             foreach ($taxonomies as $taxonomy) {
 				
-				// Get the subject's language
+				// Get the subtopic's language
 				$subjectLanguage = get_field('acf-subjects-language' , 'term_' . $taxonomy->term_id ); 
 				
 				if ( $subjectLanguage == null ) 
@@ -70,6 +75,10 @@ class BH_Step4Model {
 				// Get the wizard current language
 				global $wizardSessionManager;
 				$currentLanguage = $wizardSessionManager->getField(IWizardSessionFields::LANGUAGE_LOCALE);	
+				
+				// if the wizard is in Spanish, override and show the English's subtopics
+				if ( $currentLanguage["get_param_value"] == 'es')
+					$currentLanguage["get_param_value"] = 'en';
 
 				if ( $currentLanguage["get_param_value"] == $subjectLanguage ) {
 					$subtopicsArray[] = array('id' => $taxonomy->term_id, 'name' => $taxonomy->name);

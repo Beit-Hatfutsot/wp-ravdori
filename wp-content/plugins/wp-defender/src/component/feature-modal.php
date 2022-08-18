@@ -14,8 +14,8 @@ class Feature_Modal extends Component {
 	/**
 	 * Feature data for the last active "What's new" modal.
 	*/
-	const FEATURE_SLUG    = 'wd_show_feature_scheduled_scanning';
-	const FEATURE_VERSION = '2.7.0';
+	public const FEATURE_SLUG    = 'wd_show_feature_biometric_login';
+	public const FEATURE_VERSION = '3.0.0';
 
 	/**
 	 * Get modals that are displayed on the Dashboard page.
@@ -24,18 +24,28 @@ class Feature_Modal extends Component {
 	 * @since 2.7.0 Use one template for Welcome modal and dynamic data.
 	 */
 	public function get_dashboard_modals() {
-		$desc = __( 'You can now schedule malware scans without email notifications, automatically running regular scans on a daily, weekly, or monthly basis.', 'wpdef' );
-		$desc .= '<br/>' . __( "You'll notice this change in the Malware Scanning settings.", 'wpdef' );
+		$title = sprintf(
+		/* translators: %s: separator */
+			__( 'New: Set up Biometric Two-Factor %s Authentication!', 'wpdef' ),
+			'<br/>'
+		);
+		$desc  = sprintf(
+		/* translators: %s: plugin version */
+			__( "To harden your site's security and facilitate the login process, Defender %s enables you to set up biometric 2FA. It allows your users to authenticate their logins using Touch ID, Face ID, or FIDO-certified authentication devices.", 'wpdef' ),
+			self::FEATURE_VERSION
+		);
 
 		return array(
 			'show_welcome_modal' => $this->display_last_modal( self::FEATURE_SLUG ),
 			'welcome_modal'      => array(
-				'title'        => __( 'Update: Scheduled Scanning!', 'wpdef' ),
+				'title'        => $title,
 				'desc'         => $desc,
 				'banner_1x'    => defender_asset_url( '/assets/img/modal/welcome-modal.png' ),
 				'banner_2x'    => defender_asset_url( '/assets/img/modal/welcome-modal@2x.png' ),
-				'banner_alt'   => __( 'Modal for plugin vulnerability', 'wpdef' ),
+				'banner_alt'   => __( 'Modal for Biometric authentication', 'wpdef' ),
 				'button_title' => __( 'Got it', 'wpdef' ),
+				// Additional information.
+				'additional_text' => $this->additional_text(),
 			),
 		);
 	}
@@ -71,8 +81,8 @@ class Feature_Modal extends Component {
 			),
 			// The latest feature.
 			array(
-				'slug' => 'wd_show_feature_plugin_vulnerability',
-				'vers' => '2.6.2',
+				'slug' => 'wd_show_feature_auth_methods',
+				'vers' => '2.8.0',
 			),
 			// The current feature.
 			array(
@@ -89,5 +99,37 @@ class Feature_Modal extends Component {
 				delete_site_option( $feature['slug'] );
 			}
 		}
+	}
+
+	/**
+	 * Get additional text.
+	 *
+	 * @return string
+	 */
+	private function additional_text() {
+		$text = '<ul class="list-disc list-inside m-0">';
+		$text .= '<li class="mb-30px relative">';
+		$text .= '<strong class="text-base text-gray-500 absolute left-10px">';
+		$text .= __( 'Fingerprint and Facial recognition:', 'wpdef' );
+		$text .= '</strong>';
+		$text .= '<span class="sui-description mt-0">';
+		$text .= __( 'Users are able to register and authenticate the device(s) that supports fingerprint scan or facial recognition they wish to use for their biometric authentication. Additionally, users can enable multiple authentication methods at the same time.', 'wpdef' );
+		$text .= '</span>';
+		$text .= '</li>';
+		$text .= '<li class="sui-no-margin-bottom relative">';
+		$text .= '<strong class="text-base text-gray-500 absolute left-10px">';
+		$text .= __( 'Upgrade PHP to improve overall performance', 'wpdef' );
+		$text .= '</strong>';
+		$text .= '<span class="sui-description mt-0">';
+		$text .= sprintf(
+		/* translators: %s: plugin version */
+			__( "Defender %s now requires PHP 7.2 or above. This improves Defender's performance and security while also supporting the new biometric 2FA feature.", 'wpdef' ),
+			self::FEATURE_VERSION
+		);
+		$text .= '</span>';
+		$text .= '</li>';
+		$text .= '</ul>';
+
+		return $text;
 	}
 }
