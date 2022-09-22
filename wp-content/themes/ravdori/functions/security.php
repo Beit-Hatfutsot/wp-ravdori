@@ -61,14 +61,25 @@ function checkNonce( $nonce , $action  , $dieMessage = null )
  * Make the current logged in user to see in the media only his files
  */
 function user_restrict_media_library( $query ) {
-
+	
    $user = wp_get_current_user();
-
-    if( empty( $user ) OR !in_array( "administrator", (array) $user->roles ) )
-    {
-        $query['author'] = $user->ID;
-    }
-
+	
+    if ( $query['post_type'] !== 'attachment'  ):
+	
+		if( empty( $user ) OR !in_array( "administrator", (array) $user->roles ) ):
+			$query['author'] = $user->ID;
+		endif;
+		
+	else:
+error_log("-----------IN SECIONBD----------**");
+error_log( print_r(current_user_can( 'add_users' ),true) );
+		if( empty( $user ) OR ! current_user_can( 'add_users' ) ):
+		error_log("-----------IN third----------**");
+			$query['author'] = $user->ID;
+		endif;
+		
+		
+	endif;
 
     return $query;
 }

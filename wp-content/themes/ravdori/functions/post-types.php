@@ -1239,4 +1239,3 @@ $view['pending'] = preg_replace( '/\(.+\)/U', '('.$total_pending.')', $view['pen
    
     return $view;
 }
-
