@@ -184,7 +184,7 @@
             <?php if ( !is_page_template( 'wizard.php' ) ): ?>
                 <div class="homepage-title-container row">
                     <h2><span class="bh-translate"><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></span></h2>
-                    <h3><span class="bh-translate"><?php _e( 'אוצר אנושי מתכנית הקשר הרב דורי'  , 'BH'); ?></span></h3>
+                    <h3><span class="bh-translate"><?php _e( 'אוצר אנושי מתוכנית הקשר הרב-דורי'  , 'BH'); ?></span></h3>
                 </div>
             <?php endif; ?>
 		

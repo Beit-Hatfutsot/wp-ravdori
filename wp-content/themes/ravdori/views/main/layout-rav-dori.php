@@ -21,7 +21,7 @@ $text = get_field('acf-main-ravdori-the-program-text');
 
 <div class="row">
     <div class="col-sm-3">
-        <h2 class="title"><?php _e( 'הקשר הרב הדורי' , 'BH'); ?></h2>
+        <h2 class="title"><?php _e( 'הקשר הרב דורי' , 'BH'); ?></h2>
     </div>
 </div>
 
