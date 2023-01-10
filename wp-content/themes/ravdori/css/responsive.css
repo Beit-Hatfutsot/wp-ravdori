@@ -2620,3 +2620,14 @@ a.external-link {
     top: 2.5px;
     left: -0.5px;
 }
+
+
+
+/* Fix inner video */
+@media (max-width: 767px) {
+
+	.story-main-container div.entry iframe {
+		width: 100%
+	}
+		
+} /*767*/
