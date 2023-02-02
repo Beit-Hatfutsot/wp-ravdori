@@ -565,8 +565,8 @@ get_header();
 
         });
 
-
-        }); //ready
+		
+}); //ready
 
 	
 	$( window ).on('load', function() {

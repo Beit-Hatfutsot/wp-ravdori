@@ -45,6 +45,13 @@ function add_contextmenu_plugin($args) {
 
 
 
+// load 'paste' plugin in minimal/pressthis editor
+add_filter( 'teeny_mce_plugins', function( $plugins ) {
+	$plugins[] = 'paste';
+	return $plugins;
+});
+
+
 function enable_more_buttons($buttons) {
     $buttons[] = 'cut';
     $buttons[] = 'copy';
