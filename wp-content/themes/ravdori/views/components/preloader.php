@@ -16,7 +16,7 @@ jQuery(window).on('load', function() {
 </script>
 <div id="preloader">
 	<div id="loader">
-		<?php $preloader_image =  get_bloginfo('stylesheet_directory') . '/images/loader.gif';?>
+		<?php $preloader_image =  get_bloginfo('stylesheet_directory') . '/images/general/loading.gif';?>
 		<img src="<?php echo $preloader_image;?>" alt="preloader">
 	</div>
 </div>	

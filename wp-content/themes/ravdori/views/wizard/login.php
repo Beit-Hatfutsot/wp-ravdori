@@ -419,7 +419,7 @@ jQuery(document).ready(function () {
 					?>
 					
                         <div class="column column1 terms-column">
-                            <input type="checkbox" checked id="agree" name="agree"  value="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>" / ><span class="terms-label">
+                            <input type="checkbox" id="agree" name="agree"  value="<?php BH__e("אישור תנאי שימוש" , "BH" , $locale);?>" / ><span class="terms-label">
 							<?php BH__e("אישור " , "BH" , $locale);?><a href="<?php the_field( $acf_wizard_terms_url_field_name , 'options' ); ?>" target="_blank"><?php BH__e("תנאי שימוש" , "BH" , $locale);?></a>
 							</span>
                             <label for="agree" style="    position: absolute; top: 0px; right: 174px;"></label>

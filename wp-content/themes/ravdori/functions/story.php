@@ -510,3 +510,28 @@ function delete_post_media( $post_id ) {
         }
     }
 }
+
+
+
+/* For Web accessibility, we need at the moment to remove allvideos, embeded ppts etc. */
+function remove_iframes_from_story_content( $content ) {
+    // Only apply to posts with the post type 'story'
+    if ( STORY_POST_TYPE === get_post_type() ) {
+        $content = preg_replace( '/<iframe.*?<\/iframe>/s', '', $content );
+    }
+
+    return $content;
+}
+add_filter( 'the_content', 'remove_iframes_from_story_content' );
+
+
+function remove_embeddoc_shortcode( $content ) {
+    // Only apply to posts with the post type 'story'
+    if ( 'story' === get_post_type() ) {
+        $content = preg_replace( '/\[embeddoc.*?\]/s', '', $content );
+    }
+
+    return $content;
+}
+add_filter( 'the_content', 'remove_embeddoc_shortcode', 1 );
+

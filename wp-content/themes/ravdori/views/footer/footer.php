@@ -38,9 +38,9 @@
 
 
 						<div style="width:25%;float:right;">
-								<a href="https://www.bh.org.il/" target="_blank">
-										<img src="<?php echo IMAGES_DIR?>/general/footer/bh-logo.png" alt=""/>
-									</a>
+								<a href="#" target="_blank">
+										<img src="<?php echo IMAGES_DIR?>/general/footer/edu-logo.jpg" alt="education"/>
+								</a>
 						</div>
 								
 		
@@ -52,10 +52,12 @@
                <div class="col-xs-12 col-sm-6 col-md-3 footer-about-wrapper">
 				<div class="footer-about">
                     <?php
+					/*
                             echo __('בית הספר הבינלאומי ללימודי העם היהודי','BH') . '<br/>' .
                                  __( 'אנו - מוזיאון העם היהודי' , 'BH' ) . '<br/>' .
                                  __('ת.ד 39359, תל-אביב 61392','BH') . '<br/>' .
                                 '<a href="mailto:kesher.rav.dori@bh.org.il">' . 'kesher.rav.dori@bh.org.il' . '</a>';
+								*/
                     ?>
                 </div>
 			</div>
