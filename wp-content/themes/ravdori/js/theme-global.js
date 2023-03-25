@@ -1,6 +1,7 @@
 jQuery( document ).ready(function() {
 
 	$ = jQuery;
+	
 
 	// translations
 	loadTranslations();
@@ -74,7 +75,78 @@ jQuery( document ).ready(function() {
 	// Make the country select box searchable
 	$(".advanced-search-container select").chosen( { placeholder_text_single :  rh_translation_arr.search_string, no_results_text:rh_translation_arr.no_results_text, search_contains: true  } );
 
-});
+	
+	/*
+	var captchaTextarea = $("#g-recaptcha-response-100000");
+	
+	if ( captchaTextarea.length > 0 ) {
+		captchaTextarea.attr('aria-hidden', true);
+        captchaTextarea.attr('aria-label', 'do not use');
+        captchaTextarea.attr('aria-readonly', true);
+	}
+	*/
+	
+	
+	setTimeout(() => {
+          var textarea = document.getElementById("g-recaptcha-response-100000");
+		  
+		  if ( textarea ) {
+			  textarea.setAttribute("aria-hidden", "true");
+			  textarea.setAttribute("aria-label", "do not use");
+			  textarea.setAttribute("aria-readonly", "true");
+		  }
+		  
+		  
+		  textarea = $(".grecaptcha-badge")[0];
+          if ( textarea ) {
+			  textarea.setAttribute("aria-hidden", "true");
+			  textarea.setAttribute("aria-label", "do not use");
+			  textarea.setAttribute("aria-readonly", "true");
+		  }
+		  
+		  
+      }, 500);
+	  
+	  // adv search
+	  var chosenInput = $('#advanced_search__country_chosen > div > div > input[type=text]');
+	  chosenInput.attr('id','chosen_input');
+	  $('<label for="chosen_input" class="visually-hidden">ביטוי לחיפוש</label>').insertBefore(chosenInput);
+	  
+	  
+	  	setTimeout(() => {
+          
+		  
+		  // Story archive 
+	  
+		  // Order by 
+		  var chosenInput =  $('#story_archive_orderby_chosen > div > div > input[type=text]');
+		  chosenInput.attr('id','chosen_input0');
+		  $('<label for="chosen_input0" class="visually-hidden">סידור על פי:</label>').insertBefore(chosenInput);
+		  
+		  
+		  chosenInput =  $('#story_archive_page_select_chosen > div > div > input[type=text]');
+		  chosenInput.attr('id','chosen_input1');
+		  $('<label for="chosen_input1" class="visually-hidden">עמוד:</label>').insertBefore(chosenInput);
+		  
+		  chosenInput =  $('#story_archive_sort_asc_desc_chosen > div > div > input[type=text]');
+		  chosenInput.attr('id','chosen_input2');
+		  $('<label for="chosen_input2" class="visually-hidden">עמוד:</label>').insertBefore(chosenInput);
+		  
+		  
+      }, 1200);
+
+	 
+	  if ($('body').hasClass('single-story')) {
+			$('.entry a').filter(function() {
+				return $(this).children().length === 0 && $.trim($(this).text()) === '';
+			}).remove();
+	  }
+
+
+
+	
+	
+}); // doc.ready
 
 /* loadTranslations */
 function loadTranslations() {

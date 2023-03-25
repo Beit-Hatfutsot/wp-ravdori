@@ -24,21 +24,21 @@
 
 						
 						<div style="width:25%;float:right;">
-									<a href="https://www.gov.il/he/Departments/General/kesher" target="_blank">
-										<img src="<?php echo IMAGES_DIR?>/general/footer/siv-logo.png" alt=""/>
+									<a href="https://www.gov.il/he/Departments/General/kesher" target="_blank" aria-label="המשרד לשיווין חברתי">
+										<img src="<?php echo IMAGES_DIR?>/general/footer/siv-logo.png" alt="המשרד לשיווין חברתי"/>
 									</a>
 						</div>
 						
 						
 						<div style="width:25%;float:right;">
-									<a href="https://www.bh.org.il/he/%D7%97%D7%99%D7%A0%D7%95%D7%9A/%D7%94%D7%A7%D7%A9%D7%A8-%D7%94%D7%A8%D7%91-%D7%93%D7%95%D7%A8%D7%99/"  target="_blank">
-										<img src="<?php echo IMAGES_DIR?>/general/footer/ravdori-logo.png" alt=""/>
+									<a href="https://www.bh.org.il/he/%D7%97%D7%99%D7%A0%D7%95%D7%9A/%D7%94%D7%A7%D7%A9%D7%A8-%D7%94%D7%A8%D7%91-%D7%93%D7%95%D7%A8%D7%99/"  target="_blank" aria-label="הקשר הרב דורי">
+										<img src="<?php echo IMAGES_DIR?>/general/footer/ravdori-logo.png" alt="הקשר הרב דורי"/>
 									</a>
 						</div>
 
 
 						<div style="width:25%;float:right;">
-								<a href="#" target="_blank">
+								<a href="#" target="_blank" aria-label="משרד החינוך">
 										<img src="<?php echo IMAGES_DIR?>/general/footer/edu-logo.jpg" alt="education"/>
 								</a>
 						</div>

@@ -3,12 +3,12 @@
 <form id="search-form" class="navbar-form voffset3" role="search" method="get" action="<?php echo HOME; ?>">
 
     <div class="input-group add-on">
-
+		<label for="search-field" class="visually-hidden">חיפוש</label>
         <input  placeholder="<?php echo $search_string; ?>" name="s" id="search-field" type="text" value="<?php echo ( is_search() ? get_search_query() : '' ); ?>">
         <input type="hidden" name="post_type" value="<?php echo STORY_POST_TYPE; ?>" />
 
         <div class="input-group-btn">
-            <button class="btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            <button class="btn" type="submit"><i class="glyphicon glyphicon-search" aria-hidden="true"></i><span class="visually-hidden" aria-hidden="true" style="background: #3b3b3b;color: #fff;">ביצוע חיפוש</span></button>
         </div>
 		<?php
 		/*

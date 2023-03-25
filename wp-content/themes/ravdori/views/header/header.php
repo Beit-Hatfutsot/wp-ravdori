@@ -30,10 +30,10 @@
                      <div class="row">
                          <div class="col-sm-10 col-md-5 col-lg-6 header-logo-container">
                              <a class="ravdori-logo" style="max-width: 68%; display: inline-block;" href="<?php echo HOME?>">
-                                <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" style="margin-top: 6px;"/>
+                                <img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" style="margin-top: 6px;" alt="הקשר הרב דורי"/>
                              </a>
-                             <a class="gov-logo" style="max-width: 29%; display: inline-block;" href="<?php echo HOME?>">
-                                <img src="<?php echo IMAGES_DIR . '/general/ministry_for_social_equality.png'?>" style="margin-top: 6px; max-height: 40px;"/>
+                             <a class="gov-logo" style="max-width: 29%; display: inline-block;" href="https://www.gov.il/he/departments/ministry_for_social_equality/govil-landing-page" target="_blank">
+                                <img src="<?php echo IMAGES_DIR . '/general/ministry_for_social_equality.png'?>" style="margin-top: 6px; max-height: 40px;" alt="המשרד לשיוויון חברתי"/>
                              </a>
                          </div>
 
@@ -83,7 +83,7 @@
                          </div>
 						 
 						 <div class="col-xs-push-2 col-xs-12 visible-xs header-mobile-search-button-container">
-							<button class="btn btn-mobile-search"><i class="glyphicon glyphicon-search"></i></button>
+							<button class="btn btn-mobile-search"><i class="glyphicon glyphicon-search" aria-hidden="true"></i><span style="background: #3b3b3b;color: #fff;" class="visually-hidden">חיפוש</span></button>
 						 </div>
 
                          <div class="col-sm-5 col-lg-4 visible-lg visible-md col-md-6">
@@ -97,7 +97,7 @@
 								 
 								 <?php if ( $facebook_url ): ?>
 									  <li class="social-facebook">
-										 <a href="<?php echo $facebook_url; ?>" target="_blank">
+										 <a href="<?php echo $facebook_url; ?>" target="_blank" aria-label="קישור לפייסבוק">
 											<span class="social-icon"></span>
 										 </a>
 									 </li>
@@ -105,7 +105,7 @@
 								
 								 <?php if ( $youtube_url ): ?>
 									 <li class="social-youtube">
-										 <a href="<?php echo $youtube_url; ?>" target="_blank">
+										 <a href="<?php echo $youtube_url; ?>" target="_blank" aria-label="קישור ליוטיוב">
 											<span class="social-icon"></span>
 										 </a>
 									 </li>
@@ -113,7 +113,7 @@
 
 								 <?php if ( $twitter_url ): ?>
 									 <li class="social-twitter">
-										 <a href="<?php echo $twitter_url; ?>" target="_blank">
+										 <a href="<?php echo $twitter_url; ?>" target="_blank" aria-label="קישור לטוויטר">
 											<span class="social-icon"></span>
 										 </a>
 									 </li>
@@ -128,7 +128,7 @@
 				
 				
 				 <div class="col-sm-2 col-xs-2 visible-sm visible-xs col-md-2">
-					<a href="#" class="menu-btn">
+					<a href="#" class="menu-btn" aria-label="פתיחת תפריט מובייל">
 						<div class="hamburger-menu-button"></div>
 					</a>
 				 </div>
@@ -158,18 +158,19 @@
                					
                				?>
 							<button class="nav-scroller-btn nav-scroller-btn--left">
-								<span class="nav-scroller-btn__text"><?php _e('עוד...','BH'); ?></span>
-								<span class="nav-scroller-btn__arrow">
-									<div class="nav-scroller-arrow"></div>
+								<span class="nav-scroller-btn__text" aria-hidden="true"><?php _e('עוד...','BH'); ?></span>
+								<span class="nav-scroller-btn__arrow" aria-hidden="true" >
+									<div class="nav-scroller-arrow" aria-hidden="true"></div>
 								</span>
+								<span class="visually-hidden" aria-hidden="true" style="background: #3b3b3b;color: #fff;"><?php _e('עוד...','BH'); ?></span>
 							</button>
 							
 							<button class="nav-scroller-btn nav-scroller-btn--right">
 							
-							<span class="nav-scroller-btn__arrow">
-									<div class="nav-scroller-arrow"></div>
-							</span>
-								
+								<span class="nav-scroller-btn__arrow" aria-hidden="true">
+										<div class="nav-scroller-arrow" aria-hidden="true"></div>
+								</span>
+								<span class="visually-hidden" style="background: #3b3b3b;color: #fff;"><?php _e('עוד...','BH'); ?></span>
 							</button>
                			</div>
                     </div>
@@ -183,8 +184,8 @@
 
             <?php if ( !is_page_template( 'wizard.php' ) ): ?>
                 <div class="homepage-title-container row">
-                    <h2><span class="bh-translate"><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></span></h2>
-                    <h3><span class="bh-translate"><?php _e( 'אוצר אנושי מתוכנית הקשר הרב-דורי'  , 'BH'); ?></span></h3>
+                    <h1><span class="bh-translate"><?php _e( 'מאגר סיפורי מורשת' , 'BH'); ?></span></h1>
+                    <h2 class="header-subtitle"><span class="bh-translate"><?php _e( 'אוצר אנושי מתוכנית הקשר הרב-דורי'  , 'BH'); ?></span></h2>
                 </div>
             <?php endif; ?>
 		

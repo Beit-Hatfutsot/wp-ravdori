@@ -28,6 +28,15 @@
 		{
 			$story_thumbnail = wp_get_attachment_image($image_adult_past , 'story-archive-thumb');
 		}
+		
+		// Check if the image has an alt attribute, and set it to the post title if it doesn't
+		if ( ! empty( $story_thumbnail ) ) {
+			$alt_text = $story_thumbnail->attr['alt'];
+			if ( empty( $alt_text ) ) {
+				$title = get_the_title( $image_adult_past );
+				$story_thumbnail = preg_replace( '/(alt="")/', 'alt="' . $title . '"', $story_thumbnail, 1 );
+			}
+		}
 	
 	#endregion
 	

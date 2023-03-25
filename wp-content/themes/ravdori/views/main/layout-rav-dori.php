@@ -63,7 +63,7 @@ $text = get_field('acf-main-ravdori-the-program-text');
 
                       <div class="col-xs-4 col-sm-5 no-left-padding">
                           <?php if( $image ): ?>
-                            <img src="<?php echo $image; ?>">
+                            <img src="<?php echo $image; ?>" alt="<?php echo 'תמונת אווירה ' . $i; ?>">
                           <?php endif; ?>
                       </div>
 

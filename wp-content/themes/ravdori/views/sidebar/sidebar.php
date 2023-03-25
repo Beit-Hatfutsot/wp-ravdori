@@ -29,7 +29,7 @@
 
                     <div class="row">
                         <div class="col-sm-3">
-                            <h2 class="title orange"><span class="bh-translate"><?php _e( 'מהמילון'  , 'BH'); ?></span></h2>
+                            <h2 class="title cyan"><span class="bh-translate"><?php _e( 'מהמילון'  , 'BH'); ?></span></h2>
                         </div>
                     </div>
 

@@ -14,7 +14,7 @@
 ?>
 
 <div class="fb-share-button">
-<a onClick="window.open('http://www.facebook.com/sharer.php?s=100&amp;p[url]=<?php echo $url; ?>&amp;&p[images][0]=<?php echo $image;?>', 'sharer', 'toolbar=0,status=0,width=548,height=325');" target="_parent" href="javascript: void(0)">
+<a onClick="window.open('http://www.facebook.com/sharer.php?s=100&amp;p[url]=<?php echo $url; ?>&amp;&p[images][0]=<?php echo $image;?>', 'sharer', 'toolbar=0,status=0,width=548,height=325');" target="_parent" href="javascript: void(0)"  aria-label="שיתןף בפייסבוק">
         <span class="social-icon"><i class="fab fa-facebook-f"></i></span>
 </a>
 </div>

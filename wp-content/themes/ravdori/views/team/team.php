@@ -47,7 +47,7 @@ if( $team_query->have_posts() ):
     </div>
 
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10">
-        <h4><?php the_title(); ?></h4>
+        <h3 class="team_member_title"><?php the_title(); ?></h3>
         <div><?php echo get_the_content(); ?></div>
 <br/>
         <?php if ($phone): ?>

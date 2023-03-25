@@ -42,7 +42,8 @@ $repeaterName = 'acf-main-useful-links-repeater';
 		 data-cycle-swipe=true
 		 data-cycle-carousel-slide-dimension=390
         >
-
+    
+	<?php $i = 1; ?>
     <?php while( have_rows( $repeaterName ) ): the_row();
 
         $image = get_sub_field('acf-main-useful-links-repeater-image');
@@ -51,6 +52,18 @@ $repeaterName = 'acf-main-useful-links-repeater';
         $link  = ( $link == null ) ? get_sub_field('acf-main-useful-links-repeater-url-inner') : $link;
         $video_url = get_sub_field('acf-main-useful-links-repeater-video-url');
         $show_video = get_sub_field('acf-main-useful-links-repeater-show-video');
+		$image_alt = image_alt_by_url($image);
+		
+		if ( ! $image_alt ) {
+
+			if ( $text ) {
+				$image_alt = $text;
+			}
+			else {
+				$image_alt = 'קישור חיצוני' . ' ' . $i;
+			}
+		}
+		
     ?>
 
         <?php if ( !$show_video AND $image ): ?>
@@ -61,7 +74,7 @@ $repeaterName = 'acf-main-useful-links-repeater';
 						<?php endif; ?>
 
 							<?php if ( $image ): ?>
-								<img src="<?php echo $image;?>">
+								<img src="<?php echo $image;?>" alt="<?php echo $image_alt; ?>">
 							<?php endif; ?>
 
 							<?php if ( $text ): ?>
@@ -84,13 +97,14 @@ $repeaterName = 'acf-main-useful-links-repeater';
 					<?php //echo wp_oembed_get( $video_url ); ?>
 					<a href="https://www.youtube.com/watch?v=<?php echo $video_url?>" target="_blank">
 						<div class="utube-wrap">
-							<img src="https://img.youtube.com/vi/<?php echo $video_url?>/sddefault.jpg">
+							<img src="https://img.youtube.com/vi/<?php echo $video_url?>/sddefault.jpg" alt="נגן ביוטיוב">
 						</div>	
 					</a>	
 					
             </div>
         <?php endif;?>
-
+	
+	<?php $i++;?>
     <?php endwhile; ?>
 
     </div>

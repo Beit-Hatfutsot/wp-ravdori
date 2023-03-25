@@ -253,3 +253,24 @@ function var_error_log( $object=null ){
     ob_end_clean();                // end capture
     error_log( $contents );        // log contents of the result of var_dump( $object )
 }
+
+
+/**
+ * Get image alt text by image URL
+ *
+ * @param String $image_url
+ *
+ * @return Bool | String
+ */
+function image_alt_by_url( $image_url ) {
+    global $wpdb;
+
+    if( empty( $image_url ) ) {
+        return false;
+    }
+
+    $query_arr  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE guid='%s';", strtolower( $image_url ) ) );
+    $image_id   = ( ! empty( $query_arr ) ) ? $query_arr[0] : 0;
+
+    return get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+}

@@ -34,6 +34,6 @@
 </div>
 <div class="row visible-print">
     <div class="col-xs-12">
-        <?php echo '<img src="' .  IMAGES_DIR . '/general/logo-mail.jpg" />';?>
+        <?php echo '<img src="' .  IMAGES_DIR . '/general/logo-mail.jpg" alt="הקשר הרב דורי"/>';?>
     </div>
 </div>

@@ -57,10 +57,16 @@ if( $story_query->have_posts() ): ?>
             <?php while ( $story_query->have_posts()) : $story_query->the_post(); ?>
                 <div class="slide-container grow">
 					 <div class="slide-content">	
-							<a href="<?php echo get_the_permalink(); ?>">
+							<a href="<?php echo get_the_permalink(); ?>" aria-label="לקריאת הסיפור">
 								<div class="slide-caption">
 									<h2><?php the_title();?></h2>
-									<h3><?php the_field('acf-story-secondary-text');?></h3>
+									
+									<?php $second_text = get_field('acf-story-secondary-text'); ?>
+									
+									<?php if ( $second_text ): ?>
+										<h3><?php echo $second_text;?></h3>
+									<?php endif; ?>	
+									
 									<div class="read-story-button"><?php _e( 'לקריאת הסיפור' , 'BH' ); ?></div>
 								</div>
 								<div class="slide-image">
@@ -75,8 +81,8 @@ if( $story_query->have_posts() ): ?>
 
         </div>
         <div class="stories-slider-nav">
-            <a href=# id="stories-slider-next"></a>
-            <a href=# id="stories-slider-prev"></a>
+            <a href=# id="stories-slider-next" aria-label="לשקופית הבאה"></a>
+            <a href=# id="stories-slider-prev" aria-label="לשקופית הקודמת"></a>
         </div>
 
         <div id="homepage-stories-pager" class="text-center voffset3"></div>

@@ -20,7 +20,7 @@
 
     <li class="social-icon mail">
         <div class="printfriendly">
-            <a href="#lightbox" data-toggle="modal" rel="nofollow" >
+            <a href="#lightbox" data-toggle="modal" rel="nofollow"  aria-label="שליחת איימיל">
              <span></span>
             </a>
         </div>

@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<?php echo ( $language[ 'get_param_value' ] == 'ru' ? ' style="font-size: 15px; padding: 16px 19px;"' : ''); ?>
 			>
 				<div class="flag">
-					<img src="<?php echo IMAGES_DIR . '/general/header/flag-' . $language[ 'get_param_value' ] . '.png'?>">
+					<img src="<?php echo IMAGES_DIR . '/general/header/flag-' . $language[ 'get_param_value' ] . '.png'?>" alt="<?php echo 'Change language to ' . $language[ 'display_name' ]?>">
 				</div>
 
 				<div class="language-name"><?php echo $language["upload-story-name"]; ?></div>

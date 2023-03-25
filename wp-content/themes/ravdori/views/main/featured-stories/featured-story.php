@@ -11,7 +11,7 @@
 
 
 
-$images       = array( wp_get_attachment_image( get_field('acf-story-images-adult-past') , 'full' ) , wp_get_attachment_image( get_field('acf-story-images-adult-child') , 'full' ) );
+$images       = array( wp_get_attachment_image( get_field('acf-story-images-adult-past') , 'full', false, ['alt' => 'תמונה ראשית'] ) , wp_get_attachment_image( get_field('acf-story-images-adult-child') , 'full', false, ['alt' => 'תמונה ראשית']  ) );
 $randomNumber = rand(0, (count( $images ) - 1));
 
 $image = $images[$randomNumber];

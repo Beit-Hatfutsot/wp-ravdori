@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 			 <div>
 				 <a href="<?php echo HOME?>">
-					<img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" />
+					<img src="<?php echo IMAGES_DIR . '/general/header/logo.png'?>" alt="תוכנית הקשר הרב דורי" />
 				 </a>
 			 </div>
 			 
@@ -59,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 								 
 								 <?php if ( $facebook_url ): ?>
 									  <li class="social-facebook">
-										 <a href="<?php echo $facebook_url; ?>" target="_blank">
+										 <a href="<?php echo $facebook_url; ?>" target="_blank" aria-label="קישור לפייסבוק>
 												<span class="social-icon"></span>
 										 </a>
 									 </li>
@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 								
 								 <?php if ( $youtube_url ): ?>
 									 <li class="social-youtube">
-										 <a href="<?php echo $youtube_url; ?>" target="_blank">
+										 <a href="<?php echo $youtube_url; ?>" target="_blank" aria-label="קישור ליוטיוב">
 												<span class="social-icon"></span>
 										 </a>
 									 </li>
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 								 <?php if ( $twitter_url ): ?>
 									 <li class="social-twitter">
-										 <a href="<?php echo $twitter_url; ?>" target="_blank">
+										 <a href="<?php echo $twitter_url; ?>" target="_blank" aria-label="קישור לטוויטר">
 											<span class="social-icon"></span>
 										 </a>
 									 </li>

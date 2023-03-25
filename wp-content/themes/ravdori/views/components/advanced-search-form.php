@@ -86,6 +86,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 				  
 					<form action="<?php echo $advnaced_search_page; ?>" role="search" method="get" id="advanced-search-form" class="wizard-form">
 						
+						<label for="advanced_search__story_name" class="visually-hidden">שם הסיפור</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__story_name"   placeholder="<?php echo $story_name_menu_string;  ?>" name="advanced_search__story_name" value="<?php echo $query_story_name; ?>">
 						
 						<div class="checkbox-container">
@@ -93,6 +94,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 							<input type="checkbox" id="story-name-exact" name="story-name-exact"  <?php echo $story_checkbox_is_on;?>>
 						</div>
 						
+						<label for="advanced_search__adult_name" class="visually-hidden">שם המבוגר</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__adult_name"   placeholder="<?php echo $story_adult_menu_string; ?>" name="advanced_search__adult_name" value="<?php echo $query_adult_name; ?>">
 						
 						<div class="checkbox-container">
@@ -100,7 +102,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 							<input type="checkbox" id="adult-name-exact" name="adult-name-exact" <?php echo $adult_checkbox_is_on;?>>
 						</div>
 						
-						
+						<label for="advanced_search__student_name" class="visually-hidden">שם התלמיד</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__student_name" placeholder="<?php echo $story_student_menu_string; ?>" name="advanced_search__student_name" value="<?php echo $query_student_name; ?>">
 						
 						<div class="checkbox-container">
@@ -108,7 +110,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 							<input type="checkbox" id="student-name-exact" name="student-name-exact" <?php echo $student_checkbox_is_on;?>>
 						</div>
 						
-						
+						<label for="advanced_search__teacher_name" class="visually-hidden">שם המורה</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__teacher_name"  placeholder="<?php echo $story_teacher_menu_string; ?>" name="advanced_search__teacher_name"  value="<?php echo $query_teacher_name; ?>"  >
 						
 						<div class="checkbox-container">
@@ -123,6 +125,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 					
 							<div class="large">
 								<span class="wizard-select-theme">
+									<label for="advanced_search__country" class="visually-hidden">חיפוש לפי ארץ</label>
 									<select id="advanced_search__country" name="advanced_search__country"  class="chosen-rtl">
 										<option value=""><?php echo $story_default_country_menu_string; ?></option>
 										<?php foreach ($countries as $country): ?>
@@ -136,7 +139,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 							</div>
 						</div>
 						
-						
+						<label for="advanced_search__word_name" class="visually-hidden">ביטוי לחיפוש</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__word_name"    placeholder="<?php echo $story_word_menu_string;  ?>" name="advanced_search__word_name" value="<?php echo $query_word_name; ?>">
 						
 						<div class="checkbox-container">
@@ -144,6 +147,7 @@ $quote_checkbox_is_on 	= (isset($_GET['quote-name-exact']) 	 AND $_GET['quote-na
 							<input type="checkbox" id="word-name-exact" name="word-name-exact" <?php echo $word_checkbox_is_on;?>>
 						</div>
 						
+						<label for="advanced_search__quote_name" class="visually-hidden">שם המבוגר</label>
 						<input class="large advanced-search-form-input" type="text" id="advanced_search__quote_name"   placeholder="<?php echo $story_quote_menu_string; ?>" name="advanced_search__quote_name" value="<?php echo $query_quote_name; ?>">
 						
 						<div class="checkbox-container">
