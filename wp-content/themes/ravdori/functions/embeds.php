@@ -62,4 +62,33 @@ function my_default_image_size () {
 }
 add_filter( 'pre_option_image_default_size', 'my_default_image_size' );
 
+
+
+
+// Accssabilty 
+function disable_iframe_embeds() {
+    // Remove the iframe and object handlers
+    wp_embed_unregister_handler('iframe');
+    wp_embed_unregister_handler('object');
+}
+add_action('init', 'disable_iframe_embeds');
+
+
+function disable_all_embeds() {
+    // Remove all oEmbed providers
+    wp_oembed_remove_provider('*');
+}
+add_action('init', 'disable_all_embeds');
+
+
+function disable_video_embeds() {
+    // Remove the [video] shortcode handler
+    remove_shortcode('video');
+
+    // Remove the oEmbed handler for video embeds
+    wp_embed_unregister_handler('video');
+}
+add_action('init', 'disable_video_embeds');
+
+
 ?>

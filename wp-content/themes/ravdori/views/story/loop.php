@@ -21,6 +21,8 @@
 	// Remove empty <a>
 	//$content = preg_replace('/<a[^>]*>(\s|&nbsp;)*<\/a[^>]*>/', '', $content);
 
+	// Remove the video shortcode text
+	$content = preg_replace('/\[video.*?\].*?\[\/video\]/', '', $content);
 	
 	// Add alts for images without it
 	$alt_counter = 1;

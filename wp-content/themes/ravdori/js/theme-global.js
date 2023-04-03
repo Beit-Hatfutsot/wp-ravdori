@@ -208,7 +208,11 @@ function setTranslation() {
 	choice.click(function() {
 		// vars
 		var lang = $(this).attr('id');
-
+		
+		$('body').removeClass('en');
+		$('body').removeClass('he');
+		$('body').addClass(lang);
+		
 		js_globals.translations_lang = lang;
 
 		// switch language

@@ -122,8 +122,8 @@ a.no-underline {
   list-style: none; }
 .schools-list li {
   display: inline-block;
-  background-color: #D6D6D6 !important;
-  color: #666;
+  background-color: #3b3b3b /*#D6D6D6*/ !important;
+  color: #fff !important; /*#666*/
   font-size: 18px;
   margin-bottom: 7px;
   text-decoration: none;
@@ -135,12 +135,13 @@ a.no-underline {
   font-family: "opensanshebrew-bold", Arial, Helvetica, Sans-serif;
   font-size: 16px; }
 .schools-list li:hover {
-  background-color: #91DBE4 !important; }
+  background-color: #03499A !important; }
 .schools-list li:first-child {
+	color: #666 !important;
   font-weight: bold;
   background: #B4B4B4 !important; }
 .schools-list li.active {
-  background: #91DBE4 !important; }
+  background: #03499A !important; }
 
 .team-member-image img {
   border-radius: 50%; }
@@ -171,8 +172,8 @@ a.external-link {
 }
 
 .btn-story-upload:hover {
-	background-color: #009db2 !important;
-    border-color: #009db2 !important;
+	background-color: #3276B1 !important;
+    border-color: #3276B1 !important;
 }
 
 .btn-story-upload .caret {
@@ -215,7 +216,7 @@ a.external-link {
 .topic-title {
     font-size: 14px;
     font-weight: 800;
-    border-bottom: 2px solid #B0292F;
+    border-bottom: 2px solid #03499A; /*#B0292F;*/
     max-width: 96%;
     margin: 30px 0;
     clear: both;
@@ -1945,7 +1946,7 @@ a.external-link {
 			
 			.homepage-mobile-wizard-notice-text > div {
 				background: url(/wp-content/themes/ravdori/images/general/desktop-only-banner-right.png),url(/wp-content/themes/ravdori/images/general/desktop-only-banner-left.png);
-				background-color: #47c3d3;
+				background-color: #03499A;
 				background-size: 64px,67px;
 				background-repeat: no-repeat;
 				background-position: 97% 66px,6px -17px;
@@ -2351,7 +2352,7 @@ a.external-link {
 
 
 .col-homepage-about-the-program {
-    background-color: #FEE2B6;
+    background-color: #F1F1F2;
     margin-right: 15px;
     padding-right: 0;
 }

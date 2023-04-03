@@ -684,7 +684,7 @@ Not advised to edit stuff below this line
 .wizard-form textarea:focus, .wizard-form .element-file .file_text:active, .wizard-form select:focus {
   border-color: #2da5da; }
 .wizard-form input[type=submit], .wizard-form .element-file .button {
-  background-color: #2da5da; }
+  background-color: #03499A; }
 .wizard-form input[type=checkbox]:hover + span:before, .wizard-form input[type=radio]:hover + span:before {
   color: #8dc9e5; }
 .wizard-form input[type=checkbox]:checked + span:before, .wizard-form input[type=radio]:checked + span:before {

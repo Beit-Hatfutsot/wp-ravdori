@@ -584,11 +584,11 @@ body.page-template-wizard header #header-bottom #image-upload-and-social-contain
 .sidebar h2.title.cyan {
   background-color: #03499A; }
 .sidebar h2.title.cyan:after {
-  border-left-color: #009999; }
+  border-left-color: #03499A; }
 .sidebar h2.title.red {
-  background-color: #BF311A; }
+  background-color: #03499A; /*#BF311A;*/ }
 .sidebar h2.title.red:after {
-  border-left-color: #990000; }
+  border-left-color: #03499A; }
 .sidebar h2.title.blue {
   background-color: #232F84; }
 .sidebar h2.title.blue:after {
@@ -1425,7 +1425,7 @@ h3.story-personal-view {
   color: #fff;
   margin: 20px -25px 30px -30px;
   padding: 10px 26px;
-  background-color: #CC5A48;
+  background-color: #03499A; /*#CC5A48;*/
   font-size: 26px;
   max-width: 375px;
   width: 375px; }
@@ -1442,7 +1442,7 @@ h3.story-personal-view {
   bottom: 0px; }
 .main-page h2.title:after {
   border-width: 0 0 10px 10px;
-  border-left-color: #BF311A;
+  border-left-color: #03499A; /*#BF311A;*/
   right: 0; }
 .main-page .featured-stories .featured-story-image {
   padding: 3px;
@@ -1575,7 +1575,7 @@ h3.story-personal-view {
 .main-page #homepage_ravdori .col {
   margin-bottom: -99999px;
   padding-bottom: 99999px;
-  background-color: #FEE2B6; }
+  background-color: #F1F1F2; }
 .main-page #homepage_ravdori .col-wrap {
   overflow: hidden;
   padding-left: 15px !important; 
@@ -1617,10 +1617,10 @@ h3.story-personal-view {
 #homepage-terms .term-link a {
   color: #666666;
   font-size: 17px; }
-#homepage-terms .terms-hover:hover .homepage-terms-col {
-  background-color: #FBBF61; }
+/*#homepage-terms .terms-hover:hover .homepage-terms-col {
+  background-color: #FBBF61; }*/
 #homepage-terms .homepage-terms-col {
-  background-color: #FEE2B6;
+  background-color: #F1F1F2;
   color: #666666;
   font-size: 24px;
   padding: 13px 14px;
@@ -1866,7 +1866,7 @@ body.search h1.page-title, body.search .free-search-entry {
 
 .search-topbar {
   background: #F1F1F3;
-  border-right: 5px solid #B0292F;
+  border-right: 5px solid #03499A; /*#B0292F*/
   padding: 25px 0; }
 
 #search-subjects-form input[type=checkbox] + span:before {
@@ -1903,7 +1903,7 @@ body.search h1.page-title, body.search .free-search-entry {
 
 /* Homepage */  
 .homepage-news {
-	background-color: #FEE2B6;
+	background-color: #F1F1F2;
 	font-size: 20px;
 	line-height: 29px;
 	padding: 15px;
@@ -2034,7 +2034,7 @@ a.no-underline {
 .schools-list li {
   display: inline-block;
   background-color: #D6D6D6 !important;
-  color: #666;
+  color:#666;
   font-size: 18px;
   margin-bottom: 7px;
   text-decoration: none;
@@ -2073,7 +2073,7 @@ a.external-link {
   
 .btn-story-upload {
 	background-color: #009db2;
-    border-color: #009db2;
+    border-color: #03499A;
     display: block;
 	font-size:21px;
     border-radius: 0;
@@ -2085,8 +2085,8 @@ a.external-link {
 }
 
 .btn-story-upload:hover {
-	background-color: #009db2 !important;
-    border-color: #009db2 !important;
+	background-color: #3276B1 !important;
+    border-color: #3276B1 !important;
 }
 
 .btn-story-upload .caret {
@@ -2187,13 +2187,13 @@ a.external-link {
     padding: 0 3px;
     font-size: 16px;
     border: none;
-    background: #FFE2B8;
+    background: #E6E6E6; /*#FFE2B8;*/
 }
 
 
 #story_archive_page_select_chosen,
 #story_archive_page_select_chosen .chosen-single {
-	background: #DDF1F4;
+	background: #E6E6E6; /*#DDF1F4;*/
 	min-width: 110px;
     margin-left: 17px;
 }
@@ -2713,10 +2713,10 @@ a.external-link {
 .story-list-view .story-item__read-more a:before {
   content: '';
   position: absolute;
-  right: -16px;
+  right: -15px;
   bottom: 0;
   border-style: solid;
-  border-width: 16px 0 16px 16px;
+  border-width: 18px 0 16px 16px;
   border-color: #fff #fff #fff #03499A;
   width: 0;
   height: 0;
@@ -2785,13 +2785,14 @@ a.external-link {
   color: #fff;
   display: inline-block;
   position: relative;
-  background: #fc6;
+  background: #03499A;
   text-align: center;
   padding: 5px 10px;
   letter-spacing: 1px;
 }
 
 .story-grid-view .story-item__read-more a:before {
+	display:none;
   content: '';
   position: absolute;
   right: 0;
@@ -3054,4 +3055,9 @@ body.mobile-menu-open {
 	clip: rect(0,0,0,0) !important;
 	white-space: nowrap !important;
 	border: 0 !important;
+}
+
+
+body.en header .navbar nav.main-menu .navbar-nav > li > a {
+    font-size: 15px;
 }
