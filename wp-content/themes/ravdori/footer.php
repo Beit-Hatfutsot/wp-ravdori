@@ -139,5 +139,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 
 <?php } ?>
 
+<div id="bthn" lang="en"></div><script>
+(function () {
+   var script = document.createElement("script");
+   script.type = "text/javascript";
+   script.src = "https://bringthemhomenow.net/1.0.6/hostages-ticker.js";
+   script.setAttribute(
+     "integrity",
+     "sha384-HUMoFr9Q+E+J/4Miy+33M85Tsz7Ls2OA5PN5YpvwrLsg+c33uz/QN2MU0U36okGG"
+   );
+   script.setAttribute("crossorigin", "anonymous");
+   document.getElementsByTagName("head")[0].appendChild(script);
+ })();
+</script>
+
 </body>
 </html>
